@@ -16,26 +16,17 @@ public class RosterImpl implements Roster {
             this.roster.add(factory.generatePlayer(request, this, map, players.size()));
         }
     }
-
-    /** (non-Javadoc)
-     * @see it.unibo.risiko.model.player.Roster#getPlayer(java.lang.String)
-     */
+    
     @Override
     public Player getPlayer(String playerId) {
         return this.roster.get(playerId);
     }
 
-    /** (non-Javadoc)
-     * @see it.unibo.risiko.model.player.Roster#getPlayer(it.unibo.risiko.model.player.RisikoColors)
-     */
     @Override
     public Optional<Player> getPlayer(RisikoColors color) {
         return  this.roster.values().stream().filter(a -> a.getColor() == color).findFirst();
     }
 
-    /** (non-Javadoc)
-     * @see it.unibo.risiko.model.player.Roster#getAllPlayers()
-     */
     @Override
     public List<Player> getAllPlayers() {
         return List.copyOf(this.roster.values());
