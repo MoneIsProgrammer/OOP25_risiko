@@ -92,7 +92,7 @@ public final class PlayerImpl implements Player {
 
     @Override
     public Optional<CardEvent> playCard() {
-        return this.strategy.playCards(hand);
+        return this.strategy.playCards(hand, null);
     }
 
     @Override

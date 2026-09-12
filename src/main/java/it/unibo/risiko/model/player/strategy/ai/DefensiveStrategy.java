@@ -118,7 +118,7 @@ public class DefensiveStrategy implements PlayerStrategy {
     }
 
     @Override
-    public Optional<CardEvent> playCards(List<Card> hand) {
+    public Optional<CardEvent> playCards(List<Card> hand, Player owner) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'playCards'");
     }

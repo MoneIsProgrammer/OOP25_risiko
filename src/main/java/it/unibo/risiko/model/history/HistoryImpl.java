@@ -46,7 +46,7 @@ public class HistoryImpl implements History {
 
     @Override
     public final List<Event> getLastNEvents(final int n) {
-        return this.history.stream().limit(n).toList();
+        return this.history.subList(this.history.size() - n, n);
     }
 
     @Override

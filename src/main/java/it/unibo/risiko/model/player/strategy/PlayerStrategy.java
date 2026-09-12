@@ -40,5 +40,5 @@ public interface PlayerStrategy {
 
     ReinforceEvent getSetup(Player owner, int startingForces);
 
-    Optional<CardEvent> playCards(List<Card> hand);
+    Optional<CardEvent> playCards(List<Card> hand, Player owner);
 }

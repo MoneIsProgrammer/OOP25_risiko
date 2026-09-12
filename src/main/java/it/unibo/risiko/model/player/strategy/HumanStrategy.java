@@ -1,5 +1,9 @@
 package it.unibo.risiko.model.player.strategy;
 
+import java.util.Collection;
+import java.util.Map;
+
+import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.map.Territory;
 
 /**
@@ -30,9 +34,9 @@ public interface HumanStrategy extends PlayerStrategy {
     /**
      * sets the number of troops to reinforce a territory.
      * 
-     * @param strength number of defender's troops
+     * @param reinfoceMap Territories to reinforce and troops to add for each one
      */
-    void reinforce(int strength);
+    void reinforce(Map<Territory, Integer> reinfoceMap);
 
     /**
      * sets the source of the movement.
@@ -54,4 +58,14 @@ public interface HumanStrategy extends PlayerStrategy {
      * @param strength number of troops used in the movement
      */
     void moveStrenght(int strength);
+
+    void setupPlacement(Map<Territory, Integer> placement);
+
+    boolean canCreateAttack();
+
+    boolean canCreateReinforce();
+
+    void cardsToPlay(Collection<Card> combo);
+
+    boolean canPlayCards();
 }
