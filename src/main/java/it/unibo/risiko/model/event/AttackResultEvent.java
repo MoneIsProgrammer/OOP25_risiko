@@ -1,5 +1,7 @@
 package it.unibo.risiko.model.event;
 
+import it.unibo.risiko.model.battle.BattleResult;
+
 /**
  * Composition of {@link AttackEvent} where the attack is resolved, should not be kept as persistent data.
  * 
@@ -10,9 +12,7 @@ package it.unibo.risiko.model.event;
  */
 public record AttackResultEvent(
     AttackEvent attack,
-    int attackerLosses,
-    int defenderLosses,
-    boolean conquered
+    BattleResult result
 ) implements Event {
 
     @Override
