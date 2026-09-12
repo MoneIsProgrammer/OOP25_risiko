@@ -23,48 +23,61 @@ import it.unibo.risiko.model.player.strategy.StrategyUtils;
 /**
  * PlayerStrategy where the ai prefers to bolster its defenses rather than attack recklessly.
  */
-public class DefensiveStrategy implements PlayerStrategy {
-
+public final class DefensiveStrategy implements PlayerStrategy {
 
     private static final int MAX_ATK_STR = 3;
     private final Roster roster;
     private final GameMap map;
 
-    public DefensiveStrategy(Roster roster, GameMap map) {
+    /**
+     * Default constructor of {@link DefensiveStrategy}.
+     * 
+     * @param roster The other players
+     * @param map The playing map
+     */
+    public DefensiveStrategy(final Roster roster, final GameMap map) {
         this.roster = roster;
         this.map = map;
     }
 
     @Override
-    public Optional<AttackEvent> getAttack(Player owner) { //attacks only when has more than _3 troops and his troops > his target troops
-        var playerTerritories = this.map.getTerritoriesOf(owner.getId());
-        var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
-        var validAttacks = borders.stream().filter(a -> a.getArmies() > MAX_ATK_STR).collect(Collectors.toMap(a -> a, createAdjEnemySet(owner.getId()))); // this.map of territories and their adjacent enemies
-        validAttacks.entrySet().removeIf(a -> a.getValue().isEmpty());// prune entries where the attacker has no valid targets
-        if (validAttacks.size() == 0) {
-            return  Optional.empty();
+    //attacks only when has more than 3 troops and his troops > his target troops
+    public Optional<AttackEvent> getAttack(final Player owner) { 
+        final var playerTerritories = this.map.getTerritoriesOf(owner.getId());
+        final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
+        final var validAttacks = borders.stream()// this.map of territories and their adjacent enemies
+        .filter(a -> a.getArmies() > MAX_ATK_STR)
+        .collect(Collectors.toMap(a -> a, createAdjEnemySet(owner.getId())));
+        validAttacks.entrySet()
+        .removeIf(a -> a.getValue().isEmpty()); // prune entries where the attacker has no valid targets
+        if (validAttacks.isEmpty()) {
+            return Optional.empty();
         }
-        var strongestAttacker = validAttacks.keySet().stream().max(StrategyUtils.TERRITORY_COMPARATOR).get();
-        var weakestVictim = validAttacks.get(strongestAttacker).stream().min(StrategyUtils.TERRITORY_COMPARATOR).get();
+        final var strongestAttacker = validAttacks.keySet().stream().max(StrategyUtils.TERRITORY_COMPARATOR).get();
+        final var weakestVictim = validAttacks.get(strongestAttacker).stream().min(StrategyUtils.TERRITORY_COMPARATOR).get();
         return Optional.of(new AttackEvent(owner,
             this.roster.getPlayer(weakestVictim.getOwnerId().get()),
-            strongestAttacker.getArmies() > MAX_ATK_STR ? MAX_ATK_STR : strongestAttacker.getArmies() - 1, // this will always result in max armies, useful if the attack policy changes
-            weakestVictim.getArmies() > MAX_ATK_STR ? MAX_ATK_STR : weakestVictim.getArmies(), // to simplify defenders always defend with all their armies (MAX _3 min 1)
+            // this will always result in max armies, useful if the attack policy changes
+            strongestAttacker.getArmies() > MAX_ATK_STR ? MAX_ATK_STR : strongestAttacker.getArmies() - 1,
+            // to simplify defenders always defend with all their armies (MAX _3 min 1)
+            weakestVictim.getArmies() > MAX_ATK_STR ? MAX_ATK_STR : weakestVictim.getArmies(), 
             strongestAttacker,
             weakestVictim
         ));
     }
 
     @Override
-    public Optional<MoveEvent> getMove(Player owner) {//println only dirty debugging purposes
-        var playerTerritories = this.map.getTerritoriesOf(owner.getId());
-        var border = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
-        var weakestBorder = border.stream().filter(a -> StrategyUtils.notIsolated(a, map)).min(StrategyUtils.TERRITORY_COMPARATOR);
+    public Optional<MoveEvent> getMove(final Player owner) { //println only dirty debugging purposes
+        final var playerTerritories = this.map.getTerritoriesOf(owner.getId());
+        final var border = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
+        final var weakestBorder = border.stream()
+        .filter(a -> StrategyUtils.notIsolated(a, map))
+        .min(StrategyUtils.TERRITORY_COMPARATOR);
         if (weakestBorder.isEmpty()) {
             System.out.println("no weakest border");
             return Optional.empty();
         }
-        var strongestAdj = weakestBorder.get().getAdjacentIds().stream()
+        final var strongestAdj = weakestBorder.get().getAdjacentIds().stream()
         .map(this.map::getTerritory)
         .filter(a -> !border.contains(a))
         .filter(a -> a.getOwnerId().get().equals(owner.getId()))
@@ -81,44 +94,49 @@ public class DefensiveStrategy implements PlayerStrategy {
     }
 
     @Override
-    public ReinforceEvent getReinforce(Player owner, int armies) {
-        Map<Territory,Integer> reinforceMap = new HashMap<>();
-        var playerTerritories = this.map.getTerritoriesOf(owner.getId());
-        var border = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
-        var reinforces = Math.floor(playerTerritories.size() / 3);
-        reinforces = this.map.getContinentBonus(owner.getId());
-        for (int i = 0; i < reinforces; i++) {
-            var weakest = border.stream().min(StrategyUtils.TERRITORY_COMPARATOR); // a bit ugly but needed to first check the border
+    public ReinforceEvent getReinforce(final Player owner, final int armies) {
+        final Map<Territory, Integer> reinforceMap = new HashMap<>();
+        final var playerTerritories = this.map.getTerritoriesOf(owner.getId());
+        final var border = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
+        for (int i = 0; i < armies; i++) {
+            var weakest = border.stream()
+            .min(StrategyUtils.TERRITORY_COMPARATOR); // a bit ugly but needed to first check the border
             if (weakest.get().getArmies() >= MAX_ATK_STR) {
-                weakest = playerTerritories.stream().min(StrategyUtils.TERRITORY_COMPARATOR);// , then the inland 
+                weakest = playerTerritories.stream().min(StrategyUtils.TERRITORY_COMPARATOR); // ,then the inland 
                 if (weakest.get().getArmies() >= MAX_ATK_STR) {
-                    weakest = border.stream().min(StrategyUtils.TERRITORY_COMPARATOR); // and at last reinforce the weakest border if everithing as at least 3 armies
+                    // and at last reinforce the weakest border if everithing as at least 3 armies
+                    weakest = border.stream().min(StrategyUtils.TERRITORY_COMPARATOR); 
                 }
             }
-            reinforceMap.merge(weakest.get(), 1,Integer::sum); // sets the number of time a territory is to be reinforced with 1 troop
+            // sets the number of time a territory is to be reinforced with 1 troop
+            reinforceMap.merge(weakest.get(), 1, Integer::sum);
         }
         return new ReinforceEvent(owner, reinforceMap);
     }
 
-    private Function<Territory,Set<Territory>> createAdjEnemySet(String id) {
-        return new Function<Territory,Set<Territory>>() {
+    private Function<Territory, Set<Territory>> createAdjEnemySet(final String id) {
+        return new Function<>() {
 
             @Override
-            public Set<Territory> apply(Territory t) {
-                var set = t.getAdjacentIds().stream().map(a -> map.getTerritory(a)).filter(a->!a.getOwnerId().get().equals(id)).collect(Collectors.toSet()); //get enemies
-                return set.stream().filter(a -> a.getArmies() < t.getArmies()).collect(Collectors.toSet()); // get enemies weaker than attacker
+            public Set<Territory> apply(final Territory t) {
+                final var set = t.getAdjacentIds().stream()
+                .map(map::getTerritory)
+                .filter(a -> !a.getOwnerId().get().equals(id))
+                .collect(Collectors.toSet()); //get enemies
+                return set.stream()
+                .filter(a -> a.getArmies() < t.getArmies())
+                .collect(Collectors.toSet()); // get enemies weaker than attacker
             }
-            
         };
     }
 
     @Override
-    public ReinforceEvent getSetup(Player owner, int startingForces) {
+    public ReinforceEvent getSetup(final Player owner, final int startingForces) {
         return this.getReinforce(owner, startingForces);
     }
 
     @Override
-    public Optional<CardEvent> playCards(List<Card> hand, Player owner) {
+    public Optional<CardEvent> playCards(final List<Card> hand, final Player owner) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'playCards'");
     }

@@ -6,9 +6,7 @@ import it.unibo.risiko.model.battle.BattleResult;
  * Composition of {@link AttackEvent} where the attack is resolved, should not be kept as persistent data.
  * 
  * @param attack attack that originated this
- * @param attackerLosses troops lost by attacker
- * @param defenderLosses troops lost by defender
- * @param conquered true if attacker conquered the territory
+ * @param result the result of the attack after calculating rolls
  */
 public record AttackResultEvent(
     AttackEvent attack,

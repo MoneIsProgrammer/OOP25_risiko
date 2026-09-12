@@ -44,5 +44,5 @@ public interface EventVisitor<T> {
      * @param event to be visited
      * @return type to be determined in the implementation
      */
-    T visit(CardEvent cardEvent);
+    T visit(CardEvent event);
 }

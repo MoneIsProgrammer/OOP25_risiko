@@ -29,6 +29,7 @@ public final class PlayerImpl implements Player {
      * @param color of the player
      * @param name  name of the player
      * @param strategy  strategy that this player will use during its turns
+     * @param startingForces the number of armies in the setup phase
      */
     protected PlayerImpl(final RisikoColors color, final String name, final PlayerStrategy strategy, final int startingForces) {
         this.name = name;
@@ -59,7 +60,7 @@ public final class PlayerImpl implements Player {
     }
 
     @Override
-    public ReinforceEvent reinforce(int armies) {
+    public ReinforceEvent reinforce(final int armies) {
         return this.strategy.getReinforce(this, armies);
     }
 
@@ -80,13 +81,13 @@ public final class PlayerImpl implements Player {
 
     @Override
     public ReinforceEvent setupPlacement() {
-        int armiesToPlace = reinforces > 3 ? 3 : reinforces;
+        final int armiesToPlace = reinforces > 3 ? 3 : reinforces;
         reinforces -= armiesToPlace;
         return this.strategy.getSetup(this, armiesToPlace);
     }
 
     @Override
-    public void setArmies(int armies) {
+    public void setArmies(final int armies) {
         this.reinforces = armies;
     }
 
@@ -96,7 +97,7 @@ public final class PlayerImpl implements Player {
     }
 
     @Override
-    public void addCard(Card card) {
+    public void addCard(final Card card) {
         this.hand.add(card);
     }
 

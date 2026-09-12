@@ -9,27 +9,27 @@ import java.util.List;
  */
 public enum RisikoColors {
     /**
-     *Yellow
+     * Yellow.
      */
     YELLOW,
     /**
-     *Red
+     * Red.
      */
     RED,
     /**
-     *Green
+     * Green.
      */
     GREEN,
     /**
-     *Blue
+     * Blue.
      */
     BLUE,
     /**
-     *Pink
+     * Pink.
      */
     PINK,
     /**
-     *Black
+     * Black.
      */
     BLACK;
 

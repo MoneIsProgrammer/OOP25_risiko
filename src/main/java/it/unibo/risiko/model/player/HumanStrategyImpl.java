@@ -16,10 +16,9 @@ import it.unibo.risiko.model.map.Territory;
 import it.unibo.risiko.model.player.strategy.HumanStrategy;
 
 /**
- * HumanStrategyImpl
+ * Implementation of {@link HumanStrategy}.
  */
-public class HumanStrategyImpl implements HumanStrategy{
-
+public final class HumanStrategyImpl implements HumanStrategy {
 
     private final Roster roster;
     private final GameMap map; // i don't need it for now, remove if in final build isn't used
@@ -28,80 +27,84 @@ public class HumanStrategyImpl implements HumanStrategy{
     private final MoveBuilder moveBuilder = new MoveBuilder();
     private final CardPlayBuilder cardBuilder = new CardPlayBuilder();
 
-    public HumanStrategyImpl(Roster roster, GameMap map) {
+    /**
+     * @param roster The other players this strategy will refer to
+     * @param map the map this strategy will refer to
+     */
+    public HumanStrategyImpl(final Roster roster, final GameMap map) {
         this.roster = roster;
         this.map = map;
     }
 
     @Override
-    public Optional<AttackEvent> getAttack(Player owner) {
+    public Optional<AttackEvent> getAttack(final Player owner) {
         return Optional.of(this.attackBuilder.build(owner)); // Optionals are 
     }
 
     @Override
-    public Optional<MoveEvent> getMove(Player owner) {
+    public Optional<MoveEvent> getMove(final Player owner) {
         return Optional.of(this.moveBuilder.build(owner));
     }
 
     @Override
-    public ReinforceEvent getReinforce(Player owner, int armies) {
+    public ReinforceEvent getReinforce(final Player owner, final int armies) {
         return this.reinforceBuilder.build(owner, armies);
     }
 
     @Override
-    public void attackSource(Territory territory) {
+    public void attackSource(final Territory territory) {
         this.attackBuilder.setAttackSource(territory);
     }
 
     @Override
-    public void attackDestination(Territory territory) {
+    public void attackDestination(final Territory territory) {
         this.attackBuilder.setDefender(territory);
         this.attackBuilder.setVictim(this.roster.getPlayer(territory.getOwnerId().get()));
         this.attackBuilder.setDefenderStrenght(territory.getArmies() > 3 ? 3 : territory.getArmies());
     }
 
     @Override
-    public void attackStrenght(int strength) {
+    public void attackStrenght(final int strength) {
         this.attackBuilder.setAttackStrenght(strength);
     }
 
     @Override
-    public void reinforce(Map<Territory, Integer> reinfoceMap) {
+    public void reinforce(final Map<Territory, Integer> reinfoceMap) {
         this.reinforceBuilder.setReinforcements(reinfoceMap);
     }
 
     @Override
-    public void moveSource(Territory territory) {
+    public void moveSource(final Territory territory) {
         this.moveBuilder.setSource(territory);
     }
 
     @Override
-    public void moveDestination(Territory territory) {
+    public void moveDestination(final Territory territory) {
         this.moveBuilder.setDestination(territory);
     }
 
     @Override
-    public void moveStrenght(int strength) {
+    public void moveStrenght(final int strength) {
         this.moveBuilder.setTroopsMoved(strength);
     }
 
     @Override
-    public ReinforceEvent getSetup(Player owner, int startingForces) {
+    public ReinforceEvent getSetup(final Player owner, final int startingForces) {
         return this.reinforceBuilder.build(owner, startingForces);
     }
 
     @Override
-    public void setupPlacement(Map<Territory,Integer> placement) {
+    public void setupPlacement(final Map<Territory,Integer> placement) {
         this.reinforceBuilder.setReinforcements(placement);
     }
 
     @Override
-    public Optional<CardEvent> playCards(List<Card> hand, Player owner) {
+    public Optional<CardEvent> playCards(final List<Card> hand, final Player owner) {
         return Optional.of(this.cardBuilder.build(owner));
     }
 
     @Override 
-    public void cardsToPlay(Collection<Card> combo) {
+    public void cardsToPlay(final Collection<Card> combo) {
         this.cardBuilder.addCombo(combo);
     }
 
@@ -120,34 +123,34 @@ public class HumanStrategyImpl implements HumanStrategy{
         return this.cardBuilder.canBuild();
     }
 
-    private class AttackBuilder {
-        private Player victim = null;
-        private Integer attackStrenght = null;
-        private Integer defenderStrenght = null;
-        private Territory source = null;
-        private Territory destination = null;
+    private final class AttackBuilder {
+        private Player victim;
+        private Integer attackStrenght;
+        private Integer defenderStrenght;
+        private Territory source;
+        private Territory destination ;
 
-        public void setAttackStrenght(int strength) {
+        private void setAttackStrenght(final int strength) {
             this.attackStrenght = strength;
         }
 
-        public void setDefenderStrenght(int strength) {
+        private void setDefenderStrenght(final int strength) {
             this.defenderStrenght = strength;
         }
 
-        public void setAttackSource(Territory territory) {
+        private void setAttackSource(final Territory territory) {
             this.source = territory;
         }
 
-        public void setDefender(Territory territory) {
+        private void setDefender(final Territory territory) {
             this.destination = territory;
         }
 
-        public void setVictim(Player victim) {
+        private void setVictim(final Player victim) {
             this.victim = victim;
         }
 
-        public boolean canBuild() {
+        private boolean canBuild() {
             return this.attackStrenght != null 
             && this.defenderStrenght != null
             && this.destination != null
@@ -155,11 +158,16 @@ public class HumanStrategyImpl implements HumanStrategy{
             && this.victim != null;
         }
 
-        public AttackEvent build(Player owner) {
+        private AttackEvent build(final Player owner) {
             if (!canBuild()) {
                 throw new IllegalStateException("attack is not complete");
             }
-            var out = new AttackEvent(owner, this.victim, this.attackStrenght, this.defenderStrenght, this.source,this.destination);
+            final var out = new AttackEvent(owner,
+                this.victim, 
+                this.attackStrenght, 
+                this.defenderStrenght, 
+                this.source,
+                this.destination);
             clear();
             return out;
         }
@@ -173,43 +181,47 @@ public class HumanStrategyImpl implements HumanStrategy{
         }
     }
 
-    private class ReinforceBuilder {
-        Map<Territory, Integer> reinforceMap = null;
+    private final class ReinforceBuilder {
+        private Map<Territory, Integer> reinforceMap;
 
-        void setReinforcements(Map<Territory, Integer> reinforcements) {
+        private void setReinforcements(final Map<Territory, Integer> reinforcements) {
             this.reinforceMap.putAll(reinforcements);
         }
         
-        public ReinforceEvent build(Player owner, int armies) {
+        private ReinforceEvent build(final Player owner, final int armies) {
             if (reinforceMap.values().stream().reduce(Integer::sum).get() != armies && canBuild()) {
-                throw new IllegalStateException("The reinforcements can't be different from declared armies"); //this is a check as i can't check if map is empty due to the minimum reinforce avabile are 0
+                throw new IllegalStateException("The reinforcements can't be different from declared armies");
+                 //this is a check as i can't check if map is empty due to the minimum reinforce avabile are 0
             }
-            var out = new ReinforceEvent(owner, reinforceMap);
+            final var out = new ReinforceEvent(owner, reinforceMap);
             this.reinforceMap = null;
             return out;
         }
 
-        public  boolean canBuild() {
+        private  boolean canBuild() {
             return reinforceMap != null;
         }
     }
 
-    private class MoveBuilder {
+    private final class MoveBuilder {
 
-        private Territory source = null;
-        private Territory destination = null;
-        private Integer troopsMoved = null;
+        private Territory source;
+        private Territory destination;
+        private Integer troopsMoved;
 
-        public MoveEvent build(Player owner) {
+        private MoveEvent build(final Player owner) {
             if (!canBuild()) {
                 throw new IllegalStateException("Move is not complete");
             }
-            var out = new MoveEvent(owner,this.source,this.destination,this.troopsMoved);
+            final var out = new MoveEvent(owner,
+                this.source,
+                this.destination,
+                this.troopsMoved);
             clear();
             return out;
         }
 
-        public  boolean canBuild() {
+        private  boolean canBuild() {
             return this.source != null
             && this.destination != null
             && this.troopsMoved != null;
@@ -221,32 +233,32 @@ public class HumanStrategyImpl implements HumanStrategy{
             this.troopsMoved = null;
         }
 
-        public void setSource(Territory source) {
+        private void setSource(final Territory source) {
             this.source = source;
         }
 
-        public void setDestination(Territory destination) {
+        private void setDestination(final Territory destination) {
             this.destination = destination;
         }
 
-        public void setTroopsMoved(int troopsMoved) {
+        private void setTroopsMoved(final int troopsMoved) {
             this.troopsMoved = troopsMoved;
         }
     }
 
-    private class CardPlayBuilder {
+    private final class CardPlayBuilder {
     
         private List<Collection<Card>> played;
         private int armies;
 
-        public CardEvent build(Player owner) {
+        private CardEvent build(final Player owner) {
 
-            var out = new CardEvent(this.played, owner, armies);
+            final var out = new CardEvent(this.played, owner, armies);
             clear();
             return out;
         }
 
-        public void addCombo(Collection<Card> combo) {
+        private void addCombo(final Collection<Card> combo) {
             if (played == null) {
                 played = new ArrayList<>();
             }
@@ -263,7 +275,7 @@ public class HumanStrategyImpl implements HumanStrategy{
             this.played = null;
         }
 
-        public boolean canBuild() {
+        private boolean canBuild() {
             return this.played != null;
         }
 

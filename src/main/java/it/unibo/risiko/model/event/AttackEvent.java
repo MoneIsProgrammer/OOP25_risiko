@@ -7,7 +7,7 @@ import it.unibo.risiko.model.player.Player;
  * Event that models the intent of a player to attack another, sould not be kept as persistend data.
  *
  * @param attacker the attacker
- * @param defenderId   the victim
+ * @param defender the victim
  * @param attackerStrength troops used by attacker
  * @param defenderStrength troops defending
  * @param attackSource territory where the attack came

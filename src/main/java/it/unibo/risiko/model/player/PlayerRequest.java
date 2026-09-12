@@ -18,17 +18,17 @@ public record PlayerRequest(String name, PlayerStrategyRequest ai, RisikoColors 
          * Costant to be used to define the type of strategy the player will use.
          */
         public static final PlayerStrategyRequest AGGRESSIVE = new PlayerStrategyRequest("aggressive");
-        
+
         /**
          * Costant to be used to define the type of strategy the player will use.
          */
         public static final PlayerStrategyRequest DEFENSIVE = new PlayerStrategyRequest("defensive");
-        
+
         /**
          * Costant to be used to define the type of strategy the player will use.
          */
         public static final PlayerStrategyRequest RANDOM = new PlayerStrategyRequest("random");
-        
+
         /**
          * Costant to be used to define the type of strategy the player will use.
          */
