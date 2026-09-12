@@ -10,14 +10,14 @@ import javafx.collections.ListChangeListener;
  */
 public interface History {
     /**
-     * Used to get all the events that happened in a ordered list from newest to oldest.
+     * Used to get all the events that happened in a ordered list from oldest to newest.
      * 
      * @return a List of all Events that happened
      */
     List<Event> getAllEvents();
 
     /**
-     * Used to get a portion of the events in a ordered list from newest to oldest.
+     * Used to get a portion of the events in a ordered list from oldest to newest.
      * 
      * @param n number of Events in the return list
      * @return the last n Events in the list starting from last-n until last,
