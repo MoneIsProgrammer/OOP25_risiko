@@ -1,18 +1,16 @@
 package it.unibo.risiko.model.event;
 
 /**
- * Implemented by whoever wants to be told about what happens during a game.
- * The events by themselves don't notify anybody, the history just keeps them in a list,
- * so this is what lets the panels redraw on their own.
- * The model doesn't know who the observers are, it only calls them back.
+ * Implemented by whoever wants to know what happens in the game, like the map.
+ * The history only stores the events, this is what makes the panels redraw by themselves.
  */
 @FunctionalInterface
 public interface GameObserver {
 
     /**
-     * called when something happened in the game, always on the graphics thread.
+     * Called when something happens in the game.
      *
-     * @param event the event that just happened
+     * @param event what just happened
      */
     void onEvent(Event event);
 }

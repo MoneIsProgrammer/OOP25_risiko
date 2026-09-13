@@ -5,8 +5,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * The game map: territories, continents and borders.
- * This is the only thing the other packages use to know the geography of the game.
+ * The game map: territories, continents and which territories are neighbours.
+ * The other packages ask this and only this about the geography of the game.
  */
 public interface GameMap {
 
@@ -18,7 +18,7 @@ public interface GameMap {
     Collection<Territory> getTerritories();
 
     /**
-     * Searches a territory by id.
+     * Finds a territory by id.
      *
      * @param id the id of the territory
      * @return the territory with that id
@@ -34,7 +34,7 @@ public interface GameMap {
     Collection<Continent> getContinents();
 
     /**
-     * Searches a continent by id.
+     * Finds a continent by id.
      *
      * @param id the id of the continent
      * @return the continent with that id
@@ -43,7 +43,7 @@ public interface GameMap {
     Continent getContinent(String id);
 
     /**
-     * Tells if two territories are on the border.
+     * Tells if two territories are neighbours.
      *
      * @param first the first territory
      * @param second the second territory
@@ -56,15 +56,15 @@ public interface GameMap {
      * All the territories of a player.
      *
      * @param playerId the id of the player
-     * @return his territories, an empty set if he has none
+     * @return their territories, empty if they have none
      */
     Set<Territory> getTerritoriesOf(String playerId);
 
     /**
-     * Who owns a whole continent.
+     * Who owns all of a continent.
      *
      * @param continentId the id of the continent
-     * @return the id of the owner, empty if the continent is not all of one player
+     * @return the id of the owner, empty if nobody owns all of it
      * @throws IllegalArgumentException if the id of the continent does not exist
      */
     Optional<String> getContinentOwner(String continentId);
@@ -73,16 +73,16 @@ public interface GameMap {
      * Sum of the bonuses of the continents the player owns completely.
      *
      * @param playerId the id of the player
-     * @return the extra armies, 0 if he has no complete continent
+     * @return the extra armies, 0 if they don't own a whole continent
      */
     int getContinentBonus(String playerId);
 
     /**
-     * Tells if you can go from one territory to another passing only on territories of the
-     * same player, it is needed to check the movement at the end of the turn.
+     * Tells if you can get from one territory to the other passing only through territories
+     * of that player. Used to check the move at the end of the turn.
      *
      * @param fromId starting territory
-     * @param toId arriving territory
+     * @param toId destination territory
      * @param playerId the player that has to own the whole path
      * @return true if the path exists
      * @throws IllegalArgumentException if one of the two ids does not exist

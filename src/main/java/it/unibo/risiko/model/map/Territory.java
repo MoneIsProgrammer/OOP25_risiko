@@ -6,9 +6,9 @@ import java.util.Set;
 
 /**
  * A territory of the map.
- * Name, continent and borders are decided when the map is built and have no setter,
- * owner and armies are the part that changes during the game.
- * The owner is a player id and not a Player so that map does not depend on player.
+ * Name, continent and neighbours are fixed when the map is built, only the owner and
+ * the armies change during the game. The owner is just the player id, so the map
+ * package doesn't need the player package.
  */
 public interface Territory extends Identifiable {
 
@@ -27,7 +27,7 @@ public interface Territory extends Identifiable {
     String getContinentId();
 
     /**
-     * The territories on the border.
+     * The neighbouring territories.
      *
      * @return their ids in an unmodifiable set
      */

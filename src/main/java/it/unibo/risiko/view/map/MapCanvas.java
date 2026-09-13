@@ -30,13 +30,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 /**
- * Draws the map, continents as colored boxes, territories as pieces with the armies inside
- * and borders as lines. It only reads the {@link GameMap}, never changes it, and redraws
- * by itself when an event arrives. On a click it just says which territory was pressed.
+ * Draws the map: continents as colored boxes, territories as circles with the armies
+ * inside, and a line between every two neighbours. It only reads the {@link GameMap},
+ * redraws itself when an event changes something, and on a click it just says which
+ * territory it was.
  */
 public final class MapCanvas extends Canvas implements MapView {
 
-    /** Tells if an event changes the drawing. */
+    /** Says, event by event, if the drawing changes. */
     private static final EventVisitor<Boolean> CHANGES_THE_DRAWING = new RedrawIfNeeded();
 
     private static final double RADIUS = 17;
@@ -106,7 +107,7 @@ public final class MapCanvas extends Canvas implements MapView {
 
     @Override
     public void setSelected(final String territoryId) {
-        //throws if the territory doesn't exist
+        // throws if the territory doesn't exist
         this.selected = this.map.getTerritory(territoryId).getId();
         redraw();
     }
@@ -152,43 +153,10 @@ public final class MapCanvas extends Canvas implements MapView {
     @Override
     public void onEvent(final Event event) {
         if (event.accept(CHANGES_THE_DRAWING)) {
-            //move is over, remove the highlight
+            // the move is over, the highlight isn't needed anymore
             this.highlighted.clear();
             this.selected = null;
             redraw();
-        }
-    }
-
-    /**
-     * Says if the map has to be redrawn after an event.
-     */
-    private static final class RedrawIfNeeded implements EventVisitor<Boolean> {
-
-        @Override
-        public Boolean visit(final AttackEvent event) {
-            //just the intention, nothing changed on the map yet
-            return false;
-        }
-
-        @Override
-        public Boolean visit(final AttackResultEvent event) {
-            return true;
-        }
-
-        @Override
-        public Boolean visit(final MoveEvent event) {
-            return true;
-        }
-
-        @Override
-        public Boolean visit(final ReinforceEvent event) {
-            return true;
-        }
-
-        @Override
-        public Boolean visit(final CardEvent event) {
-            //the armies arrive later with the reinforcement
-            return false;
         }
     }
 
@@ -209,7 +177,7 @@ public final class MapCanvas extends Canvas implements MapView {
                 continue;
             }
 
-            //box around all the territories of the continent
+            // box around all the territories of the continent
             double minX = points.get(0).getX();
             double minY = points.get(0).getY();
             double maxX = minX;
@@ -249,7 +217,7 @@ public final class MapCanvas extends Canvas implements MapView {
             }
             final Point2D from = this.layout.getPosition(territory.getId());
             for (final String neighbour : territory.getAdjacentIds()) {
-                //every line is drawn only once
+                // draw each line only once, not once per side
                 if (territory.getId().compareTo(neighbour) >= 0 || !this.layout.hasPosition(neighbour)) {
                     continue;
                 }
@@ -291,13 +259,13 @@ public final class MapCanvas extends Canvas implements MapView {
             }
             context.strokeOval(x - radius, y - radius, radius * 2, radius * 2);
 
-            //armies in the middle
+            // armies in the middle
             context.setFont(armiesFont);
             context.setTextBaseline(VPos.CENTER);
             context.setFill(readableTextOn(color));
             context.fillText(String.valueOf(territory.getArmies()), x, y);
 
-            //name under it
+            // name under the circle
             context.setFont(nameFont);
             context.setTextBaseline(VPos.TOP);
             context.setFill(BORDER);
@@ -332,7 +300,8 @@ public final class MapCanvas extends Canvas implements MapView {
     }
 
     /**
-     * Finds the territory under the pointer, if two are close the nearest one wins.
+     * Finds the territory under the mouse. If two are close the nearest one wins, not
+     * the first one found.
      *
      * @param x x of the pointer in pixels
      * @param y y of the pointer in pixels
@@ -359,5 +328,39 @@ public final class MapCanvas extends Canvas implements MapView {
             }
         }
         return Optional.ofNullable(closest);
+    }
+
+    /**
+     * Says if the map has to be redrawn after an event. With a visitor, every time we add
+     * a new kind of event the compiler makes us decide here too.
+     */
+    private static final class RedrawIfNeeded implements EventVisitor<Boolean> {
+
+        @Override
+        public Boolean visit(final AttackEvent event) {
+            // just the intention to attack, nothing changed on the map yet
+            return false;
+        }
+
+        @Override
+        public Boolean visit(final AttackResultEvent event) {
+            return true;
+        }
+
+        @Override
+        public Boolean visit(final MoveEvent event) {
+            return true;
+        }
+
+        @Override
+        public Boolean visit(final ReinforceEvent event) {
+            return true;
+        }
+
+        @Override
+        public Boolean visit(final CardEvent event) {
+            // the armies come later, with a reinforcement event
+            return false;
+        }
     }
 }

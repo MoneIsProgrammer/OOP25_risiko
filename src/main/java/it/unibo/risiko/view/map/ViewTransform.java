@@ -3,18 +3,17 @@ package it.unibo.risiko.view.map;
 import javafx.geometry.Point2D;
 
 /**
- * Converts between the logic grid of the map file and the pixels of the panel, that change
- * when the window is resized. Drawing and clicking use the same one so they always agree.
+ * Goes from the grid used in the map file to the pixels of the panel, which change every
+ * time the window is resized. Drawing and clicking use the same one, so they never disagree.
  *
- * @param scale how much it is enlarged, the same horizontally and vertically
+ * @param scale zoom factor, the same in both directions
  * @param offsetX pixels of margin on the left, to center the map
  * @param offsetY pixels of margin on top, to center the map
  */
 record ViewTransform(double scale, double offsetX, double offsetY) {
 
     /**
-     * calculates the transformation that makes the whole grid fit in the available space,
-     * without deforming it and keeping it in the middle.
+     * Fits the whole grid in the given space without stretching it, and centers it.
      *
      * @param width available width in pixels
      * @param height available height in pixels
@@ -29,7 +28,7 @@ record ViewTransform(double scale, double offsetX, double offsetY) {
     }
 
     /**
-     * Tells if there is something to draw: before the panel is laid out its size is zero.
+     * False before the panel gets its size, when there is nothing to draw yet.
      *
      * @return true if there is space to draw
      */
@@ -38,7 +37,7 @@ record ViewTransform(double scale, double offsetX, double offsetY) {
     }
 
     /**
-     * converts a logic x into pixels.
+     * Converts an x on the grid into pixels.
      *
      * @param logic the x on the grid
      * @return the x in pixels
@@ -48,7 +47,7 @@ record ViewTransform(double scale, double offsetX, double offsetY) {
     }
 
     /**
-     * converts a logic y into pixels.
+     * Converts a y on the grid into pixels.
      *
      * @param logic the y on the grid
      * @return the y in pixels
@@ -58,7 +57,7 @@ record ViewTransform(double scale, double offsetX, double offsetY) {
     }
 
     /**
-     * converts a logic length into pixels.
+     * Converts a length on the grid into pixels.
      *
      * @param logic the length on the grid
      * @return the length in pixels
@@ -68,8 +67,7 @@ record ViewTransform(double scale, double offsetX, double offsetY) {
     }
 
     /**
-     * From pixels to logic coordinates, the opposite of drawing: it is used to understand
-     * where the user clicked.
+     * From pixels back to the grid: it's how we find out where the user clicked.
      *
      * @param x the x in pixels
      * @param y the y in pixels

@@ -30,13 +30,13 @@ public final class CombatSystemImpl implements CombatSystem {
 
         int attackerLosses = 0;
         int defenderLosses = 0;
-        //only the pairs that exist are compared, if one side rolled less dice the rest is ignored
+        // if one side rolled fewer dice, the extra ones don't count
         final int comparisons = Math.min(attack.size(), defence.size());
         for (int i = 0; i < comparisons; i++) {
             if (attack.get(i) > defence.get(i)) {
                 defenderLosses = defenderLosses + 1;
             } else {
-                //equal values are in favour of who defends
+                // defender wins ties
                 attackerLosses = attackerLosses + 1;
             }
         }
@@ -47,7 +47,7 @@ public final class CombatSystemImpl implements CombatSystem {
 
     @Override
     public int maxAttackDice(final Territory attacker) {
-        //one army always has to stay in the territory
+        // one army always has to stay in the territory
         return Math.max(0, Math.min(Dice.MAX_DICE, attacker.getArmies() - 1));
     }
 
@@ -73,7 +73,7 @@ public final class CombatSystemImpl implements CombatSystem {
         }
         if (!attacker.getAdjacentIds().contains(defender.getId())) {
             throw new IllegalArgumentException(attacker.getName() + " and " + defender.getName()
-                    + " are not on the border");
+                    + " are not adjacent");
         }
     }
 }

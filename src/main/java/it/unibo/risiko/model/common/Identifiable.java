@@ -1,10 +1,10 @@
 package it.unibo.risiko.model.common;
 
 /**
- * Something in the game that has a textual id: territories, continents, players, cards.
- * Ids are strings and not object references so the model packages don't have to know each other.
+ * Anything in the game that has a text id: territories, continents, players, cards.
+ * We pass ids around instead of objects, so the model packages don't depend on each other.
  */
-//not meant to be used as a lambda, it says what the object is and not what it does
+// not meant to be used as a lambda, that's why the PMD warning is turned off
 @SuppressWarnings("PMD.ImplicitFunctionalInterface")
 public interface Identifiable {
 

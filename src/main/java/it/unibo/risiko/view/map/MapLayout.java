@@ -12,10 +12,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 /**
- * Positions of the territories and colors of the continents.
- * They are only needed to draw, so they live in the view and not inside {@code Territory}:
- * this way the model has no pixels in it and can be tested without opening a window.
- * The file is the same one of the map, only here of every line we look at coordinates and color.
+ * Where each territory goes on screen, and the color of each continent.
+ * Only the drawing needs these, so they stay in the view: the model has no pixels and can be
+ * tested without opening a window. It reads the same file as {@code MapLoader}, but only looks
+ * at coordinates and colors.
  */
 public final class MapLayout {
 
@@ -45,10 +45,10 @@ public final class MapLayout {
     }
 
     /**
-     * loads the coordinates of the world map that is in the resources.
+     * Loads the coordinates of the world map from the resources.
      *
      * @return the layout of the world map
-     * @throws IOException if the file is not found or is written badly
+     * @throws IOException if the file is missing or badly written
      */
     public static MapLayout loadDefault() throws IOException {
         try (InputStream input = MapLayout.class.getResourceAsStream(MapLoader.DEFAULT_MAP)) {
@@ -60,7 +60,7 @@ public final class MapLayout {
     }
 
     /**
-     * reads the coordinates from any stream.
+     * Reads the coordinates from any stream.
      *
      * @param input the stream to read, in UTF-8
      * @return the layout that was read
@@ -86,7 +86,7 @@ public final class MapLayout {
     }
 
     /**
-     * Returns where the territory has to be drawn, in logic coordinates.
+     * Where to draw a territory, in grid coordinates.
      *
      * @param territoryId id of the territory
      * @return the point on the grid
@@ -111,7 +111,7 @@ public final class MapLayout {
     }
 
     /**
-     * Returns the color of the box of a continent.
+     * Color of a continent's box.
      *
      * @param continentId id of the continent
      * @return the color read from the file, or a grey if it is missing
@@ -129,8 +129,8 @@ public final class MapLayout {
         }
         final String type = fields[0].trim();
         if (TERRITORY_TYPE.equals(type)) {
-            //a territory without coordinates can't be drawn and can't be clicked, better an
-            //error now than an invisible piece when the game has already started
+            // without coordinates a territory can't be drawn or clicked:
+            // better to fail now than to have an invisible territory mid-game
             if (fields.length < TERR_FIELDS) {
                 throw new IOException(LINE_PREFIX + lineNumber + ": the territory "
                         + idInLine(fields) + " has no coordinates");
@@ -139,7 +139,7 @@ public final class MapLayout {
                     readNumber(fields[X_COLUMN], lineNumber),
                     readNumber(fields[Y_COLUMN], lineNumber)));
         } else if (CONTINENT_TYPE.equals(type) && fields.length >= CONT_FIELDS) {
-            //the color instead can also be lost, it falls back on grey
+            // a missing color is fine instead, the continent just becomes grey
             colors.put(fields[ID_COLUMN].trim(), readColor(fields[COLOR_COLUMN], lineNumber));
         }
     }
