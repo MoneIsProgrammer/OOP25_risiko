@@ -97,10 +97,8 @@ public final class AggressiveStrategy implements PlayerStrategy {
     public ReinforceEvent getReinforce(final Player owner, final int armies) { // TODO add card bonuses when ready
         final Map<Territory, Integer> reinforceMap = new HashMap<>();
         final var playerTerritories = map.getTerritoriesOf(owner.getId());
-        var reinforcements = Math.floor(playerTerritories.size() / 3); // arrotondamento per difetto
-        reinforcements += map.getContinentBonus(owner.getId());
         final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
-        for (int i = 0; i < reinforcements; i++) {
+        for (int i = 0; i < armies; i++) {
             var min = playerTerritories.stream().filter(a -> a.getArmies() < 2).findAny();
             if (min.isEmpty()) {
                 min = borders.stream().min(StrategyUtils.TERRITORY_COMPARATOR);

@@ -98,8 +98,7 @@ public final class RandomStrategy implements PlayerStrategy {
     public ReinforceEvent getReinforce(final Player owner, final int armies) {
         final Map<Territory, Integer> reinforceMap = new HashMap<>();
         final var playerTerritories = this.map.getTerritoriesOf(owner.getId());
-        final var reinforcements = Math.floor(playerTerritories.size() / 3) + this.map.getContinentBonus(owner.getId());
-        for (int i = 0; i < reinforcements; i++) {
+        for (int i = 0; i < armies; i++) {
             reinforceMap.merge(playerTerritories.stream().findAny().get(), 1, Integer::sum);
         }
         return new ReinforceEvent(owner, reinforceMap);

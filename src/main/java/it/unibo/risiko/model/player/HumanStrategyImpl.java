@@ -2,6 +2,7 @@ package it.unibo.risiko.model.player;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -185,6 +186,9 @@ public final class HumanStrategyImpl implements HumanStrategy {
         private Map<Territory, Integer> reinforceMap;
 
         private void setReinforcements(final Map<Territory, Integer> reinforcements) {
+            if (this.reinforceMap == null) {
+                this.reinforceMap = new HashMap<>();
+            }
             this.reinforceMap.putAll(reinforcements);
         }
         
