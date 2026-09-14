@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.PlayerRequest.PlayerStrategyRequest;
+import it.unibo.risiko.model.player.strategy.HumanStrategyImpl;
 import it.unibo.risiko.model.player.strategy.PlayerStrategy;
 import it.unibo.risiko.model.player.strategy.ai.AggressiveStrategy;
 import it.unibo.risiko.model.player.strategy.ai.DefensiveStrategy;

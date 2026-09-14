@@ -21,6 +21,12 @@ public final class RosterImpl implements Roster {
     public RosterImpl(final List<PlayerRequest> players, final GameMap map) {
         this.roster = new Registry<>("players");
         final PlayerFactory factory = new PlayerFactoryImpl();
+        if (players.size() > 6 || players.size() < 3) {
+            throw new IllegalArgumentException("Number of players is not between 3 and 6");
+        }
+        if (players.stream().map(a -> a.color()).distinct().count() != players.size()) {
+            throw new IllegalArgumentException("Duplicate Color");
+        }
         for (final PlayerRequest request : players) {
             this.roster.add(factory.generatePlayer(request, this, map, players.size()));
         }
