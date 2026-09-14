@@ -1,4 +1,4 @@
-package it.unibo.risiko.model.player;
+package it.unibo.risiko.model.player.strategy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,8 @@ import it.unibo.risiko.model.event.MoveEvent;
 import it.unibo.risiko.model.event.ReinforceEvent;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.Territory;
-import it.unibo.risiko.model.player.strategy.HumanStrategy;
+import it.unibo.risiko.model.player.Player;
+import it.unibo.risiko.model.player.Roster;
 
 /**
  * Implementation of {@link HumanStrategy}.
@@ -122,6 +123,11 @@ public final class HumanStrategyImpl implements HumanStrategy {
     @Override 
     public boolean canPlayCards() {
         return this.cardBuilder.canBuild();
+    }
+
+    @Override 
+    public boolean canCreateMove() {
+        return this.moveBuilder.canBuild();
     }
 
     @Override
