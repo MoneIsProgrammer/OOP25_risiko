@@ -2,15 +2,19 @@ package it.unibo.risiko.model.event;
 
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.map.Territory;
 import it.unibo.risiko.model.player.Player;
 
 /**
- * Event that models the reinforcement of troops in owned territories, should not be kept as persistent data.
+ * Event that models the reinforcement of troops in owned territories, should not be kept as persistend data.
+ * If a persistent copy is needed utilize the visitor to create a specialized implementation.
  * 
- * @param player that generated event
- * @param reinforcement maps territory to number of troops to reinforce
+ * @param player Reference to the player that generated the event
+ * @param reinforcement maps territory to number of troops to add
  */
+
+@SuppressFBWarnings("EI_EXPOSE_REP") // ugly but passing the references grants easier control to apply changes
 public record ReinforceEvent(
     Player player,
     Map<Territory, Integer> reinforcement 

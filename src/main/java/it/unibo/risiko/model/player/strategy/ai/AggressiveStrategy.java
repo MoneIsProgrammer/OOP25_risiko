@@ -21,32 +21,38 @@ import it.unibo.risiko.model.player.strategy.StrategyUtils;
 /**
  * PlayerStrategy where the ai attacks whoever it can if it has enough troops.
  */
-public class AggressiveStrategy implements PlayerStrategy {
+public final class AggressiveStrategy implements PlayerStrategy {
 
     private final Roster roster;
     private final GameMap map;
 
-    public AggressiveStrategy(Roster roster, GameMap map) {
+    /**
+     * Default constructor of {@link AggressiveStrategy}.
+     * 
+     * @param roster The other players
+     * @param map The playing map
+     */
+    public AggressiveStrategy(final Roster roster, final GameMap map) {
         this.roster = roster;
         this.map = map;
     }
 
     @Override
-    public Optional<AttackEvent> getAttack(Player owner) { // if it can attack it will
-        var playerTerritories = this.map.getTerritoriesOf(owner.getId());
-        var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
-        var source = borders.stream()
+    public Optional<AttackEvent> getAttack(final Player owner) { // if it can attack it will
+        final var playerTerritories = this.map.getTerritoriesOf(owner.getId());
+        final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
+        final var source = borders.stream()
         .filter(a -> a.getArmies() > 1)
         .max(StrategyUtils.TERRITORY_COMPARATOR);
         if (source.isEmpty()) {
             return Optional.empty();
         }
-        var destination = source.get().getAdjacentIds().stream() // ok because souce is a border
+        final var destination = source.get().getAdjacentIds().stream() // ok because souce is a border
             .map(map::getTerritory)
             .filter(a -> !playerTerritories.contains(a))
             .min(StrategyUtils.TERRITORY_COMPARATOR);
         if (destination.isEmpty()) {
-            return  Optional.empty();
+            return Optional.empty();
         }
         return Optional.of(new AttackEvent(owner, 
             this.roster.getPlayer(destination.get().getOwnerId().get()), 
@@ -57,11 +63,12 @@ public class AggressiveStrategy implements PlayerStrategy {
     }
 
     @Override
-    public Optional<MoveEvent> getMove(Player owner) { // take the territory that isnt on the border with the most troops and moves all - 1 to the border with fewer troops.
-        var playerTerritories = this.map.getTerritoriesOf(owner.getId());
-        var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
-        var source = borders.stream()
-        .map(a -> a.getAdjacentIds())
+    // take the territory that isnt on the border with the most troops and moves all - 1 to the border with fewer troops.
+    public Optional<MoveEvent> getMove(final Player owner) {
+        final var playerTerritories = this.map.getTerritoriesOf(owner.getId());
+        final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
+        final var source = borders.stream()
+        .map(Territory::getAdjacentIds)
         .flatMap(Set::stream) //flattens the stream
         .map(this.map::getTerritory)
         .filter(a -> a.getOwnerId().get().equals(owner.getId())) // only owned by player
@@ -72,7 +79,7 @@ public class AggressiveStrategy implements PlayerStrategy {
             System.out.println("Move got no source");
             return Optional.empty();
         }
-        var destination = source.get().getAdjacentIds().stream() //weakest border territory adj to the strongest non border
+        final var destination = source.get().getAdjacentIds().stream() //weakest border territory adj to the strongest non border
         .map(this.map::getTerritory)
         .filter(borders::contains)
         .min(StrategyUtils.TERRITORY_COMPARATOR);
@@ -87,25 +94,24 @@ public class AggressiveStrategy implements PlayerStrategy {
     }
 
     @Override
-    public ReinforceEvent getReinforce(Player owner, int armies) { // TODO add card bonuses when ready
-        Map<Territory,Integer> reinforceMap = new HashMap<>();
-        var playerTerritories = map.getTerritoriesOf(owner.getId());
-        var reinforcements = Math.floor(playerTerritories.size() / 3); // arrotondamento per difetto
-        reinforcements += map.getContinentBonus(owner.getId());
-        var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
-        for (int i = 0; i < reinforcements; i++) {
+    public ReinforceEvent getReinforce(final Player owner, final int armies) { // TODO add card bonuses when ready
+        final Map<Territory, Integer> reinforceMap = new HashMap<>();
+        final var playerTerritories = map.getTerritoriesOf(owner.getId());
+        final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
+        for (int i = 0; i < armies; i++) {
             var min = playerTerritories.stream().filter(a -> a.getArmies() < 2).findAny();
             if (min.isEmpty()) {
                 min = borders.stream().min(StrategyUtils.TERRITORY_COMPARATOR);
             }
-            reinforceMap.merge(min.get(), 1,Integer::sum); // sets the number of time a territory is to be reinforced with 1 troop
+            // sets the number of time a territory is to be reinforced with 1 troop
+            reinforceMap.merge(min.get(), 1, Integer::sum);
         }
         return new ReinforceEvent(owner, reinforceMap);
 
     }
 
-    private int attackerStrenght(Territory territory) {
-        var str = territory.getArmies();
+    private int attackerStrenght(final Territory territory) {
+        final var str = territory.getArmies();
         if (str > 3) {
             return 3;
         } else {
@@ -113,23 +119,22 @@ public class AggressiveStrategy implements PlayerStrategy {
         }
     }
 
-    private int defenderStrenght(Territory territory) {
-        var str = territory.getArmies();
+    private int defenderStrenght(final Territory territory) {
+        final var str = territory.getArmies();
         if (str > 3) {
             return 3;
-        }
-        else {
+        } else {
             return str;
         }
     }
 
     @Override
-    public ReinforceEvent getSetup(Player owner, int startingForces) {
+    public ReinforceEvent getSetup(final Player owner, final int startingForces) {
         return this.getReinforce(owner, startingForces);
     }
 
     @Override
-    public Optional<CardEvent> playCards(List<Card> hand, Player owner) {
+    public Optional<CardEvent> playCards(final List<Card> hand, final Player owner) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'playCards'");
     }

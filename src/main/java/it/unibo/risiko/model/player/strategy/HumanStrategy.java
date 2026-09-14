@@ -59,13 +59,38 @@ public interface HumanStrategy extends PlayerStrategy {
      */
     void moveStrenght(int strength);
 
+    /**
+     * sets where troops should be added.
+     * 
+     * @param placement the mapping of territories and how many troops to add to each
+     */
     void setupPlacement(Map<Territory, Integer> placement);
 
+    /**
+     * Used to check if the strategy is finished building {@link AttackEvent}.
+     * 
+     * @return true if {@link PlayerStrategy#getAttack(it.unibo.risiko.model.player.Player)} can be called
+     */
     boolean canCreateAttack();
 
+    /**
+     * Used to check if the strategy is finished building {@link ReinforceEvent}.
+     * 
+     * @return true if {@link PlayerStrategy#getReinforce(it.unibo.risiko.model.player.Player, int)} can be called
+     */
     boolean canCreateReinforce();
 
+    /**
+     * adds the cards that the player wants to play.
+     * 
+     * @param combo the combo of cards to be added
+     */
     void cardsToPlay(Collection<Card> combo);
 
+    /**
+     * Used to check if the strategy is finished building {@link CardEvemt}.
+     * 
+     * @return true if {@link PlayerStrategy#playCards(java.util.List, it.unibo.risiko.model.player.Player)} can be called
+     */
     boolean canPlayCards();
 }

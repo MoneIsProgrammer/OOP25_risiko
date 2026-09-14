@@ -17,7 +17,8 @@ public interface PlayerStrategy {
 
     /**
      * Used to generate an attack event, if unable generates nothing.
-     * @param owner TODO
+     * 
+     * @param owner Player who request the action
      * @return an {@link Optional} containing the event, if event can't be generated returns {@link Optional#empty()}
      */
     Optional<AttackEvent> getAttack(Player owner); //must pass gamestate so ai can use it, return optional to check 
@@ -25,20 +26,36 @@ public interface PlayerStrategy {
 
     /**
      * Used to generate a move event, if unable generates nothing.
-     * @param owner TODO
+     * 
+     * @param owner Player who request the action
      * @return an {@link Optional} containing the event, if event can't be generated returns {@link Optional#empty()}
      */
     Optional<MoveEvent> getMove(Player owner);
 
     /**
      * Used to generate a reinforcement event, if unable generates nothing.
-     * @param owner TODO
-     * @param armies TODO
+     * 
+     * @param owner Player who request the action
+     * @param armies How many armies this strategy has to place
      * @return a ReinforceEvent mapping the territories to reinforce and how many armies to add
      */
     ReinforceEvent getReinforce(Player owner, int armies);
 
+    /**
+     * Used during the setup phase to making it distinct to {@link PlayerStrategy#getReinforce()}.
+     * 
+     * @param owner Player who request the action
+     * @param startingForces How many armies has to place
+     * @return a reinforce event that Maps this step of the setup phase
+     */
     ReinforceEvent getSetup(Player owner, int startingForces);
 
+    /**
+     * Used to generate a CardEvent, if unable generates nothing.
+     * 
+     * @param hand the current hand of the player
+     * @param owner Player who request the action
+     * @return {@link Optional} containing the event, if event can't be generated returns {@link Optional#empty()}
+     */
     Optional<CardEvent> playCards(List<Card> hand, Player owner);
 }

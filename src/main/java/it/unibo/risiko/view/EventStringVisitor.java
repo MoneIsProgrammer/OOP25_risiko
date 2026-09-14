@@ -18,9 +18,10 @@ import it.unibo.risiko.model.map.Territory;
 public final class EventStringVisitor implements EventVisitor<List<String>> {
 
     /**
-     * Just creates the object, to be used must be passed to events
+     * Just creates the object, to be used must be passed to events.
      */
     public EventStringVisitor() {
+        //does nothing
     }
 
     @Override
@@ -36,10 +37,14 @@ public final class EventStringVisitor implements EventVisitor<List<String>> {
 
     @Override
     public List<String> visit(final AttackResultEvent event) {
-        final String attackerRolls = event.attack().attacker().getName() + " rolled " + event.result().getAttackerRolls().toString();
-        final String defenderRolls = event.attack().defender().getName() + " rolled: " + event.result().getDefenderRolls().toString();
-        final String attacker = event.attack().attacker().getName() + " lost " + event.result().getAttackerLosses() + " troops";
-        final String defender = event.attack().defender().getName() + " lost " + event.result().getDefenderLosses() + " troops";
+        final String attackerRolls = event.attack().attacker().getName() 
+        + " rolled " + event.result().getAttackerRolls().toString();
+        final String defenderRolls = event.attack().defender().getName() 
+        + " rolled: " + event.result().getDefenderRolls().toString();
+        final String attacker = event.attack().attacker().getName() 
+        + " lost " + event.result().getAttackerLosses() + " troops";
+        final String defender = event.attack().defender().getName() 
+        + " lost " + event.result().getDefenderLosses() + " troops";
         if (event.result().isConquered()) {
             final String conquered = event.attack().attacker() + " conquered " + event.attack().attackDestination().getName();
             return List.of(attackerRolls, attacker, defenderRolls, defender, conquered);
@@ -66,7 +71,7 @@ public final class EventStringVisitor implements EventVisitor<List<String>> {
     }
 
     @Override
-    public List<String> visit(CardEvent cardEvent) {
+    public List<String> visit(final CardEvent cardEvent) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }

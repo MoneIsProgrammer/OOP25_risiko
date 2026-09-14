@@ -65,3 +65,10 @@ application {
     // Define the main class for the application
     mainClass.set(main)
 }
+tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
+    reports {
+        create("html") {
+            required.set(true)
+        }
+    }
+}

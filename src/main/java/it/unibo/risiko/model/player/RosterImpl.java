@@ -6,25 +6,34 @@ import java.util.Optional;
 import it.unibo.risiko.model.common.Registry;
 import it.unibo.risiko.model.map.GameMap;
 
-public class RosterImpl implements Roster {
+/**
+ * Implementation of {@link Roster}.
+ */
+public final class RosterImpl implements Roster {
     private final Registry<Player> roster;
-    
-    public RosterImpl(List<PlayerRequest> players, GameMap map){
-        this.roster = new Registry<Player>("players");
-        PlayerFactory factory = new PlayerFactoryImpl();
-        for (PlayerRequest request : players) {
+
+    /**
+     * Default constructor.
+     * 
+     * @param players list of player to add to the roster
+     * @param map the map where players will play
+     */
+    public RosterImpl(final List<PlayerRequest> players, final GameMap map) {
+        this.roster = new Registry<>("players");
+        final PlayerFactory factory = new PlayerFactoryImpl();
+        for (final PlayerRequest request : players) {
             this.roster.add(factory.generatePlayer(request, this, map, players.size()));
         }
     }
-    
+
     @Override
-    public Player getPlayer(String playerId) {
+    public Player getPlayer(final String playerId) {
         return this.roster.get(playerId);
     }
 
     @Override
-    public Optional<Player> getPlayer(RisikoColors color) {
-        return  this.roster.values().stream().filter(a -> a.getColor() == color).findFirst();
+    public Optional<Player> getPlayer(final RisikoColors color) {
+        return this.roster.values().stream().filter(a -> a.getColor() == color).findFirst();
     }
 
     @Override
