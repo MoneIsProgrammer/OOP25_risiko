@@ -7,16 +7,16 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Reads the map file and gives what it finds to the {@link GameMapBuilder}.
- * Here there is only the reading of the text, the checks are done by the builder, so to read
- * another format it is enough to write another loader without touching the rest.
+ * Reads the map file and passes what it finds to the {@link GameMapBuilder}.
+ * It only reads text, the checks are the builder's job, so a new file format would
+ * just need a new loader.
  */
 public final class MapLoader {
 
-    /** Where the default map is between the resources. */
+    /** Path of the default map inside the resources. */
     public static final String DEFAULT_MAP = "/it/unibo/risiko/world.txt";
 
-    /** Separator of the fields in the file. */
+    /** Field separator in the map file. */
     public static final String SEPARATOR = ";";
 
     /** Prefix of the comment lines. */
@@ -31,10 +31,10 @@ public final class MapLoader {
     }
 
     /**
-     * Loads the world map that is in the resources.
-     * 
+     * Loads the world map from the resources.
+     *
      * @return the world map
-     * @throws IOException if the file is not found or it is not correct
+     * @throws IOException if the file is missing or wrong
      */
     public static GameMap loadDefault() throws IOException {
         try (InputStream input = MapLoader.class.getResourceAsStream(DEFAULT_MAP)) {
@@ -46,8 +46,8 @@ public final class MapLoader {
     }
 
     /**
-     * Reads a map from any stream, it is used by the tests to read maps written by hand.
-     * 
+     * Reads a map from any stream. The tests use it to load small maps written by hand.
+     *
      * @param input the stream to read, in UTF-8
      * @return the map that was built
      * @throws IOException if the file is broken or has wrong references
@@ -69,7 +69,7 @@ public final class MapLoader {
         try {
             return builder.build();
         } catch (final IllegalStateException e) {
-            //the file can be read but the map does not stand up
+            // the text was fine but the map itself doesn't make sense
             throw new IOException("Map not valid: " + e.getMessage(), e);
         }
     }
@@ -77,7 +77,7 @@ public final class MapLoader {
     private static void readLine(final String line, final int lineNumber, final GameMapBuilder builder)
             throws IOException {
         final String[] fields = line.split(SEPARATOR);
-        //a line made only of separators is split into an empty array, without this it crashes
+        // a line with only ';' splits into an empty array
         check(fields.length > 0, lineNumber, "there is nothing on this line");
         final String type = fields[0].trim();
         try {
@@ -97,7 +97,7 @@ public final class MapLoader {
                 default -> throw new IOException(LINE_PREFIX + lineNumber + ": unknown type '" + type + "'");
             }
         } catch (final IllegalArgumentException e) {
-            //the builder finds the error but the number of the line is known only here
+            // the builder found the error, but only here we know the line number
             throw new IOException(LINE_PREFIX + lineNumber + ": " + e.getMessage(), e);
         }
     }

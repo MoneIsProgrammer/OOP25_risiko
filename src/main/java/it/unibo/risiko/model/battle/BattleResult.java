@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Result of a battle: the dice that came out and the losses of the two sides.
- * It only holds data and changes nothing, the losses are applied by who manages the turn.
- * The lists of the dice are copied and given back unmodifiable so who reads the result
- * can't change it.
+ * Result of a battle: the dice rolled and the losses of both sides.
+ * It only holds data, the turn manager is the one that applies the losses. The dice are
+ * kept too, not only the losses, because the dice panel draws them. The lists are copies,
+ * so whoever reads the result can't change it.
  */
 public final class BattleResult {
 

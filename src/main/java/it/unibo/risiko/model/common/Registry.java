@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
- * A list of elements that can be searched by id and keeps the insertion order.
- * Territories and continents needed the same thing so it is generic, players and cards
- * can use it too.
+ * Elements you can look up by id, kept in the order they were added.
+ * Territories and continents needed exactly the same thing, so it's generic and the
+ * roster uses it for the players too.
  *
  * @param <T> the type of the elements, has to be {@link Identifiable}
  */
@@ -23,7 +23,7 @@ public final class Registry<T extends Identifiable> implements Iterable<T> {
     /**
      * Creates an empty registry.
      *
-     * @param elementName how the elements are called, it is only used in the error messages
+     * @param elementName what the elements are called, only used in error messages
      */
     public Registry(final String elementName) {
         this.elementName = elementName;
@@ -43,7 +43,7 @@ public final class Registry<T extends Identifiable> implements Iterable<T> {
     }
 
     /**
-     * Searches an element by id, not finding it is an error.
+     * Finds an element by id, and fails if it's not there.
      *
      * @param id the id to search
      * @return the element with that id
@@ -58,7 +58,7 @@ public final class Registry<T extends Identifiable> implements Iterable<T> {
     }
 
     /**
-     * Same as {@link #get(String)} but here finding nothing is normal.
+     * Like {@link #get(String)}, but for when a missing id is normal.
      *
      * @param id the id to search
      * @return the element or {@link Optional#empty()} if it is not there

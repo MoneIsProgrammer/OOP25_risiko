@@ -19,7 +19,7 @@ public final class ContinentImpl implements Continent {
      *
      * @param id unique id
      * @param name name to show on screen
-     * @param bonusArmies extra armies for who owns it completely
+     * @param bonusArmies extra armies for whoever owns all of it
      */
     public ContinentImpl(final String id, final String name, final int bonusArmies) {
         this.id = id;
@@ -28,8 +28,8 @@ public final class ContinentImpl implements Continent {
     }
 
     /**
-     * Adds a territory. It is package private because the continents are only filled while
-     * {@link GameMapBuilder} builds the map.
+     * Adds a territory. Package private because continents are only filled by
+     * {@link GameMapBuilder}, while it builds the map.
      *
      * @param territoryId the id of the territory to add
      */

@@ -6,9 +6,9 @@ import java.util.Map;
 
 /**
  * Builds a {@link GameMap} one piece at a time.
- * A half built map can't be used, so territories and borders are added here and the map
- * object is created only at the end by {@link #build()}, when everything is checked.
- * Used like this:
+ * A half-built map is useless, so you add continents, territories and neighbours here,
+ * and the map only gets created in {@link #build()}, after everything is checked.
+ * Example:
  * <pre>
  * GameMap map = new GameMapBuilder()
  *         .addContinent("europe", "Europe", 5)
@@ -25,12 +25,19 @@ public final class GameMapBuilder {
     private boolean built;
 
     /**
+     * Creates an empty builder.
+     */
+    public GameMapBuilder() {
+        // nothing to set up, the maps start empty
+    }
+
+    /**
      * Adds a continent to the map that is being built.
      *
      * @param id unique id of the continent
      * @param name name to show on screen
-     * @param bonus extra armies for who owns it completely, not negative
-     * @return this builder, to concatenate the calls
+     * @param bonus extra armies for whoever owns all of it, not negative
+     * @return this builder, so calls can be chained
      * @throws IllegalArgumentException if the continent is already there or the bonus is negative
      * @throws IllegalStateException if the map was already built
      */
@@ -52,7 +59,7 @@ public final class GameMapBuilder {
      * @param id unique id of the territory
      * @param name name to show on screen
      * @param continentId the continent it belongs to, it has to be added first
-     * @return this builder, to concatenate the calls
+     * @return this builder, so calls can be chained
      * @throws IllegalArgumentException if the territory is already there or the continent is missing
      * @throws IllegalStateException if the map was already built
      */
@@ -71,19 +78,19 @@ public final class GameMapBuilder {
     }
 
     /**
-     * Adds a border in both directions, if A is on the border of B then B is on the border of A.
+     * Makes two territories neighbours, both ways.
      *
      * @param first the first territory
      * @param second the second territory
-     * @return this builder, to concatenate the calls
-     * @throws IllegalArgumentException if one of the territories does not exist or if a
-     *                                  territory is put on the border with itself
+     * @return this builder, so calls can be chained
+     * @throws IllegalArgumentException if one of the territories doesn't exist or if the
+     *                                  two ids are the same
      * @throws IllegalStateException if the map was already built
      */
     public GameMapBuilder addAdjacency(final String first, final String second) {
         checkNotBuilt();
         if (first.equals(second)) {
-            throw new IllegalArgumentException(first + " can't be on the border with itself");
+            throw new IllegalArgumentException(first + " cannot be adjacent to itself");
         }
         final TerritoryImpl one = requireTerritory(first);
         final TerritoryImpl other = requireTerritory(second);
@@ -93,11 +100,11 @@ public final class GameMapBuilder {
     }
 
     /**
-     * Checks that the map makes sense and returns it, after this call the builder is not usable.
+     * Checks that the map makes sense and returns it. After this the builder can't be used again.
      *
      * @return the complete map
      * @throws IllegalStateException if the map is empty, if a continent has no territories,
-     *                               if a territory has no borders or if the builder was already used
+     *                               if a territory has no neighbours or if the builder was already used
      */
     public GameMap build() {
         checkNotBuilt();

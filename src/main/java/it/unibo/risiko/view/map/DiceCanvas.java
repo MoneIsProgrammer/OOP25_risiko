@@ -52,7 +52,7 @@ public final class DiceCanvas extends Canvas {
     }
 
     /**
-     * shows the dice of a battle.
+     * Shows the dice of a battle.
      *
      * @param battleResult the result to show
      */
@@ -62,7 +62,7 @@ public final class DiceCanvas extends Canvas {
     }
 
     /**
-     * empties the panel.
+     * Empties the panel.
      */
     public void clear() {
         this.result = Optional.empty();
@@ -117,7 +117,7 @@ public final class DiceCanvas extends Canvas {
         final double middle = DICE_Y + SIDE / 2 - DOT / 2;
         final double bottom = DICE_Y + SIDE - DOT_MARGIN - DOT;
 
-        //odd numbers have the middle dot, the others go in pairs
+        // odd numbers have the middle dot, the other dots come in pairs
         if (value % 2 != 0) {
             dot(context, center, middle);
         }
