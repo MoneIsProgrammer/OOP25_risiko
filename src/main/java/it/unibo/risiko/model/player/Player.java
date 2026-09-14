@@ -1,5 +1,6 @@
 package it.unibo.risiko.model.player;
 
+import java.util.List;
 import java.util.Optional;
 
 import it.unibo.risiko.model.common.Identifiable;
@@ -33,23 +34,31 @@ public interface Player extends  Identifiable{
 
     /**
      * Used to get the next attack that the player wants to take.
+     * 
      * @return an {@link Optional} containing the event if it can be generated, {@link Optional#empty()} otherwise
      */
     Optional<AttackEvent> attack();
 
     /**
      * Used to get the transfer of troops from a territory to another.
+     * 
      * @return an {@link Optional} containing the event if it can be generated, {@link Optional#empty()} otherwise
      */
     Optional<MoveEvent> move();
 
     /**
      * Used to get the reinforcement to various territories.
-     * @param armies TODO
-     * @return an {@link Optional} containing the event if it can be generated, {@link Optional#empty()} otherwise
+     * 
+     * @param armies the armies the player has to place
+     * @return a reinforce event, it does not return an {@link Optional} cause it is a forced event that must be done
      */
     ReinforceEvent reinforce(int armies);
 
+    /**
+     * Method that places troops following setup phase rules
+     * 
+     * @return a reinforce event, it does not return an {@link Optional} cause it is a forced event that must be done
+     */
     ReinforceEvent setupPlacement();
 
     /**
@@ -66,10 +75,25 @@ public interface Player extends  Identifiable{
      */
     RisikoColors getColor();
 
-    void setArmies(int armies);
-
+    /**
+     * Used to generate a {@link CardEvent}
+     * 
+     * @return an {@link Optional} containing the event if it can be generated
+     */
     Optional<CardEvent> playCard();
 
+    /**
+     * adds a card to this player hand
+     * 
+     * @param card to add
+     */
     void addCard(Card card);
+
+    /**
+     * getter for the player hand, each change like removing cards is reflected in the player's internal hand
+     * 
+     * @return a list rapresenting the player hand
+     */
+    List<Card> getHand();
 
 }

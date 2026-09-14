@@ -7,7 +7,8 @@ import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.map.Territory;
 
 /**
- * Strategy designed to be used by human player, models various methods to build each event.
+ * Strategy designed to be used by human player, models various methods to build each event incrementally.
+ * Trying to generate and event while in a incomplete state throws and {@link IllegalStateException}
  */
 public interface HumanStrategy extends PlayerStrategy {
     /**
@@ -84,13 +85,19 @@ public interface HumanStrategy extends PlayerStrategy {
      * adds the cards that the player wants to play.
      * 
      * @param combo the combo of cards to be added
+     * @throws IllegalArgumentException if the combo does not contain 3 cards
      */
     void cardsToPlay(Collection<Card> combo);
 
     /**
-     * Used to check if the strategy is finished building {@link CardEvemt}.
+     * Used to check if the strategy is finished building {@link CardEvent}.
      * 
      * @return true if {@link PlayerStrategy#playCards(java.util.List, it.unibo.risiko.model.player.Player)} can be called
      */
     boolean canPlayCards();
+
+	/**
+	 * Clears the unused argument passed during construction, making a clean slate for next calls
+	 */
+	void flush();
 }
