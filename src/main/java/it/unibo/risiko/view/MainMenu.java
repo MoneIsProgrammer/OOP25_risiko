@@ -18,7 +18,7 @@ public class MainMenu extends Application{ //test class to lauch scenes
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        stage.setTitle("MyShapes with JavaFX");
+        stage.setTitle("Risiko");
         stage.setScene(new MainMenuScene(newGame(), e -> System.out.print("load"), false));
         stage.show();
     }
