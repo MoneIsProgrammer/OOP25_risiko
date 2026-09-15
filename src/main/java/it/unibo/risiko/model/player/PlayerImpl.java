@@ -88,7 +88,7 @@ public final class PlayerImpl implements Player {
 
     @Override
     public Optional<CardEvent> playCard() {
-        return this.strategy.playCards(hand, null);
+        return this.strategy.playCards(hand, this);
     }
 
     @Override
@@ -96,9 +96,19 @@ public final class PlayerImpl implements Player {
         this.hand.add(card);
     }
 
+    @Override
+    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID) {
+        return this.strategy.getMoveAfterConquest(sourceID, destinationID, this);
+    }
+    
 	@Override
 	public List<Card> getHand() {
         return this.hand;
+    }
+
+    @Override
+    public void setArmies(int armies) {
+        this.reinforces = armies;
     }
 
 }

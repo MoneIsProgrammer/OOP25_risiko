@@ -14,7 +14,7 @@ public interface History {
      * 
      * @return a List of all Events that happened
      */
-    List<Event> getAllEvents();
+    List<String> getAllEvents();
 
     /**
      * Used to get a portion of the events in a ordered list from oldest to newest.
@@ -23,7 +23,7 @@ public interface History {
      * @return the last n Events in the list starting from last-n until last,
      *      if n is greater than the total number of events there will be less than n elements
      */
-    List<Event> getLastNEvents(int n);
+    List<String> getLastNEvents(int n);
 
     /**
      * Used to know how many elements are present in the history.
@@ -40,16 +40,17 @@ public interface History {
     void addEvent(Event event);
 
     /**
-     * Used to create a History with various events from zero.
+     * Used to create a History with various string rapresentation of events from zero.
      * 
-     * @param history Overwrites current History with the passed list of Events
+     * @param history Overwrites current History with the passed list of String
      */
-    void restoreHistory(List<Event> history);
+    void restoreHistory(List<String> history);
 
     /**
      * Used to add listeners that want to be notified when this class changes.
      * 
      * @param listener listener to be added that will be notified on addition to the history
      */
-    void addListener(ListChangeListener<Event> listener);
+    void addListener(ListChangeListener<String> listener);
+
 }

@@ -141,4 +141,21 @@ public final class DefensiveStrategy implements PlayerStrategy {
         throw new UnsupportedOperationException("Unimplemented method 'playCards'");
     }
 
+    @Override
+    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner) {
+        var source = this.map.getTerritory(sourceID);
+        var destination = this.map.getTerritory(destinationID);
+        var troopsToMove = source.getArmies() - 1;
+        if (troopsToMove > 1) {
+            if (source.getAdjacentIds().stream().map(this.map::getTerritory).anyMatch(a -> a.getOwnerId().get() != owner.getId())) {
+                troopsToMove = Math.floorDiv(troopsToMove, 2); //if has enemy near halve the troops
+            }
+            else {
+                //else move all but 2
+                troopsToMove =- 1;
+            }
+        }
+        return new MoveEvent(owner, source, destination, troopsToMove);
+    }
+
 }

@@ -23,7 +23,7 @@ import it.unibo.risiko.model.player.Roster;
 public final class HumanStrategyImpl implements HumanStrategy {
 
     private final Roster roster;
-    private final GameMap map; // i don't need it for now, remove if in final build isn't used
+    private final GameMap map;
     private final AttackBuilder attackBuilder = new AttackBuilder();
     private final ReinforceBuilder reinforceBuilder = new ReinforceBuilder();
     private final MoveBuilder moveBuilder = new MoveBuilder();
@@ -305,5 +305,15 @@ public final class HumanStrategyImpl implements HumanStrategy {
         }
 
 
+    }
+
+    @Override
+    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner) {
+        if (this.moveBuilder.troopsMoved == null) {
+            this.moveBuilder.setTroopsMoved(1);
+        }
+        this.moveBuilder.setDestination(this.map.getTerritory(destinationID));
+        this.moveBuilder.setSource(this.map.getTerritory(sourceID));
+        return this.moveBuilder.build(owner);
     }
 }

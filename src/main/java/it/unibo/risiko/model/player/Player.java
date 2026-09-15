@@ -9,6 +9,7 @@ import it.unibo.risiko.model.event.AttackEvent;
 import it.unibo.risiko.model.event.CardEvent;
 import it.unibo.risiko.model.event.MoveEvent;
 import it.unibo.risiko.model.event.ReinforceEvent;
+import it.unibo.risiko.model.map.Territory;
 import it.unibo.risiko.model.player.strategy.PlayerStrategy;
 
 /**
@@ -48,52 +49,35 @@ public interface Player extends  Identifiable{
 
     /**
      * Used to get the reinforcement to various territories.
-     * 
-     * @param armies the armies the player has to place
-     * @return a reinforce event, it does not return an {@link Optional} cause it is a forced event that must be done
+     * @param armies TODO
+     * @return an {@link Optional} containing the event if it can be generated, {@link Optional#empty()} otherwise
      */
     ReinforceEvent reinforce(int armies);
 
-    /**
-     * Method that places troops following setup phase rules
-     * 
-     * @return a reinforce event, it does not return an {@link Optional} cause it is a forced event that must be done
-     */
     ReinforceEvent setupPlacement();
 
     /**
-     * Getter for the player name
+     * Getter for the player name.
      * 
      * @return the name of the player
      */
     String getName();
 
     /**
-     * Getter for the PlayerColor
+     * Getter for the PlayerColor.
      * 
      * @return the color of the player
      */
     RisikoColors getColor();
 
-    /**
-     * Used to generate a {@link CardEvent}
-     * 
-     * @return an {@link Optional} containing the event if it can be generated
-     */
+    void setArmies(int armies);
+
     Optional<CardEvent> playCard();
 
-    /**
-     * adds a card to this player hand
-     * 
-     * @param card to add
-     */
     void addCard(Card card);
 
-    /**
-     * getter for the player hand, each change like removing cards is reflected in the player's internal hand
-     * 
-     * @return a list rapresenting the player hand
-     */
     List<Card> getHand();
+
+    MoveEvent getMoveAfterConquest(String sourceID, String destinationID);
 
 }
