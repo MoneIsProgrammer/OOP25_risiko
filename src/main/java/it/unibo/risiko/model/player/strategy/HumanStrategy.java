@@ -13,7 +13,7 @@ import it.unibo.risiko.model.player.Player;
 
 /**
  * Strategy designed to be used by human player, models various methods to build each event incrementally.
- * Trying to generate and event while in a incomplete state throws and {@link IllegalStateException}
+ * Trying to generate an event while in a incomplete state throws an {@link IllegalStateException}
  */
 public interface HumanStrategy extends PlayerStrategy {
     /**
@@ -41,6 +41,7 @@ public interface HumanStrategy extends PlayerStrategy {
      * sets the number of troops to reinforce a territory.
      * 
      * @param reinfoceMap Territories to reinforce and troops to add for each one
+     * @throws IllegalArgumentException if a value < 1 is passed
      */
     void reinforce(Map<Territory, Integer> reinfoceMap);
 
@@ -48,6 +49,7 @@ public interface HumanStrategy extends PlayerStrategy {
      * sets the source of the movement.
      * 
      * @param territory the source
+     * @throws IllegalArgumentException if a value < 1 is passed in a map entry
      */
     void moveSource(Territory territory);
 
@@ -69,6 +71,7 @@ public interface HumanStrategy extends PlayerStrategy {
      * sets where troops should be added.
      * 
      * @param placement the mapping of territories and how many troops to add to each
+     * @throws IllegalArgumentException if a value < 1 is passed
      */
     void setupPlacement(Map<Territory, Integer> placement);
 
@@ -102,12 +105,12 @@ public interface HumanStrategy extends PlayerStrategy {
     boolean canPlayCards();
 
     /** 
-     * The specialized metod to get a move event after a conquest, MUST be called after {@link HumanStrategy#moveStrenght(int)}.
+     * The specialized metod to get a move event after a conquest, MUST be called after {@link HumanStrategy#moveStrenght(int)},
+     * else the minimum movement of 1 army is utilized.
      * 
      * @param sourceID where troops are coming from
      * @param destinationID where troops will end up
      * @param owner the {@link Player} who requested this
-     * @throws IllegalStateException if called before setting {@link HumanStrategy#moveStrenght(int)}
      */
     @Override
     MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner);

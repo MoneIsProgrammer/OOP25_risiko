@@ -146,10 +146,16 @@ public final class HumanStrategyImpl implements HumanStrategy {
         private Territory destination ;
 
         private void setAttackStrenght(final int strength) {
+            if (strength < 1) {
+                throw new IllegalArgumentException("can't attack with " + strength + " armies");
+            }
             this.attackStrenght = strength;
         }
 
         private void setDefenderStrenght(final int strength) {
+            if (strength < 1) {
+                throw new IllegalArgumentException("can't defend with " + strength + " armies");
+            }
             this.defenderStrenght = strength;
         }
 
@@ -202,6 +208,11 @@ public final class HumanStrategyImpl implements HumanStrategy {
         private void setReinforcements(final Map<Territory, Integer> reinforcements) {
             if (this.reinforceMap == null) {
                 this.reinforceMap = new HashMap<>();
+            }
+            for (int val : reinforcements.values()) {
+                if (val < 1) {
+                    throw new IllegalArgumentException("cant reinforce with " + val + " troops");
+                }
             }
             this.reinforceMap.putAll(reinforcements);
         }
@@ -264,6 +275,9 @@ public final class HumanStrategyImpl implements HumanStrategy {
         }
 
         private void setTroopsMoved(final int troopsMoved) {
+            if (troopsMoved < 1) {
+                throw new IllegalArgumentException("can't move " + troopsMoved + " armies");
+            }
             this.troopsMoved = troopsMoved;
         }
     }
@@ -310,6 +324,8 @@ public final class HumanStrategyImpl implements HumanStrategy {
     @Override
     public MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner) {
         if (this.moveBuilder.troopsMoved == null) {
+            //default case instead of trowing an exception now moves the least amount of troops,
+            //quickens this method call if player wants to do nothing
             this.moveBuilder.setTroopsMoved(1);
         }
         this.moveBuilder.setDestination(this.map.getTerritory(destinationID));
