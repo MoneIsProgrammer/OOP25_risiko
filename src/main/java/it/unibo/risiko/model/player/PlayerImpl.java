@@ -93,12 +93,17 @@ public final class PlayerImpl implements Player {
 
     @Override
     public Optional<CardEvent> playCard() {
-        return this.strategy.playCards(hand, null);
+        return this.strategy.playCards(hand, this);
     }
 
     @Override
     public void addCard(final Card card) {
         this.hand.add(card);
+    }
+
+    @Override
+    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID) {
+        return this.strategy.getMoveAfterConquest(sourceID, destinationID, this);
     }
 
 }

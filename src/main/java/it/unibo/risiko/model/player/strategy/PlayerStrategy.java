@@ -58,4 +58,14 @@ public interface PlayerStrategy {
      * @return {@link Optional} containing the event, if event can't be generated returns {@link Optional#empty()}
      */
     Optional<CardEvent> playCards(List<Card> hand, Player owner);
+
+    /**
+     * The strategy method to ask how many troops to move from source to destination.
+     * 
+     * @param sourceID the source of the movement
+     * @param destinationID the destination of the movement
+     * @param owner the player who request this
+     * @return the {@link MoveEvent} that rapresents the move of armies, after a conquest,
+     */
+    MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner);
 }

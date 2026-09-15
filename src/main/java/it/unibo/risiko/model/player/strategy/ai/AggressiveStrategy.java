@@ -138,4 +138,11 @@ public final class AggressiveStrategy implements PlayerStrategy {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'playCards'");
     }
+
+    @Override
+    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner) {
+        var source = this.map.getTerritory(sourceID);
+        var destination = this.map.getTerritory(destinationID);
+        return new MoveEvent(owner, source, destination, source.getArmies() - 1);
+    }
 }

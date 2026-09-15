@@ -4,7 +4,11 @@ import java.util.Collection;
 import java.util.Map;
 
 import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.event.AttackEvent;
+import it.unibo.risiko.model.event.MoveEvent;
+import it.unibo.risiko.model.event.ReinforceEvent;
 import it.unibo.risiko.model.map.Territory;
+import it.unibo.risiko.model.player.Player;
 
 /**
  * Strategy designed to be used by human player, models various methods to build each event.
@@ -93,4 +97,16 @@ public interface HumanStrategy extends PlayerStrategy {
      * @return true if {@link PlayerStrategy#playCards(java.util.List, it.unibo.risiko.model.player.Player)} can be called
      */
     boolean canPlayCards();
+
+    /** 
+     * The specialized metod to get a move event after a conquest, MUST be called after {@link HumanStrategy#moveStrenght(int)}.
+     * 
+     * @param sourceID where troops are coming from
+     * @param destinationID where troops will end up
+     * @param owner the {@link Player} who requested this
+     * @throws IllegalStateException if called before setting {@link HumanStrategy#moveStrenght(int)}
+     */
+    @Override
+    MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner);
+
 }

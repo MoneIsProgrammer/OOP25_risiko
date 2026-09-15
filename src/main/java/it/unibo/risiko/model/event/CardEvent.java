@@ -11,7 +11,7 @@ import it.unibo.risiko.model.player.Player;
  * Event that models the playing of card combos and respective army gain,  should not be kept as persistend data.
  * If a persistent copy is needed utilize the visitor to create a specialized implementation.
  * 
- * @param played Collection of Cards played
+ * @param played Various {@link Collection} of Cards played, each collection represent a "Tris"
  * @param owner Reference to the player who made the request
  * @param gainedArmies the number of armies gained
  */

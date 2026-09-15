@@ -114,4 +114,12 @@ public final class RandomStrategy implements PlayerStrategy {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'playCards'");
     }
+
+    @Override
+    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner) {
+        var source = this.map.getTerritory(sourceID);
+        var destination = this.map.getTerritory(destinationID);
+        var moveStr = this.random.nextInt(1, source.getArmies());
+        return new MoveEvent(owner, source, destination, moveStr);
+    }
 }
