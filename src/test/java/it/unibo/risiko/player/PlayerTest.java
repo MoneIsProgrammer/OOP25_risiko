@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +22,6 @@ import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
 import it.unibo.risiko.model.player.strategy.HumanStrategy;
-import it.unibo.risiko.model.player.strategy.HumanStrategyImpl;
 import it.unibo.risiko.model.player.strategy.ai.AggressiveStrategy;
 import it.unibo.risiko.model.player.strategy.ai.DefensiveStrategy;
 import it.unibo.risiko.model.player.strategy.ai.RandomStrategy;
@@ -154,8 +152,30 @@ public class PlayerTest {
         assertEquals("mongolia", move.sourceTerritory().getId());
         assertEquals(this.map.getTerritory("indonesia"), move.destinationTerritory());
         assertEquals(2, move.troopsMoved());
+        move = interactive.getMoveAfterConquest("mongolia", "indonesia", human);
+        assertEquals(human, move.player());
+        assertEquals("mongolia", move.sourceTerritory().getId());
+        assertEquals(this.map.getTerritory("indonesia"), move.destinationTerritory());
+        assertEquals(1, move.troopsMoved());
+
     }
         //TODO missing card test
+
+
+    @Test void incorrectHumanMove() {
+        Player human = roster.getPlayer(RisikoColors.BLACK).get();
+        HumanStrategy interactive = (HumanStrategy) human.getStrategy();
+
+        assertThrows(IllegalArgumentException.class, () -> interactive.attackStrenght(0));
+        assertThrows(IllegalArgumentException.class, () -> interactive.moveStrenght(0));
+        assertThrows(IllegalArgumentException.class, () -> interactive.reinforce(Map.of(this.map.getTerritory("indonesia"), 0)));
+        assertThrows(IllegalArgumentException.class, () -> interactive.attackStrenght(-1));
+        assertThrows(IllegalArgumentException.class, () -> interactive.moveStrenght(-1));
+        assertThrows(IllegalArgumentException.class, () -> interactive.reinforce(Map.of(this.map.getTerritory("indonesia"), 0)));
+        assertThrows(NullPointerException.class, () -> interactive.reinforce(Map.of(null, 0)));
+        assertThrows(NullPointerException.class, () -> interactive.reinforce(Map.of(null, 2)));
+    }
+
     @Test void flushTest() {
         Player human = roster.getPlayer(RisikoColors.BLACK).get();
         HumanStrategy interactive = (HumanStrategy) human.getStrategy();
