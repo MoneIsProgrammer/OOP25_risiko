@@ -1,6 +1,5 @@
 package it.unibo.risiko.view;
 
-import it.unibo.risiko.model.event.Event;
 import it.unibo.risiko.model.history.History;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
@@ -16,7 +15,6 @@ public class GameLog extends ScrollPane {
     private static final int PADDING = 5;
     //private final History history;
     private final VBox content = new VBox();
-    private final EventStringVisitor visitor = new EventStringVisitor();
 
     /**
      * @param history the game history to be connected to this class
@@ -30,18 +28,15 @@ public class GameLog extends ScrollPane {
         history.addListener(new ListChangeListener<>() {
 
             @Override
-            public void onChanged(final Change<? extends Event> c) {
+            public void onChanged(final Change<? extends String> c) {
                 while (c.next()) {
-                    for (final Event event : c.getAddedSubList()) {
-                        final var out = event.accept(visitor);
-                        for (final String string : out) {
-                            final Label label = new Label(string);
-                            label.setWrapText(true);
-                            label.setMaxWidth(Double.MAX_VALUE);
-                            label.setPadding(new Insets(PADDING));
-                            final Separator separator = new Separator();
-                            content.getChildren().addAll(label, separator);
-                        }
+                    for (final String string : c.getAddedSubList()) {
+                        final Label label = new Label(string);
+                        label.setWrapText(true);
+                        label.setMaxWidth(Double.MAX_VALUE);
+                        label.setPadding(new Insets(PADDING));
+                        final Separator separator = new Separator();
+                        content.getChildren().addAll(label, separator);
                     }
                 }
             }
