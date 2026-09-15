@@ -9,7 +9,6 @@ import it.unibo.risiko.model.event.AttackEvent;
 import it.unibo.risiko.model.event.CardEvent;
 import it.unibo.risiko.model.event.MoveEvent;
 import it.unibo.risiko.model.event.ReinforceEvent;
-import it.unibo.risiko.model.map.Territory;
 import it.unibo.risiko.model.player.strategy.PlayerStrategy;
 
 /**
@@ -49,11 +48,17 @@ public interface Player extends  Identifiable{
 
     /**
      * Used to get the reinforcement to various territories.
-     * @param armies TODO
-     * @return an {@link Optional} containing the event if it can be generated, {@link Optional#empty()} otherwise
+     * 
+     * @param armies How many armies to place
+     * @return a {@link ReinforceEvent} describing the reinforce, it's not an {@link Optional} as this is a forced move
      */
     ReinforceEvent reinforce(int armies);
 
+    /**
+     * Creates reinforce events with assigning at maximum 3 troops at a time useful during the setup phase as it knows how many troops has to place
+     * 
+     * @return a ReinfoceEvent
+     */
     ReinforceEvent setupPlacement();
 
     /**
@@ -70,14 +75,37 @@ public interface Player extends  Identifiable{
      */
     RisikoColors getColor();
 
+    /**
+     * Setter for the armies to place during the setupPhase, useful to ovveride the default value assigned by {@link PlayerFactory}
+     * 
+     * @param armies number of armies for the setup phase
+     */
     void setArmies(int armies);
 
+    /**
+     * Used to get the {@link Cards} to play to get additional reinforcements.
+     * 
+     * @return an {@link Optional} containing the event if it can be generated, {@link Optional#empty()} otherwise
+     */
     Optional<CardEvent> playCard();
 
+    /**
+     * Adds a {@link Card} tho the player hand.
+     * 
+     * @param card the  {@link Card} to add to the player's hand
+     */
     void addCard(Card card);
 
-    List<Card> getHand();
-
+    /**
+     * Used to get the transfer of troops from a territory to another, 
+     * speficially this generates a MoveEvent rapresenting che transfer of troops from attacking territory to the conquered one
+     * 
+     * @param source the attacking territory from where the troops come from
+     * @param destination the conquered territory where the troops will end up
+     * @return an {@link MoveEvent}, this is a forced event where at worst just 1 troop must be moved to occupy the destination
+     */
     MoveEvent getMoveAfterConquest(String sourceID, String destinationID);
+
+    List<Card> getHand();
 
 }
