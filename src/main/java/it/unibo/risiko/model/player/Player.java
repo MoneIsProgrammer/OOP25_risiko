@@ -76,4 +76,8 @@ public interface Player extends  Identifiable{
 
     void addCard(Card card);
 
+    List<Card> getHand();
+
+    MoveEvent getMoveAfterConquest(String sourceID, String destinationID);
+
 }

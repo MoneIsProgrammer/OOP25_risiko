@@ -106,4 +106,9 @@ public final class PlayerImpl implements Player {
         return this.hand;
     }
 
+    @Override
+    public void setArmies(int armies) {
+        this.reinforces = armies;
+    }
+
 }
