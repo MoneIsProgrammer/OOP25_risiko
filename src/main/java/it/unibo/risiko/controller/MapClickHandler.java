@@ -99,11 +99,13 @@ public final class MapClickHandler implements TerritoryClickListener {
         }
     }
 
+    // only the player of the turn, only in attack or move
     private boolean canClick() {
         return this.currentPlayer != null
                 && (this.currentPhase == Phase.ATTACK || this.currentPhase == Phase.MOVE);
     }
 
+    // the territory is of the player of the turn
     private boolean isMine(final Territory territory) {
         final var owner = territory.getOwnerId();
         return owner.isPresent() && owner.get().equals(this.currentPlayer);
@@ -131,6 +133,7 @@ public final class MapClickHandler implements TerritoryClickListener {
         return found;
     }
 
+    // removes selection and highlight
     private void clear() {
         this.mapView.clearSelection();
         this.mapView.setHighlighted(Set.of());
