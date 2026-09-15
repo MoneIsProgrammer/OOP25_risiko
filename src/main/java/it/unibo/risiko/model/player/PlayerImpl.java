@@ -82,13 +82,8 @@ public final class PlayerImpl implements Player {
     @Override
     public ReinforceEvent setupPlacement() {
         final int armiesToPlace = reinforces > 3 ? 3 : reinforces;
-        reinforces -= armiesToPlace;
+        this.reinforces -= armiesToPlace;
         return this.strategy.getSetup(this, armiesToPlace);
-    }
-
-    @Override
-    public void setArmies(final int armies) {
-        this.reinforces = armies;
     }
 
     @Override
@@ -104,6 +99,11 @@ public final class PlayerImpl implements Player {
     @Override
     public MoveEvent getMoveAfterConquest(String sourceID, String destinationID) {
         return this.strategy.getMoveAfterConquest(sourceID, destinationID, this);
+    }
+    
+	@Override
+	public List<Card> getHand() {
+        return this.hand;
     }
 
 }

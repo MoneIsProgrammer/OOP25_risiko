@@ -3,6 +3,7 @@ package it.unibo.risiko.model.history;
 import java.util.List;
 
 import it.unibo.risiko.model.event.Event;
+import it.unibo.risiko.view.EventStringVisitor;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -12,7 +13,8 @@ import javafx.collections.ObservableList;
  */
 public class HistoryImpl implements History {
 
-    private final ObservableList<Event> history = FXCollections.observableArrayList();
+    private final ObservableList<String> history = FXCollections.observableArrayList();
+    private final EventStringVisitor visitor = new EventStringVisitor();
 
     /**
      * This constructor returns an empty hystory.
@@ -26,7 +28,7 @@ public class HistoryImpl implements History {
      * 
      * @param history the events 
      */
-    public HistoryImpl(final List<Event> history) {
+    public HistoryImpl(final List<String> history) {
         this.restoreHistory(history);
     }
 
@@ -36,17 +38,25 @@ public class HistoryImpl implements History {
      * @param events variable number events to be added
      */
     public HistoryImpl(final Event... events) {
-        this.restoreHistory(List.of(events));
+        for (Event event : events) {
+            this.addEvent(event);
+        }
     }
 
     @Override
-    public final List<Event> getAllEvents() {
+    public final List<String> getAllEvents() {
         return List.copyOf(this.history);
     }
 
     @Override
-    public final List<Event> getLastNEvents(final int n) {
-        return List.copyOf(this.history.subList(this.history.size() - n, n));
+    public final List<String> getLastNEvents(final int n) {
+        if (n > this.history.size()) {
+            return List.copyOf(this.history);
+        }
+        if (n < 0) {
+            throw new IllegalArgumentException("cannot request negative elemtents");
+        }
+        return this.history.stream().skip(this.history.size() - n).toList();
     }
 
     @Override
@@ -56,17 +66,20 @@ public class HistoryImpl implements History {
 
     @Override
     public final void addEvent(final Event event) {
-        this.history.add(event);
+        var list = event.accept(this.visitor);
+        for (String string : list) {
+            this.history.add(string);
+        }
     }
 
     @Override
-    public final void restoreHistory(final List<Event> newHistory) {
+    public final void restoreHistory(final List<String> newHistory) {
         this.history.clear();
         this.history.addAll(newHistory);
     }
 
     @Override
-    public final void addListener(final ListChangeListener<Event> listener) {
+    public final void addListener(final ListChangeListener<String> listener) {
         this.history.addListener(listener);
     }
 }

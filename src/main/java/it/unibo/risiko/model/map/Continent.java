@@ -4,9 +4,9 @@ import it.unibo.risiko.model.common.Identifiable;
 import java.util.Set;
 
 /**
- * A continent, a group of territories that gives extra armies to who owns all of them.
- * Who owns it is not saved here, it is calculated from the territories by
- * {@link GameMap#getContinentOwner(String)}.
+ * A group of territories that gives extra armies to whoever owns all of them.
+ * The owner isn't stored here, {@link GameMap#getContinentOwner(String)} works it out
+ * from the territories.
  */
 public interface Continent extends Identifiable {
 
@@ -25,7 +25,7 @@ public interface Continent extends Identifiable {
     Set<String> getTerritoryIds();
 
     /**
-     * Extra armies that who owns the whole continent gets every turn.
+     * Extra armies you get every turn if you own the whole continent.
      *
      * @return the bonus in armies
      */

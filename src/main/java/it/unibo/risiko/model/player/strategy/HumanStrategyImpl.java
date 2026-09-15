@@ -1,4 +1,4 @@
-package it.unibo.risiko.model.player;
+package it.unibo.risiko.model.player.strategy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,8 @@ import it.unibo.risiko.model.event.MoveEvent;
 import it.unibo.risiko.model.event.ReinforceEvent;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.Territory;
-import it.unibo.risiko.model.player.strategy.HumanStrategy;
+import it.unibo.risiko.model.player.Player;
+import it.unibo.risiko.model.player.Roster;
 
 /**
  * Implementation of {@link HumanStrategy}.
@@ -124,6 +125,19 @@ public final class HumanStrategyImpl implements HumanStrategy {
         return this.cardBuilder.canBuild();
     }
 
+    @Override 
+    public boolean canCreateMove() {
+        return this.moveBuilder.canBuild();
+    }
+
+    @Override
+    public void flush() {
+        this.attackBuilder.clear();
+        this.cardBuilder.clear();
+        this.moveBuilder.clear();
+        this.reinforceBuilder.clear();
+    }
+
     private final class AttackBuilder {
         private Player victim;
         private Integer attackStrenght;
@@ -192,13 +206,17 @@ public final class HumanStrategyImpl implements HumanStrategy {
             this.reinforceMap.putAll(reinforcements);
         }
         
-        private ReinforceEvent build(final Player owner, final int armies) {
+        public void clear() {
+            this.reinforceMap = null;
+        }
+
+		private ReinforceEvent build(final Player owner, final int armies) {
             if (reinforceMap.values().stream().reduce(Integer::sum).get() != armies && canBuild()) {
                 throw new IllegalStateException("The reinforcements can't be different from declared armies");
                  //this is a check as i can't check if map is empty due to the minimum reinforce avabile are 0
             }
             final var out = new ReinforceEvent(owner, reinforceMap);
-            this.reinforceMap = null;
+            clear();
             return out;
         }
 
@@ -265,6 +283,9 @@ public final class HumanStrategyImpl implements HumanStrategy {
         private void addCombo(final Collection<Card> combo) {
             if (played == null) {
                 played = new ArrayList<>();
+            }
+            if (combo.size() != 3) {
+                throw new IllegalArgumentException("The combo must be of only 3 cards");
             }
             played.add(combo);
             calculateArmies();

@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link GameMap}.
- * The constructor is package private so the map can only be created by
- * {@link GameMapBuilder} and nobody can build a map that is half done.
+ * The constructor is package private: maps only come out of {@link GameMapBuilder},
+ * so a half-done map can't exist.
  */
 public final class GameMapImpl implements GameMap {
 
@@ -68,13 +68,13 @@ public final class GameMapImpl implements GameMap {
         for (final String id : getContinent(continentId).getTerritoryIds()) {
             final Optional<String> current = getTerritory(id).getOwnerId();
             if (current.isEmpty()) {
-                //one free territory is enough, the continent is of nobody
+                // one free territory is enough, the continent belongs to nobody
                 return Optional.empty();
             }
             if (owner == null) {
                 owner = current.get();
             } else if (!owner.equals(current.get())) {
-                //two different owners, nobody has the whole continent
+                // two different owners, so nobody has all of it
                 return Optional.empty();
             }
         }
@@ -99,7 +99,7 @@ public final class GameMapImpl implements GameMap {
         if (fromId.equals(toId)) {
             return true;
         }
-        //visit in width passing only on the territories of the player
+        // breadth-first search, going only through the player's territories
         final Deque<String> toVisit = new ArrayDeque<>();
         final Set<String> visited = new HashSet<>();
         toVisit.add(fromId);

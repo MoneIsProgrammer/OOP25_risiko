@@ -3,15 +3,15 @@ package it.unibo.risiko.model.battle;
 import java.util.List;
 
 /**
- * The roll of the dice.
- * It is an interface because the tests need a version with the results decided before,
- * otherwise there is no way to check the result of a battle. The ai can use its own dice
- * too when it simulates an attack.
+ * Rolling the dice.
+ * It's an interface because the tests need dice with results decided in advance, otherwise
+ * you can't check how a battle ends. The AI must use its own dice when it simulates an
+ * attack: with the game's dice it would change the rolls of the real game.
  */
 @FunctionalInterface
 public interface Dice {
 
-    /** Maximum number of dice that can be rolled at the same time. */
+    /** Most dice you can roll at once. */
     int MAX_DICE = 3;
 
     /**

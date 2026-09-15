@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Normal six faces dice.
+ * Normal six-sided dice.
  */
 public final class RandomDice implements Dice {
 
@@ -23,8 +23,8 @@ public final class RandomDice implements Dice {
     }
 
     /**
-     * Creates the dice with a {@link Random} passed from outside, with a fixed seed the same
-     * sequence always comes out and it is easier to find a bug.
+     * Creates the dice with a {@link Random} from outside. With a fixed seed you always get
+     * the same rolls, which is handy when chasing a bug.
      *
      * @param random the source of random numbers to use
      */
@@ -45,7 +45,7 @@ public final class RandomDice implements Dice {
         for (int i = 0; i < amount; i++) {
             results.add(this.random.nextInt(FACES) + 1);
         }
-        //sorted from the highest, so after this the comparison in pairs is direct
+        // highest first, so the battle can compare them pair by pair
         results.sort(Collections.reverseOrder());
         return results;
     }

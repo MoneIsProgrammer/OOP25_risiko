@@ -7,7 +7,8 @@ import java.util.Set;
 
 /**
  * Implementation of {@link Territory}.
- * The borders are in a LinkedHashSet so they stay in the order of the map file.
+ * The neighbours are in a LinkedHashSet so they keep the order of the map file,
+ * and every run draws them and reports errors the same way.
  */
 public final class TerritoryImpl implements Territory {
 
@@ -33,10 +34,10 @@ public final class TerritoryImpl implements Territory {
     }
 
     /**
-     * Adds a border. It is package private because the borders are only added by
-     * {@link GameMapBuilder} while it builds the map.
+     * Adds a neighbour. Package private because only {@link GameMapBuilder} should do it,
+     * while it builds the map.
      *
-     * @param territoryId the id of the territory on the border
+     * @param territoryId the id of the neighbour
      */
     void addAdjacent(final String territoryId) {
         this.adjacent.add(territoryId);
