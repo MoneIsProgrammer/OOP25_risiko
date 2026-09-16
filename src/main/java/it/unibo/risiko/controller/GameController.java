@@ -15,6 +15,10 @@ import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
 import it.unibo.risiko.model.turn.Phase;
 import it.unibo.risiko.view.GameScene;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -31,6 +35,11 @@ public class GameController {
     Phase phase;
     String sourceId;
     String destinationId;
+    final BooleanProperty canGenerate = new SimpleBooleanProperty(true); // activate button to commit the action if it can be generated
+    final IntegerProperty armyCounter = new SimpleIntegerProperty(0); //to show player how many armies has to place or wants to utilize
+    final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6); // set this to the maximum troops utilizable for the action, limits if action can be launched
+
+
 
     public GameController(List<PlayerRequest> a) {
         try {
@@ -44,7 +53,7 @@ public class GameController {
     }
 
     public void start(Stage stage) {
-        this.gameGui = new GameScene(roster,map,history, pairSelected(), null, getStrenght());
+        this.gameGui = new GameScene(roster,map,history, pairSelected(), null, getStrenght(), canGenerate, armyCounter, maxArmyforAction);
         stage.setScene(gameGui);
     }
 
@@ -54,6 +63,7 @@ public class GameController {
 
             @Override
             public void accept(Integer t) {
+                maxArmyforAction.set(10);
                 System.out.println(t);
             }
 
