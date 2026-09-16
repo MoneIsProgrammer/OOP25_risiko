@@ -18,9 +18,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -35,7 +33,7 @@ public class GameScene extends Scene{
     //unused private static final double WINDOW_HEIGHT = 700;
 
     final MapCanvas canvas;
-    final IntegerProperty counter = new SimpleIntegerProperty(0);
+    final IntegerProperty armyCounter = new SimpleIntegerProperty(0); //to show player how many armies has to place or wants to utilize
     final BorderPane root;
 
     public GameScene(Roster roster,
@@ -80,18 +78,7 @@ public class GameScene extends Scene{
         // TODO register mapView to the game events, redraw it after dealing the territories
         // TODO give the result of every AttackResultEvent to dice.setResult
 
-        var addButton = new Button("+");
-        addButton.setOnAction(e -> this.counter.set(this.counter.get() + 1));
-        var subtractButton = new Button("-");
-        subtractButton.setOnAction(e -> this.counter.set(this.counter.get() - 1));
-        var armiesCounter = new Text();
-        armiesCounter.textProperty().bind(counter.asString());
-        var confirmButton = new Button("confirm");
-        confirmButton.setOnAction(e -> {
-            getStrenght.accept(this.counter.get());
-            this.counter.set(0);
-        });
-        var bottom = new HBox(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton);
+        var bottom = new ChangingBox(getStrenght, armyCounter);
         bottom.setAlignment(Pos.CENTER);
         bottom.setSpacing(5);
         box.getChildren().addAll(bottom, new GameLogBox(history));
@@ -105,4 +92,5 @@ public class GameScene extends Scene{
         root.setRight(box);
 
     }
+
 }
