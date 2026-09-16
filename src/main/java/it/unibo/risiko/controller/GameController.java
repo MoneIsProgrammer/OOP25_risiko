@@ -11,6 +11,7 @@ import it.unibo.risiko.model.player.PlayerRequest;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
 import it.unibo.risiko.view.GameScene;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
@@ -20,6 +21,7 @@ public class GameController {
 
     Roster roster;
     GameMap map;
+    Scene gameGui;
     History history = new HistoryImpl();
 
     public GameController(List<PlayerRequest> a) {
@@ -32,7 +34,8 @@ public class GameController {
     }
 
     public void start(Stage stage) {
-        stage.setScene(new GameScene(roster,map,history));
+        this.gameGui = new GameScene(roster,map,history);
+        stage.setScene(gameGui);
     }
 
 }
