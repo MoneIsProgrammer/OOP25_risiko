@@ -1,6 +1,9 @@
 package it.unibo.risiko.view;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import it.unibo.risiko.controller.MapClickHandler;
 import it.unibo.risiko.model.history.History;
@@ -11,8 +14,13 @@ import it.unibo.risiko.view.map.DiceCanvas;
 import it.unibo.risiko.view.map.MapCanvas;
 import it.unibo.risiko.view.map.MapLayout;
 import it.unibo.risiko.view.map.MapView;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -27,11 +35,19 @@ public class GameScene extends Scene{
     //unused private static final double WINDOW_HEIGHT = 700;
 
     final MapCanvas canvas;
+    final IntegerProperty counter = new SimpleIntegerProperty(0);
+    final BorderPane root;
 
-    public GameScene(Roster roster, GameMap map, History history) { //TODO add necessary paramenters for controller view comunication
+    public GameScene(Roster roster,
+        GameMap map,
+        History history,
+        BiConsumer<String,String> getTerritories,
+        Consumer<Map<String, Integer>> getReinforcements, // human player wants a map with terr integer the conversion happens in the controller
+        Consumer<Integer> getStrenght
+    ) { //TODO add necessary paramenters for controller view comunication
         
-        final var root = new BorderPane();
-        super(root);
+        super(new BorderPane());
+        this.root = (BorderPane) this.getRoot();
         try {
             canvas = new MapCanvas(map, MapLayout.loadDefault());
         } catch (final IOException e) {
@@ -48,6 +64,7 @@ public class GameScene extends Scene{
         final var clickHandler = new MapClickHandler(map, mapView);
         mapView.addTerritoryClickListener(clickHandler);
         clickHandler.addChoiceListener((from, to) -> {
+            getTerritories.accept(from, to);
             // TODO put here the HumanStrategy calls, from and to are the ids of the territories
         });
         // TODO call clickHandler.setTurn when the turn or the phase changes
@@ -64,6 +81,20 @@ public class GameScene extends Scene{
         // TODO give the result of every AttackResultEvent to dice.setResult
 
         box.getChildren().add(new GameLogBox(history));
+        var addButton = new Button("+");
+        addButton.setOnAction(e -> this.counter.set(this.counter.get() + 1));
+        var subtractButton = new Button("-");
+        subtractButton.setOnAction(e -> this.counter.set(this.counter.get() - 1));
+        var armiesCounter = new Text();
+        armiesCounter.textProperty().bind(counter.asString());
+        var confirmButton = new Button("confirm");
+        confirmButton.setOnAction(e -> {
+            getStrenght.accept(this.counter.get());
+            this.counter.set(0);
+        });
+        var bottom = new HBox(subtractButton,armiesCounter,addButton,confirmButton);
+        bottom.setAlignment(Pos.CENTER);
+
 
         // the map follows the size of the window
         final var container = new Pane(canvas);
@@ -71,6 +102,7 @@ public class GameScene extends Scene{
         canvas.heightProperty().bind(container.heightProperty());
         root.setCenter(container);
         root.setRight(box);
+        root.setBottom(bottom);
 
     }
 }
