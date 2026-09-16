@@ -90,7 +90,7 @@ public final class AggressiveStrategy implements PlayerStrategy {
         return Optional.of(new MoveEvent(owner,
         source.get(),
         destination.get(),
-        source.get().getArmies() - 1));
+        source.get().getArmies() - 2));
     }
 
     @Override
