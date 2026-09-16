@@ -82,11 +82,11 @@ public class PlayerSelectScene extends Scene {
         this.top = new FlowPane();
         this.bottom = new BorderPane();
         this.mainBox = (GridPane) this.getRoot();
-        this.addHuman = new Button("human");
-        this.addAggressive = new Button("aggressive");
-        this.addDefensive = new Button("defensive");
-        this.addRandom = new Button("random");
-        this.done = new Button("Inizia la partita");
+        this.addHuman = new Button("Human");
+        this.addAggressive = new Button("Aggressive");
+        this.addDefensive = new Button("Defensive");
+        this.addRandom = new Button("Random");
+        this.done = new Button("Start new Game");
         this.field = new TextField();
         this.playerColors.addAll(ColorConversion.getAvabileJavaFXColors());
         initializeLayout();
@@ -201,8 +201,11 @@ public class PlayerSelectScene extends Scene {
         VBox.setMargin(name, new Insets(10, 10, 0, 10));
 
         box.setBorder(new Border(
-                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(spacing),
-                        new BorderWidths(spacing))));
+                new BorderStroke(Color.BLACK,
+                    BorderStrokeStyle.SOLID,
+                    new CornerRadii(spacing),
+                    new BorderWidths(spacing)
+                )));
         FlowPane.setMargin(box, new Insets(10));
         box.setOnMouseClicked(
                 e -> {

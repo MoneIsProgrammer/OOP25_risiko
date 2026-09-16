@@ -3,12 +3,15 @@ package it.unibo.risiko.controller;
 import java.io.IOException;
 import java.util.List;
 
+import it.unibo.risiko.model.history.History;
+import it.unibo.risiko.model.history.HistoryImpl;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.MapLoader;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.PlayerRequest;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
+import it.unibo.risiko.view.GameLogBox;
 import it.unibo.risiko.view.map.DiceCanvas;
 import it.unibo.risiko.view.map.MapCanvas;
 import it.unibo.risiko.view.map.MapLayout;
@@ -30,6 +33,7 @@ public class GameController {
 
     Roster roster;
     GameMap map;
+    History history = new HistoryImpl();
 
     public GameController(List<PlayerRequest> a) {
         try {
@@ -72,6 +76,8 @@ public class GameController {
         box.getChildren().add(dice);
         // TODO register mapView to the game events, redraw it after dealing the territories
         // TODO give the result of every AttackResultEvent to dice.setResult
+
+        box.getChildren().add(new GameLogBox(this.history));
 
         // the map follows the size of the window
         final var container = new Pane(canvas);
