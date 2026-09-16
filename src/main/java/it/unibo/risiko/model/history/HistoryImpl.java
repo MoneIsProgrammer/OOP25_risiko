@@ -82,4 +82,9 @@ public class HistoryImpl implements History {
     public final void addListener(final ListChangeListener<String> listener) {
         this.history.addListener(listener);
     }
+
+    @Override
+    public void addCustomEvent(String event) {
+        this.history.add(event);
+    }
 }
