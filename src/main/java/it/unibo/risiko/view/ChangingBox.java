@@ -47,8 +47,17 @@ public class ChangingBox extends HBox {
      * 
      * @param phase determinates which configuration should be applied
      */
-    public void change(Phase phase) {
+    public void change(Phase phase) {//invoke when phase changes
         super.getChildren().clear();
-        super.getChildren().addAll(reinforceSetup);
+        switch (phase) {
+            case REINFORCE:
+                super.getChildren().addAll(reinforceSetup);
+                break;
+        
+            default:
+                super.getChildren().addAll(attackSetup);
+                break;
+        }
+        
     }
 }
