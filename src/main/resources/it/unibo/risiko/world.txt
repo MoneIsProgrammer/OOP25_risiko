@@ -5,8 +5,6 @@
 # ADJ;id1;id2                      (the border is registered both ways)
 #
 # Blank lines and lines starting with # are ignored.
-# Territory ids are the key shared with the rest of the model: the card deck
-# and the save files refer to a territory by this id, never by its name.
 
 
 CONT;north_america;North America;5;#D9B45A

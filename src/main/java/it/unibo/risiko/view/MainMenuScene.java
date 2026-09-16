@@ -13,8 +13,8 @@ import javafx.scene.text.Font;
 
 public class MainMenuScene extends Scene{
     
-    private static final int WIDTH = 500;
-    private static final int HEIGHT = 500;
+    private static final double WIDTH = 500;
+    private static final double HEIGHT = 500;
     private final VBox main;
     private final Button newGameButton;
     private final Button loadGameButton;
@@ -30,7 +30,7 @@ public class MainMenuScene extends Scene{
         this(newGame, loadGame, canLoadGame, WIDTH, HEIGHT);
     }
 
-    public MainMenuScene(final EventHandler<ActionEvent> newGame, final EventHandler<ActionEvent> loadGame,final boolean canLoadGame, final int width, final int height) {
+    public MainMenuScene(final EventHandler<ActionEvent> newGame, final EventHandler<ActionEvent> loadGame,final boolean canLoadGame, final double width, final double height) {
         super(new VBox(), width, height);
         this.main = (VBox) this.getRoot();
         this.title = new Label("RiSiKo!");
