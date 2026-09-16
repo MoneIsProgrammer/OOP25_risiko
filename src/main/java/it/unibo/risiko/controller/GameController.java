@@ -44,13 +44,20 @@ public class GameController {
     }
 
     public void start(Stage stage) {
-        this.gameGui = new GameScene(roster,map,history, pairSelected(), null, null);
+        this.gameGui = new GameScene(roster,map,history, pairSelected(), null, getStrenght());
         stage.setScene(gameGui);
     }
 
     private Consumer<Integer> getStrenght() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getStrenght'");
+        return new Consumer<Integer>() {
+
+            @Override
+            public void accept(Integer t) {
+                System.out.println(t);
+            }
+
+        };
     }
 
     private Consumer<Map<String, Integer>> getReiforceMap() {

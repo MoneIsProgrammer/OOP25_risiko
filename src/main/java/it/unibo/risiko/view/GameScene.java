@@ -91,7 +91,7 @@ public class GameScene extends Scene{
             getStrenght.accept(this.counter.get());
             this.counter.set(0);
         });
-        var bottom = new HBox(subtractButton,armiesCounter,addButton,confirmButton);
+        var bottom = new HBox(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton);
         bottom.setAlignment(Pos.CENTER);
         bottom.setSpacing(5);
         box.getChildren().addAll(bottom, new GameLogBox(history));
