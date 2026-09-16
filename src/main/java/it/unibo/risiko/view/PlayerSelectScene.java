@@ -76,7 +76,7 @@ public class PlayerSelectScene extends Scene {
      * @param width  of the scene
      * @param height of the scene
      */
-    public PlayerSelectScene(final Consumer<List<PlayerRequest>> onDone, final int width, final int height) {
+    public PlayerSelectScene(final Consumer<List<PlayerRequest>> onDone, final double width, final double height) {
         super(new GridPane(), width, height);
         this.onDone = onDone;
         this.top = new FlowPane();
