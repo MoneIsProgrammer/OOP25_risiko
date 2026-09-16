@@ -77,40 +77,51 @@ public final class DefensiveStrategy implements PlayerStrategy {
             System.out.println("no weakest border");
             return Optional.empty();
         }
+        //strongest adj non border
         final var strongestAdj = weakestBorder.get().getAdjacentIds().stream()
         .map(this.map::getTerritory)
         .filter(a -> !border.contains(a))
         .filter(a -> a.getOwnerId().get().equals(owner.getId()))
         .max(StrategyUtils.TERRITORY_COMPARATOR);
-        if (strongestAdj.isEmpty()) {
+        if (strongestAdj.isEmpty() || strongestAdj.get().getArmies() < 3) {
             System.out.println("no Strongest adj");
             return Optional.empty();
         }
         return Optional.of(new MoveEvent(owner,
             strongestAdj.get(),
             weakestBorder.get(),
-            strongestAdj.get().getArmies() - 1
+            strongestAdj.get().getArmies() - 2
         ));
     }
 
     @Override
     public ReinforceEvent getReinforce(final Player owner, final int armies) {
-        final Map<Territory, Integer> reinforceMap = new HashMap<>();
+        final Map<Territory, Integer> reinforceMap = new HashMap<>(); //internal rapresentation of territories and troops
         final var playerTerritories = this.map.getTerritoriesOf(owner.getId());
+        for (Territory territory : playerTerritories) {
+            reinforceMap.put(territory, territory.getArmies());
+        }
         final var border = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
         for (int i = 0; i < armies; i++) {
-            var weakest = border.stream()
-            .min(StrategyUtils.TERRITORY_COMPARATOR); // a bit ugly but needed to first check the border
-            if (weakest.get().getArmies() >= MAX_ATK_STR) {
-                weakest = playerTerritories.stream().min(StrategyUtils.TERRITORY_COMPARATOR); // ,then the inland 
-                if (weakest.get().getArmies() >= MAX_ATK_STR) {
+            var weakest = reinforceMap.entrySet().stream()
+            .filter(a -> border.contains(a.getKey()))
+            .min((a,b) -> Integer.compare(a.getValue(), b.getValue())); // a bit ugly but needed to first check the border
+            if (weakest.get().getValue() >= MAX_ATK_STR) {
+                weakest = reinforceMap.entrySet().stream()
+                .filter(a -> !border.contains(a.getKey()))
+                .min((a,b) -> Integer.compare(a.getValue(), b.getValue())); // ,then the inland 
+                if (weakest.get().getValue() >= MAX_ATK_STR) {
                     // and at last reinforce the weakest border if everithing as at least 3 armies
-                    weakest = border.stream().min(StrategyUtils.TERRITORY_COMPARATOR); 
+                    weakest = reinforceMap.entrySet().stream()
+                    .filter(a -> border.contains(a.getKey()))
+                    .min((a,b) -> Integer.compare(a.getValue(), b.getValue())); 
                 }
             }
             // sets the number of time a territory is to be reinforced with 1 troop
-            reinforceMap.merge(weakest.get(), 1, Integer::sum);
+            reinforceMap.merge(weakest.get().getKey(), 1, Integer::sum);
         }
+        reinforceMap.replaceAll((k,v) -> v - k.getArmies());
+        reinforceMap.entrySet().removeIf(a -> a.getValue() == 0);
         return new ReinforceEvent(owner, reinforceMap);
     }
 

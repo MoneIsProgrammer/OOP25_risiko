@@ -98,14 +98,19 @@ public final class AggressiveStrategy implements PlayerStrategy {
         final Map<Territory, Integer> reinforceMap = new HashMap<>();
         final var playerTerritories = map.getTerritoriesOf(owner.getId());
         final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
+        for (Territory territory : playerTerritories) {
+            reinforceMap.put(territory, territory.getArmies());
+        }
         for (int i = 0; i < armies; i++) {
-            var min = playerTerritories.stream().filter(a -> a.getArmies() < 2).findAny();
+            var min = reinforceMap.entrySet().stream().filter(a -> a.getValue() < 2).findAny();
             if (min.isEmpty()) {
-                min = borders.stream().min(StrategyUtils.TERRITORY_COMPARATOR);
+                min = reinforceMap.entrySet().stream().filter(a -> borders.contains(a.getKey())).min((a,b) ->Integer.compare(a.getValue(), b.getValue()));
             }
             // sets the number of time a territory is to be reinforced with 1 troop
-            reinforceMap.merge(min.get(), 1, Integer::sum);
+            reinforceMap.merge(min.get().getKey(), 1, Integer::sum);
         }
+        reinforceMap.replaceAll((k,v) -> v - k.getArmies());
+        reinforceMap.entrySet().removeIf(a -> a.getValue() == 0);
         return new ReinforceEvent(owner, reinforceMap);
 
     }

@@ -46,11 +46,25 @@ public final class StrategyUtils {
     // not isolated if has 2 neighbor allies, there are some edgecases
     public static boolean notIsolated(final Territory territory, final GameMap map) {
     var counter = 0;
+    Territory lonely = null;
+    for (final String adj : territory.getAdjacentIds()) {
+        if (map.getTerritory(adj).getOwnerId().get().equals(territory.getOwnerId().get())) {
+            counter++;
+            lonely = map.getTerritory(adj);
+        }
+    }
+        if (counter == 1) {
+            return secondIsolatedCheck(lonely, map); //ok because if counter = 1 lonely has been assigned
+        }
+        return counter >= 2;
+    }
+
+    private static boolean secondIsolatedCheck(final Territory territory, final GameMap map) {var counter = 0;
     for (final String adj : territory.getAdjacentIds()) {
         if (map.getTerritory(adj).getOwnerId().get().equals(territory.getOwnerId().get())) {
             counter++;
         }
     }
-        return counter >= 2;
+        return counter >= 3;
     }
 }
