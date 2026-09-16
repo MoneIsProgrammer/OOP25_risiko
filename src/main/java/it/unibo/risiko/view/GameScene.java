@@ -80,7 +80,6 @@ public class GameScene extends Scene{
         // TODO register mapView to the game events, redraw it after dealing the territories
         // TODO give the result of every AttackResultEvent to dice.setResult
 
-        box.getChildren().add(new GameLogBox(history));
         var addButton = new Button("+");
         addButton.setOnAction(e -> this.counter.set(this.counter.get() + 1));
         var subtractButton = new Button("-");
@@ -94,6 +93,8 @@ public class GameScene extends Scene{
         });
         var bottom = new HBox(subtractButton,armiesCounter,addButton,confirmButton);
         bottom.setAlignment(Pos.CENTER);
+        bottom.setSpacing(5);
+        box.getChildren().addAll(bottom, new GameLogBox(history));
 
 
         // the map follows the size of the window
@@ -102,7 +103,6 @@ public class GameScene extends Scene{
         canvas.heightProperty().bind(container.heightProperty());
         root.setCenter(container);
         root.setRight(box);
-        root.setBottom(bottom);
 
     }
 }
