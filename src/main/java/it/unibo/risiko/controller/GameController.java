@@ -23,6 +23,7 @@ public class GameController {
     GameMap map;
     Scene gameGui;
     History history = new HistoryImpl();
+    PlayerTurn turn;
 
     public GameController(List<PlayerRequest> a) {
         try {
@@ -30,7 +31,8 @@ public class GameController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        roster = new RosterImpl(a, map);//TODO Build map before players then the territories must be assigned
+        roster = new RosterImpl(a, map);//Build map before players then the territories must be assigned
+        this.turn = new PlayerTurn(roster);
     }
 
     public void start(Stage stage) {
