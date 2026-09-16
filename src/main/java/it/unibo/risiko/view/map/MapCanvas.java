@@ -222,11 +222,28 @@ public final class MapCanvas extends Canvas implements MapView {
                     continue;
                 }
                 final Point2D to = this.layout.getPosition(neighbour);
-                context.strokeLine(
-                        transform.screenX(from.getX()), transform.screenY(from.getY()),
-                        transform.screenX(to.getX()), transform.screenY(to.getY()));
+                if (Math.abs(from.getX() - to.getX()) > MapLayout.LOGIC_WIDTH / 2) {
+                    drawAcrossTheEdge(context, transform, from, to);
+                } else {
+                    context.strokeLine(
+                            transform.screenX(from.getX()), transform.screenY(from.getY()),
+                            transform.screenX(to.getX()), transform.screenY(to.getY()));
+                }
             }
         }
+    }
+
+    // like alaska and kamchatka, the line goes out on both sides
+    private void drawAcrossTheEdge(final GraphicsContext context, final ViewTransform transform,
+                                   final Point2D first, final Point2D second) {
+        final var west = first.getX() < second.getX() ? first : second;
+        final var east = first.getX() < second.getX() ? second : first;
+        context.strokeLine(
+                transform.screenX(west.getX()), transform.screenY(west.getY()),
+                transform.screenX(0), transform.screenY(west.getY()));
+        context.strokeLine(
+                transform.screenX(east.getX()), transform.screenY(east.getY()),
+                transform.screenX(MapLayout.LOGIC_WIDTH), transform.screenY(east.getY()));
     }
 
     private void drawTerritories(final GraphicsContext context, final ViewTransform transform) {
