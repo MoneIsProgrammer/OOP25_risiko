@@ -54,7 +54,7 @@ public interface History {
     void addListener(ListChangeListener<String> listener);
 
     /**
-     * Adds a custom string rapresenting and event that is not modeled in this history
+     * Adds a custom string rapresenting and event that is not modeled in this history.
      * 
      * @param event custom event string to add to this history
      */
