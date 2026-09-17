@@ -112,15 +112,15 @@ public interface HumanStrategy extends PlayerStrategy {
     @Override
     MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner);
 
-	/**
-	 * Clears the unused argument passed during construction, making a clean slate for next calls.
-	 */
-	void flush();
-
     /**
      * Used to check if the strategy is finished building {@link MoveEvent}.
      * 
      * @return true if {@link PlayerStrategy#getMove(it.unibo.risiko.model.player.Player)} can be called
      */
     boolean canCreateMove();
+
+    /**
+     * Clears the passed inputs.
+     */
+    void flush();
 }

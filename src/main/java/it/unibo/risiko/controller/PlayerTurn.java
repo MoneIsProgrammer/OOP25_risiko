@@ -14,6 +14,7 @@ public final class PlayerTurn {
 
     private List<Player> playerOrder = new ArrayList<>();
     private int counter = -1;
+
     /**
      * Default constructor, already shuffles the players.
      * 

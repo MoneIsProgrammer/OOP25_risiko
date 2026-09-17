@@ -147,12 +147,13 @@ public final class DefensiveStrategy implements PlayerStrategy {
         final var destination = this.map.getTerritory(destinationID);
         var troopsToMove = source.getArmies() - 1;
         if (troopsToMove > 1) {
-            if (source.getAdjacentIds().stream().map(this.map::getTerritory).anyMatch(a -> a.getOwnerId().get().equals(owner.getId()))) {
+            if (source.getAdjacentIds().stream()
+                .map(this.map::getTerritory)
+                .anyMatch(a -> a.getOwnerId().get().equals(owner.getId()))) {
                 troopsToMove = Math.floorDiv(troopsToMove, 2); //if has enemy near halve the troops
-            }
-            else {
+            } else {
                 //else move all but 2
-                troopsToMove =- 1;
+                troopsToMove = 1;
             }
         }
         return new MoveEvent(owner, source, destination, troopsToMove);
