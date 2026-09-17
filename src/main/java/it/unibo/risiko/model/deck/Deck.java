@@ -38,7 +38,7 @@ public class Deck {
     }
 
     /*  To clear the hand and the cards in deck */
-    public void clear(ArrayList<Card> deck) {
+    public void clear() {
         deck.clear();
     }
 
@@ -86,7 +86,7 @@ public class Deck {
          * index: Using the random variable from the Random class,
         it gets a random number between 0 and 42 (not included) */
         int index = random.nextInt(deck.size());
-        Card card = deck.get(index);
+        Card card = this.deck.get(index);
         remove(card);
         cardsUsed++;
         return card;
