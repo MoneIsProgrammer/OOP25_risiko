@@ -60,7 +60,7 @@ public class GameController {
     private Consumer<Integer> getStrenght() {
         // TODO Auto-generated method stub
         return new Consumer<Integer>() {
-
+            //with ArmyCounter this may be useless
             @Override
             public void accept(Integer t) {
                 maxArmyforAction.set(10);
