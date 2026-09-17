@@ -10,6 +10,7 @@ import it.unibo.risiko.model.map.GameMap;
  * Implementation of {@link Roster}.
  */
 public final class RosterImpl implements Roster {
+    private static final int MAX_PLAYERS = 6;
     private final Registry<Player> roster;
 
     /**
@@ -21,10 +22,10 @@ public final class RosterImpl implements Roster {
     public RosterImpl(final List<PlayerRequest> players, final GameMap map) {
         this.roster = new Registry<>("players");
         final PlayerFactory factory = new PlayerFactoryImpl();
-        if (players.size() > 6 || players.size() < 3) {
+        if (players.size() > MAX_PLAYERS || players.size() < 3) {
             throw new IllegalArgumentException("Number of players is not between 3 and 6");
         }
-        if (players.stream().map(a -> a.color()).distinct().count() != players.size()) {
+        if (players.stream().map(PlayerRequest::color).distinct().count() != players.size()) {
             throw new IllegalArgumentException("Duplicate Color");
         }
         for (final PlayerRequest request : players) {

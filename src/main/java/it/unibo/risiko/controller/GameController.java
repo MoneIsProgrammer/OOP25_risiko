@@ -2,92 +2,116 @@ package it.unibo.risiko.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.history.HistoryImpl;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.MapLoader;
-import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.PlayerRequest;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
-import it.unibo.risiko.view.GameLogBox;
-import it.unibo.risiko.view.map.DiceCanvas;
-import it.unibo.risiko.view.map.MapCanvas;
-import it.unibo.risiko.view.map.MapLayout;
-import it.unibo.risiko.view.map.MapView;
+import it.unibo.risiko.model.turn.Phase;
+import it.unibo.risiko.view.GameScene;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
- * GameController
+ * The Controller for the game part of risiko.
  */
-public class GameController {
+public final class GameController {
 
-    private static final double WINDOW_WIDTH = 1100;
-    private static final double WINDOW_HEIGHT = 700;
+    private Roster roster;
+    private GameMap map;
+    private Scene gameGui;
+    private History history = new HistoryImpl();
+    private PlayerTurn turn;
+    private Phase phase;
+    private String sourceId;
+    private String destinationId;
+    // activate button to commit the action if it can be generated, both this and the army are used to check may be moved
+    private final BooleanProperty ableToBuild = new SimpleBooleanProperty(true);
+    //to show player how many armies has to place or wants to utilize
+    private final IntegerProperty armyCounter = new SimpleIntegerProperty(0);
+    // set this to the maximum troops utilizable for the action, limits if action can be launched by controller parameteters
+    private final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6);
 
-    Roster roster;
-    GameMap map;
-    History history = new HistoryImpl();
-
-    public GameController(List<PlayerRequest> a) {
+    /**
+     * Default constructor for new game.
+     * 
+     * @param requests players that will play in the game
+     */
+    public GameController(final List<PlayerRequest> requests) {
         try {
             map = MapLoader.loadDefault();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
-        roster = new RosterImpl(a, map);//TODO Build map before players then the territories must be assigned
+        //Build map before players then the territories must be assigned
+        this.roster = new RosterImpl(requests, map); 
+        this.turn = new PlayerTurn(roster);
+        this.phase = Phase.SETUP;
     }
 
-    public void start(Stage stage) {
-        final MapCanvas canvas;
-        try {
-            canvas = new MapCanvas(map, MapLayout.loadDefault());
-        } catch (final IOException e) {
-            throw new IllegalStateException("Could not load the map layout", e);
-        }
+    /**
+     * Entry point for javaFx thread.
+     * 
+     * @param stage the stage the gui will be built on
+     */
+    public void start(final Stage stage) {
+        this.gameGui = new GameScene(
+            roster,
+            map,
+            history,
+            pairSelected(), 
+            getReiforceMap(), 
+            getStrenght(), 
+            ableToBuild, 
+            armyCounter, 
+            maxArmyforAction
+        );
+        stage.setScene(gameGui);
+    }
 
-        // from here we use it only as a MapView
-        final MapView mapView = canvas;
-        for (final Player player : roster.getAllPlayers()) {
-            mapView.setPlayerColor(player.getId(), player.getColor());
-        }
+    private Consumer<Integer> getStrenght() {
+        // TODO Auto-generated method stub
+        return new Consumer<>() {
+            //with ArmyCounter this may be useless
+            @Override
+            public void accept(final Integer t) {
+                maxArmyforAction.set(10);
+                System.out.println(t); //dirty testing, feel free to remove
+            }
 
-        // clicks for the attack and the move
-        final var clickHandler = new MapClickHandler(map, mapView);
-        mapView.addTerritoryClickListener(clickHandler);
-        clickHandler.addChoiceListener((from, to) -> {
-            // TODO put here the HumanStrategy calls, from and to are the ids of the territories
-        });
-        // TODO call clickHandler.setTurn when the turn or the phase changes
+        };
+    }
 
-        var box = new VBox();
-        for (Player player : roster.getAllPlayers()) {
-            box.getChildren().add(new Text(player.getName() + player.getId() + player.getColor().name()));
-        }
+    private Consumer<Map<String, Integer>> getReiforceMap() {
+        return new Consumer<>() {
 
-        // the dice of the last attack, under the players
-        final var dice = new DiceCanvas();
-        box.getChildren().add(dice);
-        // TODO register mapView to the game events, redraw it after dealing the territories
-        // TODO give the result of every AttackResultEvent to dice.setResult
+            @Override
+            public void accept(final Map<String, Integer> t) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'accept'");
+            }
+        };
+    }
 
-        box.getChildren().add(new GameLogBox(this.history));
+    private BiConsumer<String, String> pairSelected() {
+        return new BiConsumer<>() {
 
-        // the map follows the size of the window
-        final var container = new Pane(canvas);
-        canvas.widthProperty().bind(container.widthProperty());
-        canvas.heightProperty().bind(container.heightProperty());
-
-        final var root = new BorderPane();
-        root.setCenter(container);
-        root.setRight(box);
-        stage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
+            @Override
+            public void accept(final String from, final String to) {
+                sourceId = from;
+                destinationId = to;
+            }
+        };
     }
 
 }

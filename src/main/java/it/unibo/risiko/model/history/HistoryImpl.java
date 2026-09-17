@@ -11,7 +11,7 @@ import javafx.collections.ObservableList;
 /**
  * Implementation of History.
  */
-public class HistoryImpl implements History {
+public final class HistoryImpl implements History {
 
     private final ObservableList<String> history = FXCollections.observableArrayList();
     private final EventStringVisitor visitor = new EventStringVisitor();
@@ -38,18 +38,18 @@ public class HistoryImpl implements History {
      * @param events variable number events to be added
      */
     public HistoryImpl(final Event... events) {
-        for (Event event : events) {
+        for (final Event event : events) {
             this.addEvent(event);
         }
     }
 
     @Override
-    public final List<String> getAllEvents() {
+    public List<String> getAllEvents() {
         return List.copyOf(this.history);
     }
 
     @Override
-    public final List<String> getLastNEvents(final int n) {
+    public List<String> getLastNEvents(final int n) {
         if (n > this.history.size()) {
             return List.copyOf(this.history);
         }
@@ -60,26 +60,31 @@ public class HistoryImpl implements History {
     }
 
     @Override
-    public final int getTotalEvents() {
+    public int getTotalEvents() {
         return this.history.size();
     }
 
     @Override
-    public final void addEvent(final Event event) {
-        var list = event.accept(this.visitor);
-        for (String string : list) {
+    public void addEvent(final Event event) {
+        final var list = event.accept(this.visitor);
+        for (final String string : list) {
             this.history.add(string);
         }
     }
 
     @Override
-    public final void restoreHistory(final List<String> newHistory) {
+    public void restoreHistory(final List<String> newHistory) {
         this.history.clear();
         this.history.addAll(newHistory);
     }
 
     @Override
-    public final void addListener(final ListChangeListener<String> listener) {
+    public void addListener(final ListChangeListener<String> listener) {
         this.history.addListener(listener);
+    }
+
+    @Override
+    public void addCustomEvent(final String event) {
+        this.history.add(event);
     }
 }

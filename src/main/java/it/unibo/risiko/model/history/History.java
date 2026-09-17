@@ -6,7 +6,7 @@ import it.unibo.risiko.model.event.Event;
 import javafx.collections.ListChangeListener;
 
 /**
- * Models the history of the game containing various {@link Event}s.
+ * Models the history of the game containing various {@link Event}s string rapresentation.
  */
 public interface History {
     /**
@@ -52,5 +52,12 @@ public interface History {
      * @param listener listener to be added that will be notified on addition to the history
      */
     void addListener(ListChangeListener<String> listener);
+
+    /**
+     * Adds a custom string rapresenting and event that is not modeled in this history.
+     * 
+     * @param event custom event string to add to this history
+     */
+    void addCustomEvent(String event);
 
 }

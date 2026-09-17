@@ -97,17 +97,17 @@ public final class PlayerImpl implements Player {
     }
 
     @Override
-    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID) {
+    public MoveEvent getMoveAfterConquest(final String sourceID, final String destinationID) {
         return this.strategy.getMoveAfterConquest(sourceID, destinationID, this);
     }
-    
-	@Override
-	public List<Card> getHand() {
+
+    @Override
+    public List<Card> getHand() {
         return this.hand;
     }
 
     @Override
-    public void setArmies(int armies) {
+    public void setArmies(final int armies) {
         this.reinforces = armies;
     }
 
