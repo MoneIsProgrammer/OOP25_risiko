@@ -54,7 +54,7 @@ public final class RandomStrategy implements PlayerStrategy {
 
     @Override
     public Optional<AttackEvent> getAttack(final Player owner) {
-        if (this.random.nextInt(10) % 3 == 0) {
+        if (this.random.nextInt(3) == 0) {
             return Optional.empty();
         }
         final var playerTerritories = map.getTerritoriesOf(owner.getId());
@@ -69,7 +69,7 @@ public final class RandomStrategy implements PlayerStrategy {
         .findAny();
         return Optional.of(new AttackEvent(owner,
             this.roster.getPlayer(victim.get().getOwnerId().get()),
-            attacker.get().getArmies() > 3 ? 3 : attacker.get().getArmies() - 1,
+            this.random.nextInt(attacker.get().getArmies()),
             victim.get().getArmies() > 3 ? 3 : victim.get().getArmies(),
             attacker.get(),
             victim.get()
@@ -98,8 +98,9 @@ public final class RandomStrategy implements PlayerStrategy {
     public ReinforceEvent getReinforce(final Player owner, final int armies) {
         final Map<Territory, Integer> reinforceMap = new HashMap<>();
         final var playerTerritories = this.map.getTerritoriesOf(owner.getId());
+        final var size = playerTerritories.size();
         for (int i = 0; i < armies; i++) {
-            reinforceMap.merge(playerTerritories.stream().findAny().get(), 1, Integer::sum);
+            reinforceMap.merge(playerTerritories.stream().skip(random.nextInt(size)).findAny().get(), 1, Integer::sum);
         }
         return new ReinforceEvent(owner, reinforceMap);
     }
