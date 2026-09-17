@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Set;
 
     /**
-     * CardStrategy contains two methods:
-     * cardsValid, checks whether a certain combination of cards can be played
-     * bonusReinforcements, returns the number of troops a player can deploy as reinforcements
+     * CardStrategy contains the method:
+     * bonusReinforcements, returns the number of troops a player can 
+     * deploy as reinforcements
      */
 public class CardBonus {
     String troopname;   
@@ -22,60 +22,40 @@ public class CardBonus {
         this.map = map;
     }
 
-    /** cardsValid checks whether a set of cards can be played, we need the setOfCards 
-     * and the list of territories occupied by the player
-     * It returns true if the set can be played, false if it can't be played
-    */
-   // TODO: In che senso sia valida?
-    public boolean cardsValid(ArrayList<Card> setOfCards, String playerId) {
-        boolean torf = false;
-        //Set<Territory> territoriesOccupied = this.map.getTerritoriesOf(playerId);
-        return torf;
-    }
-    //it.unibo.risiko.model.map.GameMapImpl.getTerritoriesOf
-
     /** This method calculates the number of troops a player can deploy 
      * as reinforcements 
-     * In input, this method: gets the number of territories occupied by 
-     * the player; the cards that the player wants to play */
+     * In input, this method gets: 
+     * the player's ID;
+     * the cards that the player wants to play */
     int bonusReinforcements(String playerId, ArrayList<Card> setOfCards) {
+        
         int nOfTerritoriesOccupied = this.map.getTerritoriesOf(playerId).size();
-        int troopsDeploy = 0;
-        /** First, it checks whether the set of cards can be played 
-         * If it can't be played it sends an error message.
-         * If it can be played, calculate the number of troops that the 
-         * player can deploy
-        */
-        if (!(cardsValid(setOfCards, playerId))) {
-            // TODO: cosa fare nel caso in cui la combinazione di carte non è valida
-            return 0;
-        } else {
-            /** 1. The player occupies x territories, so they have a right to x:3 territories
-             * (for example: nOfTerritoriesOccupied = 14, troopsDeploy = 14/3 = 4) ROUNDING
-             * DOWN
-             */
-            troopsDeploy = nOfTerritoriesOccupied/3;
-            /** 2. If the player occupies all the territories within one or more continents,
-             * each turn they have a right to a number of extra troops
-             * This has been directly implemented within the GameMapImpl class, see
-             * getContinentBonus method
-             */
-            /** 3. During the reinforcement phase, the player has the right to play a 
-             * three-of-a-kind cards, thanks to which they can add troops. The valid 
-             * combinations are: 
-             * 3 cannons: 4 troops
-             * 3 infantries: 6 troops
-             * 3 cavalries: 8 troops
-             * 1 cannon, 1 infantry and 1 cavalry: 10 troops
-             * 1 jolly and two of the same cards: 12 troops 
-             * Moreover, if the player occupies any of the territories represented on 
-             * the cards, they get 2 troops for each of these cards */
-            /* For calculating the bonus for the three of a kind cards, we'll call the 
-            calculateThreeBonus method */
-            troopsDeploy = troopsDeploy + calculateThreeBonus(setOfCards, playerId);
-        }
+        int troopsDeployable = 0;
+        /** Calculate the number of troops that the 
+         * player can deploy */
+        /** 1. The player occupies x territories, so they have a right to x:3 territories
+         * (for example: nOfTerritoriesOccupied = 14, troopsDeployable = 14/3 = 4) ROUNDING
+         * DOWN */
+        troopsDeployable = nOfTerritoriesOccupied/3;
+        /** 2. If the player occupies all the territories within one or more continents,
+         * each turn they have a right to a number of extra troops
+         * This has been directly implemented within the GameMapImpl class, see
+         * getContinentBonus method */
+        /** 3. During the reinforcement phase, the player has the right to play a 
+         * three-of-a-kind cards, thanks to which they can add troops. The valid 
+         * combinations are: 
+         * 3 cannons: 4 troops
+         * 3 infantries: 6 troops
+         * 3 cavalries: 8 troops
+         * 1 cannon, 1 infantry and 1 cavalry: 10 troops
+         * 1 jolly and two of the same cards: 12 troops 
+         * Moreover, if the player occupies any of the territories represented on 
+         * the cards, they get 2 troops for each of these cards */
+        /* For calculating the bonus for the three of a kind cards, we'll call the 
+        calculateThreeBonus method */
+        troopsDeployable = troopsDeployable + calculateThreeBonus(setOfCards, playerId);
         /* needs to be a return method that returns the number of troops a player can deploy */
-        return troopsDeploy;
+        return troopsDeployable;
     }
 
     public int calculateThreeBonus (ArrayList<Card> setOfCards, String playerId) {
