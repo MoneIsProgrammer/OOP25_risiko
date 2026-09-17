@@ -30,9 +30,6 @@ import it.unibo.risiko.model.player.strategy.ai.RandomStrategy;
  * Test class for player general player and "human interactions".
  */
 final class PlayerTest {
-    private  GameMap map;
-    //@SuppressWarnings("PMD.SingularField") // can't initialize roster before map and map can't be initialized in constructor
-    private Roster roster;
     private static final String HUMAN_NAME = "human";
     private static final String AGGRESSIVE_NAME = "aggressive";
     private static final String DEFENSIVE_NAME = "defensive";
@@ -40,6 +37,9 @@ final class PlayerTest {
     private static final String ALASKA_ID = "alaska"; 
     private static final String INDONESIA_ID = "indonesia";
     private static final String MONGOLIA_ID = "mongolia";
+
+    private GameMap map;
+    private Roster roster;
 
     @BeforeEach void init() throws IOException {
         this.map = MapLoader.loadDefault();

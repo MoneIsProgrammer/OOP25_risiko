@@ -221,15 +221,11 @@ final class AiTest {
         assertNotEquals(reinforce2.reinforcement(), reinforce.reinforcement());
 
         final var move = this.random.move();
-        assertEquals(6, move.get().troopsMoved());
+        final int expected = 6;
+        assertEquals(expected, move.get().troopsMoved());
         assertEquals(A_ID, move.get().destinationTerritory().getId());
         assertEquals(D_ID, move.get().sourceTerritory().getId());
         final var move2 = this.random.move();
         assertNotEquals(move, move2);
-
-
-
-
-
     }
 }
