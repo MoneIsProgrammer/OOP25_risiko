@@ -17,7 +17,7 @@ import it.unibo.risiko.model.player.Player;
  */
 
 @SuppressFBWarnings("EI_EXPOSE_REP") // ugly but passing the references grants easier control to apply changes
-public record CardEvent(List<Collection<Card>> played, Player owner, int gainedArmies) implements Event{
+public record CardEvent(List<Collection<Card>> played, Player owner, int gainedArmies) implements Event {
 
     @Override
     public <T> T accept(final EventVisitor<T> visitor) {

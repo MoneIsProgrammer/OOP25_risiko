@@ -11,12 +11,23 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public class GameLogBox extends VBox{
-    
-    public GameLogBox(History history) {
+/**
+ * Box to wrap GameLog and gives it a title.
+ */
+public final class GameLogBox extends VBox {
+    private static final int DEF_SPACING = 5;
+
+    /**
+     * Default constructor.
+     * 
+     * @param history the history to link to GameLog
+     */
+    public GameLogBox(final History history) {
         super();
-        this.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(5),new BorderWidths(5))));
-        this.getChildren().addAll(new Text("Past Moves"), new GameLog(history));
-        this.setAlignment(Pos.TOP_CENTER);
+        super.setBorder(new Border(
+            new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(DEF_SPACING), new BorderWidths(DEF_SPACING))
+        ));
+        super.getChildren().addAll(new Text("Past Moves"), new GameLog(history));
+        super.setAlignment(Pos.TOP_CENTER);
     }
 }

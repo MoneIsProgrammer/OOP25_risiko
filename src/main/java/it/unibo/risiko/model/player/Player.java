@@ -17,7 +17,7 @@ import it.unibo.risiko.model.player.strategy.PlayerStrategy;
  * It's designed so that each player behavior is differentiated by the Strategy Pattern,
  * meaning for each different behavior and external {@link PlayerStrategy} implementation is required.
  */
-public interface Player extends  Identifiable{
+public interface Player extends Identifiable {
     /**
      * Returns the Strategy used by the player.
      * 
@@ -55,7 +55,8 @@ public interface Player extends  Identifiable{
     ReinforceEvent reinforce(int armies);
 
     /**
-     * Creates reinforce events with assigning at maximum 3 troops at a time useful during the setup phase as it knows how many troops has to place
+     * Creates reinforce events with assigning at maximum 3 troops at a time,
+     * useful during the setup phase as it knows how many troops has to place.
      * 
      * @return a ReinfoceEvent
      */
@@ -76,7 +77,8 @@ public interface Player extends  Identifiable{
     RisikoColors getColor();
 
     /**
-     * Setter for the armies to place during the setupPhase, useful to ovveride the default value assigned by {@link PlayerFactory}
+     * Setter for the armies to place during the setupPhase,
+     * useful to ovveride the default value assigned by {@link PlayerFactory}.
      * 
      * @param armies number of armies for the setup phase
      */
@@ -98,14 +100,19 @@ public interface Player extends  Identifiable{
 
     /**
      * Used to get the transfer of troops from a territory to another, 
-     * speficially this generates a MoveEvent rapresenting che transfer of troops from attacking territory to the conquered one
+     * speficially this generates a MoveEvent rapresenting che transfer of troops from attacking territory to the conquered one.
      * 
-     * @param source the attacking territory from where the troops come from
-     * @param destination the conquered territory where the troops will end up
+     * @param sourceID the attacking territory from where the troops come from
+     * @param destinationID the conquered territory where the troops will end up
      * @return an {@link MoveEvent}, this is a forced event where at worst just 1 troop must be moved to occupy the destination
      */
     MoveEvent getMoveAfterConquest(String sourceID, String destinationID);
 
+    /**
+     * Gets the cards in the player's hand.
+     * 
+     * @return A list of card in the player hand
+     */
     List<Card> getHand();
 
 }

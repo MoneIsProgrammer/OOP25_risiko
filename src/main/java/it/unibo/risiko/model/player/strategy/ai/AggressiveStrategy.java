@@ -76,7 +76,7 @@ public final class AggressiveStrategy implements PlayerStrategy {
         .filter(a -> a.getArmies() > 2) // 3 armies at least
         .max(StrategyUtils.TERRITORY_COMPARATOR);
         if (source.isEmpty()) {
-            System.out.println("Move got no source");
+            //System.out.println("Move got no source");
             return Optional.empty();
         }
         final var destination = source.get().getAdjacentIds().stream() //weakest border territory adj to the strongest non border
@@ -84,7 +84,7 @@ public final class AggressiveStrategy implements PlayerStrategy {
         .filter(borders::contains)
         .min(StrategyUtils.TERRITORY_COMPARATOR);
         if (destination.isEmpty()) {
-            System.out.println("Move got no dest");
+            //System.out.println("Move got no dest");
             return Optional.empty();
         }
         return Optional.of(new MoveEvent(owner,
@@ -140,9 +140,9 @@ public final class AggressiveStrategy implements PlayerStrategy {
     }
 
     @Override
-    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner) {
-        var source = this.map.getTerritory(sourceID);
-        var destination = this.map.getTerritory(destinationID);
+    public MoveEvent getMoveAfterConquest(final String sourceID, final String destinationID, final Player owner) {
+        final var source = this.map.getTerritory(sourceID);
+        final var destination = this.map.getTerritory(destinationID);
         return new MoveEvent(owner, source, destination, source.getArmies() - 1);
     }
 }

@@ -9,9 +9,11 @@ import it.unibo.risiko.model.map.GameMap;
 public interface PlayerFactory {
     /**
      * Creates a player following the passed specifications.
+     * 
      * @param roster so the player knows the other players
-     * @param map TODO
-     * @param playerRequest necessary informations to build the player
+     * @param map the map the player will play on
+     * @param request necessary informations to build the player
+     * @param nOfPlayers how many players are in the games, sets the starting troops
      * 
      * @return the player built following specifications
      */

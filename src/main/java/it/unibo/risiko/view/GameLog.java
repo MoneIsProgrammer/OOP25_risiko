@@ -19,7 +19,7 @@ public class GameLog extends ScrollPane {
     /**
      * @param history the game history to be connected to this class
      */
-    public GameLog(History history) {
+    public GameLog(final History history) {
         super();
         this.setContent(this.content);
         this.content.setPadding(new Insets(PADDING));

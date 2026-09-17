@@ -46,7 +46,9 @@ public final class EventStringVisitor implements EventVisitor<List<String>> {
         final String defender = event.attack().defender().getName() 
         + " lost " + event.result().getDefenderLosses() + " troops";
         if (event.result().isConquered()) {
-            final String conquered = event.attack().attacker().getName() + " conquered " + event.attack().attackDestination().getName();
+            final String conquered = event.attack().attacker().getName() 
+            + " conquered " 
+            + event.attack().attackDestination().getName();
             return List.of(attackerRolls, attacker, defenderRolls, defender, conquered);
         }
         return List.of(attackerRolls, attacker, defenderRolls, defender);
