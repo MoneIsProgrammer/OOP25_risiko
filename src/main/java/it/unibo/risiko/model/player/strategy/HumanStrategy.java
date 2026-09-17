@@ -113,7 +113,7 @@ public interface HumanStrategy extends PlayerStrategy {
     MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner);
 
 	/**
-	 * Clears the unused argument passed during construction, making a clean slate for next calls
+	 * Clears the unused argument passed during construction, making a clean slate for next calls.
 	 */
 	void flush();
 

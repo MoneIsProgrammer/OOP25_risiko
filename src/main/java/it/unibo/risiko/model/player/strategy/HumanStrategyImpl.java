@@ -96,7 +96,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
     }
 
     @Override
-    public void setupPlacement(final Map<Territory,Integer> placement) {
+    public void setupPlacement(final Map<Territory, Integer> placement) {
         this.reinforceBuilder.setReinforcements(placement);
     }
 
@@ -138,12 +138,22 @@ public final class HumanStrategyImpl implements HumanStrategy {
         this.reinforceBuilder.clear();
     }
 
+    @Override
+    public MoveEvent getMoveAfterConquest(final String sourceID, final String destinationID, final Player owner) {
+        if (this.moveBuilder.troopsMoved == null) {
+            this.moveBuilder.setTroopsMoved(1);
+        }
+        this.moveBuilder.setDestination(this.map.getTerritory(destinationID));
+        this.moveBuilder.setSource(this.map.getTerritory(sourceID));
+        return this.moveBuilder.build(owner);
+    }
+
     private final class AttackBuilder {
         private Player victim;
         private Integer attackStrenght;
         private Integer defenderStrenght;
         private Territory source;
-        private Territory destination ;
+        private Territory destination;
 
         private void setAttackStrenght(final int strength) {
             this.attackStrenght = strength;
@@ -205,22 +215,22 @@ public final class HumanStrategyImpl implements HumanStrategy {
             }
             this.reinforceMap.putAll(reinforcements);
         }
-        
-        private  void clear() {
+
+        private void clear() {
             this.reinforceMap = null;
         }
 
-		private ReinforceEvent build(final Player owner, final int armies) {
+        private ReinforceEvent build(final Player owner, final int armies) {
             if (reinforceMap.values().stream().reduce(Integer::sum).get() != armies && canBuild()) {
                 throw new IllegalStateException("The reinforcements can't be different from declared armies");
-                 //this is a check as i can't check if map is empty due to the minimum reinforce avabile are 0
+                //this is a check as i can't check if map is empty due to the minimum reinforce avabile are 0
             }
             final var out = new ReinforceEvent(owner, reinforceMap);
             clear();
             return out;
         }
 
-        private  boolean canBuild() {
+        private boolean canBuild() {
             return reinforceMap != null;
         }
     }
@@ -243,7 +253,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
             return out;
         }
 
-        private  boolean canBuild() {
+        private boolean canBuild() {
             return this.source != null
             && this.destination != null
             && this.troopsMoved != null;
@@ -269,7 +279,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
     }
 
     private final class CardPlayBuilder {
-    
+
         private List<Collection<Card>> played;
         private int armies;
 
@@ -303,17 +313,5 @@ public final class HumanStrategyImpl implements HumanStrategy {
         private boolean canBuild() {
             return this.played != null;
         }
-
-
-    }
-
-    @Override
-    public MoveEvent getMoveAfterConquest(final String sourceID, final String destinationID, final Player owner) {
-        if (this.moveBuilder.troopsMoved == null) {
-            this.moveBuilder.setTroopsMoved(1);
-        }
-        this.moveBuilder.setDestination(this.map.getTerritory(destinationID));
-        this.moveBuilder.setSource(this.map.getTerritory(sourceID));
-        return this.moveBuilder.build(owner);
     }
 }
