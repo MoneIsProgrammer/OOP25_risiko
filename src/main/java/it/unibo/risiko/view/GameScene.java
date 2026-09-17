@@ -23,29 +23,41 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-
 /**
- * GameScene
+ * Scene to interact with the game.
  */
-public class GameScene extends Scene{
-    
+public class GameScene extends Scene {
     //unused private static final double WINDOW_WIDTH = 1100;
     //unused private static final double WINDOW_HEIGHT = 700;
 
-    final MapCanvas canvas;
-    final BorderPane root;
+    private final MapCanvas canvas;
+    private final BorderPane root;
 
+    /**
+     * Default constructor.
+     * 
+     * @param roster who is playing
+     * @param map the game map
+     * @param history to track past events
+     * @param getTerritories consumer to get basics for events
+     * @param getReinforcements consumer to get the combination for a reinforce event
+     * @param getStrenght consumer to get the number of troops player wants to use
+     * @param canGenerate if the player can request an action without running into an error
+     * @param armyCounter how many armies player has or can use during an action
+     * @param maxArmyforAction the max of troops that can be used during an action,
+     *      or must remain after an action(specifically for reinforce event)
+     */
     public GameScene(final Roster roster,
         final GameMap map,
         final History history,
-        final BiConsumer<String,String> getTerritories,
-        final Consumer<Map<String, Integer>> getReinforcements, // human player wants a map with terr integer the conversion happens in the controller
+        final BiConsumer<String, String> getTerritories, 
+        // human player wants a map with terr integer the conversion happens in the controller
+        final Consumer<Map<String, Integer>> getReinforcements,
         final Consumer<Integer> getStrenght,
         final BooleanProperty canGenerate,
         final IntegerProperty armyCounter,
         final IntegerProperty maxArmyforAction
     ) { //TODO add necessary paramenters for controller view comunication
-        
         super(new BorderPane());
         this.root = (BorderPane) this.getRoot();
         try {
@@ -79,12 +91,11 @@ public class GameScene extends Scene{
         box.getChildren().add(dice);
         // TODO register mapView to the game events, redraw it after dealing the territories
         // TODO give the result of every AttackResultEvent to dice.setResult
-
+        final var spacing = 5;
         final var bottom = new ChangingBox(getStrenght, armyCounter, canGenerate, maxArmyforAction);
         bottom.setAlignment(Pos.CENTER);
-        bottom.setSpacing(5);
+        bottom.setSpacing(spacing);
         box.getChildren().addAll(bottom, new GameLogBox(history));
-
 
         // the map follows the size of the window
         final var container = new Pane(canvas);
