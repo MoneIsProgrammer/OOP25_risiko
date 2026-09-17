@@ -50,7 +50,7 @@ public class MainMenuScene extends Scene{
         this.customize(loadGameButton);
         this.main.getChildren().addAll(this.title, this.newGameButton, this.loadGameButton, this.exitButton);
         this.main.setAlignment(Pos.CENTER);
-        this.main.spacingProperty().bind(this.main.heightProperty().multiply(0.1));;
+        this.main.spacingProperty().bind(this.main.heightProperty().multiply(0.1));
         
     }
 

@@ -11,12 +11,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public class GameLogBox extends VBox{
+public final class GameLogBox extends VBox{
     
-    public GameLogBox(History history) {
+    public GameLogBox(final History history) {
         super();
-        this.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(5),new BorderWidths(5))));
-        this.getChildren().addAll(new Text("Past Moves"), new GameLog(history));
-        this.setAlignment(Pos.TOP_CENTER);
+        super.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(5),new BorderWidths(5))));
+        super.getChildren().addAll(new Text("Past Moves"), new GameLog(history));
+        super.setAlignment(Pos.TOP_CENTER);
     }
 }

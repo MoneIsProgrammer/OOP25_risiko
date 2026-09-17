@@ -12,7 +12,7 @@ public class PlayerTurn {
     List<Player> playerOrder = new ArrayList<>();
     int counter = -1;
     
-    public PlayerTurn(Roster roster) {
+    public PlayerTurn(final Roster roster) {
         playerOrder.addAll(roster.getAllPlayers());
         Collections.shuffle(playerOrder);
     }
@@ -22,8 +22,8 @@ public class PlayerTurn {
         return playerOrder.get(counter % playerOrder.size());
     }
 
-    public void remove(Player player) {
-        var current = playerOrder.get(counter % playerOrder.size());
+    public void remove(final Player player) {
+        final var current = playerOrder.get(counter % playerOrder.size());
         if (current.equals(player)) {
             throw new IllegalArgumentException("cannot remove the active player");
         }

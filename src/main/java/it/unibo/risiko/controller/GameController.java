@@ -35,16 +35,16 @@ public class GameController {
     Phase phase;
     String sourceId;
     String destinationId;
-    final BooleanProperty canGenerate = new SimpleBooleanProperty(true); // activate button to commit the action if it can be generated
+    final BooleanProperty ableToBuild = new SimpleBooleanProperty(true); // activate button to commit the action if it can be generated, both this and the army are used to check may be moved
     final IntegerProperty armyCounter = new SimpleIntegerProperty(0); //to show player how many armies has to place or wants to utilize
-    final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6); // set this to the maximum troops utilizable for the action, limits if action can be launched
+    final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6); // set this to the maximum troops utilizable for the action, limits if action can be launched by controller parameteters
 
 
 
-    public GameController(List<PlayerRequest> a) {
+    public GameController(final List<PlayerRequest> a) {
         try {
             map = MapLoader.loadDefault();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         this.roster = new RosterImpl(a, map);//Build map before players then the territories must be assigned
@@ -52,34 +52,41 @@ public class GameController {
         this.phase = Phase.SETUP;
     }
 
-    public void start(Stage stage) {
-        this.gameGui = new GameScene(roster,map,history, pairSelected(), null, getStrenght(), canGenerate, armyCounter, maxArmyforAction);
+    public void start(final Stage stage) {
+        this.gameGui = new GameScene(roster,map,history, pairSelected(), getReiforceMap(), getStrenght(), ableToBuild, armyCounter, maxArmyforAction);
         stage.setScene(gameGui);
     }
 
     private Consumer<Integer> getStrenght() {
         // TODO Auto-generated method stub
-        return new Consumer<Integer>() {
+        return new Consumer<>() {
             //with ArmyCounter this may be useless
             @Override
-            public void accept(Integer t) {
+            public void accept(final Integer t) {
                 maxArmyforAction.set(10);
-                System.out.println(t);
+                System.out.println(t); //dirty testing, feel free to remove
             }
 
         };
     }
 
     private Consumer<Map<String, Integer>> getReiforceMap() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getReiforceMap'");
+        return new Consumer<>() {
+
+            @Override
+            public void accept(Map<String, Integer> t) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'accept'");
+            }
+            
+        };
     }
 
     private BiConsumer<String, String> pairSelected() {
-        return new BiConsumer<String,String>() {
+        return new BiConsumer<>() {
 
             @Override
-            public void accept(String from, String to) {
+            public void accept(final String from, final String to) {
                 sourceId = from;
                 destinationId = to;
             }

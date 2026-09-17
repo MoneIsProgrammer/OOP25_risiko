@@ -14,24 +14,24 @@ import javafx.scene.text.Text;
 
 public class ChangingBox extends HBox {
     
-    private IntegerProperty counter;
-    private List<Node> attackSetup;
-    private List<Node> reinforceSetup;
-    private BooleanProperty buttonActive = new SimpleBooleanProperty(false);
+    private final IntegerProperty counter;
+    private final List<Node> attackSetup;
+    private final List<Node> reinforceSetup;
+    private final BooleanProperty buttonActive = new SimpleBooleanProperty(false);
 
-    public ChangingBox(Consumer<Integer> getStrenght, IntegerProperty counter, BooleanProperty canGenerate, IntegerProperty maxArmyforAction) {
+    public ChangingBox(final Consumer<Integer> getStrenght, final IntegerProperty counter, final BooleanProperty canGenerate, final IntegerProperty maxArmyforAction) {
         super();
         this.counter = counter;
         buttonActive.bind(canGenerate.and(counter.greaterThan(-1).and(counter.lessThanOrEqualTo(maxArmyforAction))));
-        var addButton = new Button("+");
+        final var addButton = new Button("+");
         addButton.setOnAction(e -> this.counter.set(this.counter.get() + 1));
-        var subtractButton = new Button("-");
+        final var subtractButton = new Button("-");
         subtractButton.setOnAction(e -> {
             this.counter.set(this.counter.get() - 1);
         });
-        var armiesCounter = new Text();
+        final var armiesCounter = new Text();
         armiesCounter.textProperty().bind(counter.asString());
-        var confirmButton = new Button("confirm");
+        final var confirmButton = new Button("confirm");
         confirmButton.disableProperty().bind(buttonActive.not());
         confirmButton.setOnAction(e -> {
             getStrenght.accept(this.counter.get());
@@ -40,9 +40,9 @@ public class ChangingBox extends HBox {
         });
         attackSetup = List.of(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton);
 
-        var armies = new Text();
+        final var armies = new Text();
         armies.textProperty().bind(counter.asString());
-        var reinforceButton = new Button("Confirm");
+        final var reinforceButton = new Button("Confirm");
         reinforceButton.setOnAction(e -> change(Phase.ATTACK));
         reinforceSetup = List.of(new Text("Armies to place:"),armies,reinforceButton);
 
@@ -54,7 +54,7 @@ public class ChangingBox extends HBox {
      * 
      * @param phase determinates which configuration should be applied
      */
-    public void change(Phase phase) {//invoke when phase changes
+    public void change(final Phase phase) {//invoke when phase changes
         super.getChildren().clear();
         switch (phase) {
             case REINFORCE:

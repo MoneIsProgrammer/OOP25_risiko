@@ -38,7 +38,7 @@ public class HistoryImpl implements History {
      * @param events variable number events to be added
      */
     public HistoryImpl(final Event... events) {
-        for (Event event : events) {
+        for (final Event event : events) {
             this.addEvent(event);
         }
     }
@@ -66,8 +66,8 @@ public class HistoryImpl implements History {
 
     @Override
     public final void addEvent(final Event event) {
-        var list = event.accept(this.visitor);
-        for (String string : list) {
+        final var list = event.accept(this.visitor);
+        for (final String string : list) {
             this.history.add(string);
         }
     }
@@ -84,7 +84,7 @@ public class HistoryImpl implements History {
     }
 
     @Override
-    public void addCustomEvent(String event) {
+    public void addCustomEvent(final String event) {
         this.history.add(event);
     }
 }

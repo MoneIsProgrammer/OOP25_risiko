@@ -24,7 +24,7 @@ public final class RosterImpl implements Roster {
         if (players.size() > 6 || players.size() < 3) {
             throw new IllegalArgumentException("Number of players is not between 3 and 6");
         }
-        if (players.stream().map(a -> a.color()).distinct().count() != players.size()) {
+        if (players.stream().map(PlayerRequest::color).distinct().count() != players.size()) {
             throw new IllegalArgumentException("Duplicate Color");
         }
         for (final PlayerRequest request : players) {

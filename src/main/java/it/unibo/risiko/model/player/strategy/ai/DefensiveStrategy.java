@@ -74,7 +74,7 @@ public final class DefensiveStrategy implements PlayerStrategy {
         .filter(a -> StrategyUtils.notIsolated(a, map))
         .min(StrategyUtils.TERRITORY_COMPARATOR);
         if (weakestBorder.isEmpty()) {
-            System.out.println("no weakest border");
+            //System.out.println("no weakest border");
             return Optional.empty();
         }
         final var strongestAdj = weakestBorder.get().getAdjacentIds().stream()
@@ -83,7 +83,7 @@ public final class DefensiveStrategy implements PlayerStrategy {
         .filter(a -> a.getOwnerId().get().equals(owner.getId()))
         .max(StrategyUtils.TERRITORY_COMPARATOR);
         if (strongestAdj.isEmpty()) {
-            System.out.println("no Strongest adj");
+            //System.out.println("no Strongest adj");
             return Optional.empty();
         }
         return Optional.of(new MoveEvent(owner,
@@ -142,12 +142,12 @@ public final class DefensiveStrategy implements PlayerStrategy {
     }
 
     @Override
-    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner) {
-        var source = this.map.getTerritory(sourceID);
-        var destination = this.map.getTerritory(destinationID);
+    public MoveEvent getMoveAfterConquest(final String sourceID, final String destinationID, final Player owner) {
+        final var source = this.map.getTerritory(sourceID);
+        final var destination = this.map.getTerritory(destinationID);
         var troopsToMove = source.getArmies() - 1;
         if (troopsToMove > 1) {
-            if (source.getAdjacentIds().stream().map(this.map::getTerritory).anyMatch(a -> a.getOwnerId().get() != owner.getId())) {
+            if (source.getAdjacentIds().stream().map(this.map::getTerritory).anyMatch(a -> a.getOwnerId().get().equals(owner.getId()))) {
                 troopsToMove = Math.floorDiv(troopsToMove, 2); //if has enemy near halve the troops
             }
             else {

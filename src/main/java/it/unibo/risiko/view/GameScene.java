@@ -16,8 +16,6 @@ import it.unibo.risiko.view.map.MapLayout;
 import it.unibo.risiko.view.map.MapView;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -37,15 +35,15 @@ public class GameScene extends Scene{
     final MapCanvas canvas;
     final BorderPane root;
 
-    public GameScene(Roster roster,
-        GameMap map,
-        History history,
-        BiConsumer<String,String> getTerritories,
-        Consumer<Map<String, Integer>> getReinforcements, // human player wants a map with terr integer the conversion happens in the controller
-        Consumer<Integer> getStrenght,
-        BooleanProperty canGenerate,
-        IntegerProperty armyCounter,
-        IntegerProperty maxArmyforAction
+    public GameScene(final Roster roster,
+        final GameMap map,
+        final History history,
+        final BiConsumer<String,String> getTerritories,
+        final Consumer<Map<String, Integer>> getReinforcements, // human player wants a map with terr integer the conversion happens in the controller
+        final Consumer<Integer> getStrenght,
+        final BooleanProperty canGenerate,
+        final IntegerProperty armyCounter,
+        final IntegerProperty maxArmyforAction
     ) { //TODO add necessary paramenters for controller view comunication
         
         super(new BorderPane());
@@ -71,8 +69,8 @@ public class GameScene extends Scene{
         });
         // TODO call clickHandler.setTurn when the turn or the phase changes
 
-        var box = new VBox();
-        for (Player player : roster.getAllPlayers()) {
+        final var box = new VBox();
+        for (final Player player : roster.getAllPlayers()) {
             box.getChildren().add(new Text(player.getName() + player.getId() + player.getColor().name()));
         }
 
@@ -82,7 +80,7 @@ public class GameScene extends Scene{
         // TODO register mapView to the game events, redraw it after dealing the territories
         // TODO give the result of every AttackResultEvent to dice.setResult
 
-        var bottom = new ChangingBox(getStrenght, armyCounter, canGenerate, maxArmyforAction);
+        final var bottom = new ChangingBox(getStrenght, armyCounter, canGenerate, maxArmyforAction);
         bottom.setAlignment(Pos.CENTER);
         bottom.setSpacing(5);
         box.getChildren().addAll(bottom, new GameLogBox(history));

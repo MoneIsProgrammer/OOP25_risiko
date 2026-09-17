@@ -11,13 +11,13 @@ import javafx.stage.Stage;
 public class MainMenu extends Application{ //test class to lauch scenes
 
     private Stage stage;
-    private Rectangle2D screen = Screen.getPrimary().getBounds();
+    private final Rectangle2D screen = Screen.getPrimary().getBounds();
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(final Stage stage) throws Exception {
         this.stage = stage;
         stage.setTitle("Risiko");
-        stage.setScene(new MainMenuScene(newGame(), e -> System.out.print("load"), false));
+        stage.setScene(new MainMenuScene(newGame(), null, false));
         this.stage.setWidth(screen.getWidth());
         this.stage.setHeight(screen.getHeight());
         this.stage.setX(screen.getMinX());
@@ -28,7 +28,7 @@ public class MainMenu extends Application{ //test class to lauch scenes
 
     public EventHandler<ActionEvent> newGame() {
         return e -> stage.setScene(new PlayerSelectScene(a -> {
-            var game = new GameController(a);
+            final var game = new GameController(a);
             game.start(stage);
         }));
     }   

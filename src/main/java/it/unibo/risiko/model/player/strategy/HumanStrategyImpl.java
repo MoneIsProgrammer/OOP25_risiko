@@ -206,7 +206,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
             this.reinforceMap.putAll(reinforcements);
         }
         
-        public void clear() {
+        private  void clear() {
             this.reinforceMap = null;
         }
 
@@ -308,7 +308,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
     }
 
     @Override
-    public MoveEvent getMoveAfterConquest(String sourceID, String destinationID, Player owner) {
+    public MoveEvent getMoveAfterConquest(final String sourceID, final String destinationID, final Player owner) {
         if (this.moveBuilder.troopsMoved == null) {
             this.moveBuilder.setTroopsMoved(1);
         }
