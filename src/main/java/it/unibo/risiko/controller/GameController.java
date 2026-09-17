@@ -23,37 +23,59 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * GameController
+ * The Controller for the game part of risiko.
  */
-public class GameController {
+public final class GameController {
 
-    Roster roster;
-    GameMap map;
-    Scene gameGui;
-    History history = new HistoryImpl();
-    PlayerTurn turn;
-    Phase phase;
-    String sourceId;
-    String destinationId;
-    final BooleanProperty ableToBuild = new SimpleBooleanProperty(true); // activate button to commit the action if it can be generated, both this and the army are used to check may be moved
-    final IntegerProperty armyCounter = new SimpleIntegerProperty(0); //to show player how many armies has to place or wants to utilize
-    final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6); // set this to the maximum troops utilizable for the action, limits if action can be launched by controller parameteters
+    private Roster roster;
+    private GameMap map;
+    private Scene gameGui;
+    private History history = new HistoryImpl();
+    private PlayerTurn turn;
+    private Phase phase;
+    private String sourceId;
+    private String destinationId;
+    // activate button to commit the action if it can be generated, both this and the army are used to check may be moved
+    private final BooleanProperty ableToBuild = new SimpleBooleanProperty(true);
+    //to show player how many armies has to place or wants to utilize
+    private final IntegerProperty armyCounter = new SimpleIntegerProperty(0);
+    // set this to the maximum troops utilizable for the action, limits if action can be launched by controller parameteters
+    private final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6);
 
-
-
-    public GameController(final List<PlayerRequest> a) {
+    /**
+     * Default constructor for new game.
+     * 
+     * @param requests players that will play in the game
+     */
+    public GameController(final List<PlayerRequest> requests) {
         try {
             map = MapLoader.loadDefault();
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        this.roster = new RosterImpl(a, map);//Build map before players then the territories must be assigned
+        //Build map before players then the territories must be assigned
+        this.roster = new RosterImpl(requests, map); 
         this.turn = new PlayerTurn(roster);
         this.phase = Phase.SETUP;
     }
 
+    /**
+     * Entry point for javaFx thread.
+     * 
+     * @param stage the stage the gui will be built on
+     */
     public void start(final Stage stage) {
-        this.gameGui = new GameScene(roster,map,history, pairSelected(), getReiforceMap(), getStrenght(), ableToBuild, armyCounter, maxArmyforAction);
+        this.gameGui = new GameScene(
+            roster,
+            map,
+            history,
+            pairSelected(), 
+            getReiforceMap(), 
+            getStrenght(), 
+            ableToBuild, 
+            armyCounter, 
+            maxArmyforAction
+        );
         stage.setScene(gameGui);
     }
 
@@ -74,11 +96,10 @@ public class GameController {
         return new Consumer<>() {
 
             @Override
-            public void accept(Map<String, Integer> t) {
+            public void accept(final Map<String, Integer> t) {
                 // TODO Auto-generated method stub
                 throw new UnsupportedOperationException("Unimplemented method 'accept'");
             }
-            
         };
     }
 
@@ -90,7 +111,6 @@ public class GameController {
                 sourceId = from;
                 destinationId = to;
             }
-            
         };
     }
 
