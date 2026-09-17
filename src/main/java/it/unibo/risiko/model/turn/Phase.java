@@ -16,5 +16,5 @@ public enum Phase {
     ATTACK,
 
     /** End of the turn, you can move armies between your territories. */
-    MOVE
+    MOVE;
 }

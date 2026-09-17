@@ -54,12 +54,12 @@ public enum CardTerritories {
      */
     private final String territoryName;
 
-    // Constructor
+    /* Constructor */
     private CardTerritories(String territoryName) {
         this.territoryName = territoryName;
     }
 
-    // Public Method - Getters
+    /* Public Method - Getters */
     public String getTerritoryName() {
         return territoryName;
     }

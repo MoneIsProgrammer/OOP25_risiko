@@ -27,7 +27,7 @@ public class TerritoriesDeck extends Deck {
         deckTerritoryCards.shuffle();
     }
 
-    /* Getter */
+    /* Getter; Returns all the territory cards in the decks */
     TerritoriesDeck getTerritoriesDeck () {
         return deckTerritoryCards;
     }
