@@ -1,5 +1,6 @@
 package it.unibo.risiko.view;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,6 +24,8 @@ public class ChangingBox extends HBox {
     private final List<Node> attackSetup;
     private final List<Node> reinforceSetup;
     private final BooleanProperty buttonActive = new SimpleBooleanProperty(false);
+    private List<Node> moveSetup;
+    private List<Node> cardSetup;
 
     /**
      * Default constructor.
@@ -63,19 +66,31 @@ public class ChangingBox extends HBox {
         confirmButton.setOnAction(e -> {
             getStrenght.accept(this.counter.get());
             this.counter.set(0);
-            this.change(Phase.REINFORCE); //TODO remove when done
+            advancePhase.run();
         });
-        attackSetup = List.of(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton);
+        attackSetup = List.of(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
 
         final var armies = new Text();
         armies.textProperty().bind(counter.asString());
         final var reinforceButton = new Button("Confirm");
-        reinforceButton.setOnAction(e -> change(Phase.ATTACK)); //TODO Change when done
-        reinforceSetup = List.of(new Text("Armies to place:"), armies, reinforceButton);
+        reinforceButton.setOnAction(e -> {}); //TODO Change when done
+        reinforceSetup = List.of(new Text("Armies to place:"), armies, reinforceButton, doneButton);
 
-        super.getChildren().addAll(attackSetup);
+        moveSetup = List.of(new Text("move"), doneButton);
 
-        addListener.accept(null);
+        cardSetup = List.of(new Text("card"), doneButton);
+
+
+        super.getChildren().addAll(reinforceSetup);
+
+        addListener.accept(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                change((Phase) evt.getNewValue());
+            }
+            
+        });
     }
 
     /**
@@ -86,12 +101,17 @@ public class ChangingBox extends HBox {
     public void change(final Phase phase) { //invoke when phase changes //TODO add all phases
         super.getChildren().clear();
         switch (phase) {
-            case REINFORCE:
+            case REINFORCE, SETUP:
                 super.getChildren().addAll(reinforceSetup);
                 break;
-            default:
+            case ATTACK:
                 super.getChildren().addAll(attackSetup);
                 break;
+            case MOVE:
+                super.getChildren().addAll(moveSetup);
+                break;
+            case PLAYCARDS:
+                super.getChildren().addAll(cardSetup);
         }
     }
 }

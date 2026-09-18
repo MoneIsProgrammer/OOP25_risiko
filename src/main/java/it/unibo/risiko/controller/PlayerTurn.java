@@ -17,7 +17,7 @@ public final class PlayerTurn {
     private boolean setupDone = false;
     private List<Player> playerOrder = new ArrayList<>();
     private int counter = -1;
-    private Phase currentPhase = Phase.SETUP;
+    private Phase currentPhase = Phase.REINFORCE; //TODO change to setup
     private final PropertyChangeSupport phaseChange = new PropertyChangeSupport(this);
 
 

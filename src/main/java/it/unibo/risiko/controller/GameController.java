@@ -30,7 +30,6 @@ public final class GameController {
 
     private Roster roster;
     private GameMap map;
-    private Scene gameGui;
     private History history = new HistoryImpl();
     private PlayerTurn turn;
     private Phase phase;
