@@ -11,14 +11,14 @@ package it.unibo.risiko.model.deck;
 public class TerritoriesDeck extends Deck {
 
     /* Create the deck with all the territory cards */
-    void createTerritoryDeck () {
+    public void createTerritoryDeck () {
         this.populateTerritoryDeck();
         this.shuffle();
     }
 
     /* Add the Jolly cards to the deck that already contains all
     the territory cards */
-    void addJollyTerritoryDeck () {
+    public void addJollyTerritoryDeck () {
         this.addJolly();
         this.shuffle();
     }

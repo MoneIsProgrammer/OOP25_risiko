@@ -7,7 +7,7 @@ import java.util.Random;
 /**
  * This is a super class. It forms the basis of all decks including 
  * territories deck and objectives deck
- * Attributes: cards
+ * Attributes: deck
  * Methods: clear(), add(card), remove(card), shuffle(),
  * dealCard(), dealObjectiveCard(), populateTerritoryDeck(),
  * addJolly(), populateObjectiveDeck()
