@@ -33,6 +33,21 @@ public final class RosterImpl implements Roster {
         }
     }
 
+    /**
+     * Testing constructor, seeds the randoms, less checks for valid inputs.
+     * 
+     * @param players to add
+     * @param map used in the testing
+     * @param debug parameter to differentiate debug from non debug constructor
+     */
+    public RosterImpl(final List<PlayerRequest> players, final GameMap map, final boolean debug) {
+        this.roster = new Registry<>("players");
+        final PlayerFactoryImpl factory = new PlayerFactoryImpl();
+        for (final PlayerRequest request : players) {
+            this.roster.add(factory.generatePlayer(request, this, map, players.size()));
+        }
+    }
+
     @Override
     public Player getPlayer(final String playerId) {
         return this.roster.get(playerId);

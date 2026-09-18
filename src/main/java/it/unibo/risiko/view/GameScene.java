@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import it.unibo.risiko.controller.GameController;
 import it.unibo.risiko.controller.MapClickHandler;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
@@ -22,16 +23,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 /**
  * Scene to interact with the game.
  */
-public class GameScene extends Scene {
+public class GameScene {
     //unused private static final double WINDOW_WIDTH = 1100;
     //unused private static final double WINDOW_HEIGHT = 700;
 
-    private final MapCanvas canvas;
-    private final BorderPane root;
+    private GameController controller;
 
     /**
      * Default constructor.
@@ -47,19 +48,15 @@ public class GameScene extends Scene {
      * @param maxArmyforAction the max of troops that can be used during an action,
      *      or must remain after an action(specifically for reinforce event)
      */
-    public GameScene(final Roster roster,
+    public void start(final Roster roster,
         final GameMap map,
         final History history,
-        final BiConsumer<String, String> getTerritories, 
-        // human player wants a map with terr integer the conversion happens in the controller
-        final Consumer<Map<String, Integer>> getReinforcements,
-        final Consumer<Integer> getStrenght,
-        final BooleanProperty canGenerate,
-        final IntegerProperty armyCounter,
-        final IntegerProperty maxArmyforAction
+        final Stage stage
     ) { //TODO add necessary paramenters for controller view comunication
-        super(new BorderPane());
-        this.root = (BorderPane) this.getRoot();
+        final MapCanvas canvas;
+        final BorderPane root;
+
+        root = new BorderPane();
         try {
             canvas = new MapCanvas(map, MapLayout.loadDefault());
         } catch (final IOException e) {
@@ -76,7 +73,7 @@ public class GameScene extends Scene {
         final var clickHandler = new MapClickHandler(map, mapView);
         mapView.addTerritoryClickListener(clickHandler);
         clickHandler.addChoiceListener((from, to) -> {
-            getTerritories.accept(from, to);
+            controller.getTerritories(from, to);
             // TODO put here the HumanStrategy calls, from and to are the ids of the territories
         });
         // TODO call clickHandler.setTurn when the turn or the phase changes
@@ -92,7 +89,7 @@ public class GameScene extends Scene {
         // TODO register mapView to the game events, redraw it after dealing the territories
         // TODO give the result of every AttackResultEvent to dice.setResult
         final var spacing = 5;
-        final var bottom = new ChangingBox(getStrenght, armyCounter, canGenerate, maxArmyforAction);
+        final var bottom = new ChangingBox(controller.getStrenght, controller.armyCounter, controller.ableToBuild, controller.maxArmyforAction, a -> controller.addListener(a) , () -> controller.advancePhase());
         bottom.setAlignment(Pos.CENTER);
         bottom.setSpacing(spacing);
         box.getChildren().addAll(bottom, new GameLogBox(history));
@@ -103,7 +100,13 @@ public class GameScene extends Scene {
         canvas.heightProperty().bind(container.heightProperty());
         root.setCenter(container);
         root.setRight(box);
+        stage.setScene(new Scene(root));
 
+    }
+
+    public GameScene(GameController controller) {
+        super();
+        this.controller = controller;
     }
 
 }

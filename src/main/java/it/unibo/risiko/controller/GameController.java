@@ -1,5 +1,6 @@
 package it.unibo.risiko.controller;
 
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -29,25 +30,27 @@ public final class GameController {
 
     private Roster roster;
     private GameMap map;
-    private Scene gameGui;
     private History history = new HistoryImpl();
     private PlayerTurn turn;
     private Phase phase;
     private String sourceId;
     private String destinationId;
     // activate button to commit the action if it can be generated, both this and the army are used to check may be moved
-    private final BooleanProperty ableToBuild = new SimpleBooleanProperty(true);
+    public final BooleanProperty ableToBuild = new SimpleBooleanProperty(true);
     //to show player how many armies has to place or wants to utilize
-    private final IntegerProperty armyCounter = new SimpleIntegerProperty(0);
+    public final IntegerProperty armyCounter = new SimpleIntegerProperty(0);
     // set this to the maximum troops utilizable for the action, limits if action can be launched by controller parameteters
-    private final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6);
+    public final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6);
+    public Consumer<Integer> getStrenght;
+    private GameScene view;
+    private Stage stage;
 
     /**
      * Default constructor for new game.
      * 
      * @param requests players that will play in the game
      */
-    public GameController(final List<PlayerRequest> requests) {
+    public GameController(final List<PlayerRequest> requests, Stage stage) {
         try {
             map = MapLoader.loadDefault();
         } catch (final IOException e) {
@@ -57,26 +60,7 @@ public final class GameController {
         this.roster = new RosterImpl(requests, map); 
         this.turn = new PlayerTurn(roster);
         this.phase = Phase.SETUP;
-    }
-
-    /**
-     * Entry point for javaFx thread.
-     * 
-     * @param stage the stage the gui will be built on
-     */
-    public void start(final Stage stage) {
-        this.gameGui = new GameScene(
-            roster,
-            map,
-            history,
-            pairSelected(), 
-            getReiforceMap(), 
-            getStrenght(), 
-            ableToBuild, 
-            armyCounter, 
-            maxArmyforAction
-        );
-        stage.setScene(gameGui);
+        this.stage = stage;
     }
 
     private Consumer<Integer> getStrenght() {
@@ -102,16 +86,22 @@ public final class GameController {
             }
         };
     }
+    
+    public void getTerritories(String to, String from) {
 
-    private BiConsumer<String, String> pairSelected() {
-        return new BiConsumer<>() {
+    }
 
-            @Override
-            public void accept(final String from, final String to) {
-                sourceId = from;
-                destinationId = to;
-            }
-        };
+    public void registerView(GameScene gameScene) {
+        this.view = gameScene;
+        this.view.start(roster, map, history, this.stage);
+    }
+
+    public void advancePhase() {
+        this.turn.advancePhase();
+    }
+
+    public void addListener(PropertyChangeListener listener) {
+        turn.addPropertyChangeListener(listener);
     }
 
 }

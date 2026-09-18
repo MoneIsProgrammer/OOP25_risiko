@@ -90,7 +90,7 @@ public final class AggressiveStrategy implements PlayerStrategy {
         return Optional.of(new MoveEvent(owner,
         source.get(),
         destination.get(),
-        source.get().getArmies() - 1));
+        source.get().getArmies() - 2));
     }
 
     @Override
@@ -98,14 +98,21 @@ public final class AggressiveStrategy implements PlayerStrategy {
         final Map<Territory, Integer> reinforceMap = new HashMap<>();
         final var playerTerritories = map.getTerritoriesOf(owner.getId());
         final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
+        for (final Territory territory : playerTerritories) {
+            reinforceMap.put(territory, territory.getArmies());
+        }
         for (int i = 0; i < armies; i++) {
-            var min = playerTerritories.stream().filter(a -> a.getArmies() < 2).findAny();
+            var min = reinforceMap.entrySet().stream().filter(a -> a.getValue() < 2).findAny();
             if (min.isEmpty()) {
-                min = borders.stream().min(StrategyUtils.TERRITORY_COMPARATOR);
+                min = reinforceMap.entrySet().stream()
+                    .filter(a -> borders.contains(a.getKey()))
+                    .min((a, b) -> Integer.compare(a.getValue(), b.getValue()));
             }
             // sets the number of time a territory is to be reinforced with 1 troop
-            reinforceMap.merge(min.get(), 1, Integer::sum);
+            reinforceMap.merge(min.get().getKey(), 1, Integer::sum);
         }
+        reinforceMap.replaceAll((k, v) -> v - k.getArmies());
+        reinforceMap.entrySet().removeIf(a -> a.getValue() == 0);
         return new ReinforceEvent(owner, reinforceMap);
 
     }
@@ -135,8 +142,7 @@ public final class AggressiveStrategy implements PlayerStrategy {
 
     @Override
     public Optional<CardEvent> playCards(final List<Card> hand, final Player owner) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'playCards'");
+        return StrategyUtils.genericCardPlay(hand, owner, this.map);
     }
 
     @Override

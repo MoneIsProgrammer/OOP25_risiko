@@ -1,0 +1,16 @@
+CONT;test;Test;5;#7FA8D9
+
+TERR;a;A;test;150;200
+TERR;b;B;test;350;200
+TERR;c;C;test;550;200
+TERR;d;D;test;150;400
+TERR;e;E;test;350;400
+TERR;f;F;test;550;400
+
+ADJ;a;b
+ADJ;b;c
+ADJ;a;d
+ADJ;b;e
+ADJ;c;e
+ADJ;d;e
+ADJ;e;f

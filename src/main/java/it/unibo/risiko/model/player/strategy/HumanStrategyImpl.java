@@ -1,6 +1,5 @@
 package it.unibo.risiko.model.player.strategy;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CardBonus;
 import it.unibo.risiko.model.event.AttackEvent;
 import it.unibo.risiko.model.event.CardEvent;
 import it.unibo.risiko.model.event.MoveEvent;
@@ -22,12 +22,13 @@ import it.unibo.risiko.model.player.Roster;
  */
 public final class HumanStrategyImpl implements HumanStrategy {
 
+    public static final String ARMIES = " armies";
     private final Roster roster;
     private final GameMap map;
     private final AttackBuilder attackBuilder = new AttackBuilder();
     private final ReinforceBuilder reinforceBuilder = new ReinforceBuilder();
     private final MoveBuilder moveBuilder = new MoveBuilder();
-    private final CardPlayBuilder cardBuilder = new CardPlayBuilder();
+    private final CardPlayBuilder cardBuilder;
 
     /**
      * @param roster The other players this strategy will refer to
@@ -36,6 +37,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
     public HumanStrategyImpl(final Roster roster, final GameMap map) {
         this.roster = roster;
         this.map = map;
+        cardBuilder = new CardPlayBuilder(map);
     }
 
     @Override
@@ -149,6 +151,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
     }
 
     private final class AttackBuilder {
+        private static final String ARMIES = " armies";
         private Player victim;
         private Integer attackStrenght;
         private Integer defenderStrenght;
@@ -156,10 +159,16 @@ public final class HumanStrategyImpl implements HumanStrategy {
         private Territory destination;
 
         private void setAttackStrenght(final int strength) {
+            if (strength < 1) {
+                throw new IllegalArgumentException("can't attack with " + strength + ARMIES);
+            }
             this.attackStrenght = strength;
         }
 
         private void setDefenderStrenght(final int strength) {
+            if (strength < 1) {
+                throw new IllegalArgumentException("can't defend with " + strength + ARMIES);
+            }
             this.defenderStrenght = strength;
         }
 
@@ -213,6 +222,11 @@ public final class HumanStrategyImpl implements HumanStrategy {
             if (this.reinforceMap == null) {
                 this.reinforceMap = new HashMap<>();
             }
+            for (final int val : reinforcements.values()) {
+                if (val < 1) {
+                    throw new IllegalArgumentException("cant reinforce with " + val + ARMIES);
+                }
+            }
             this.reinforceMap.putAll(reinforcements);
         }
 
@@ -222,7 +236,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
 
         private ReinforceEvent build(final Player owner, final int armies) {
             if (reinforceMap.values().stream().reduce(Integer::sum).get() != armies && canBuild()) {
-                throw new IllegalStateException("The reinforcements can't be different from declared armies");
+                throw new IllegalStateException("The reinforcements can't be different from declared" + ARMIES);
                 //this is a check as i can't check if map is empty due to the minimum reinforce avabile are 0
             }
             final var out = new ReinforceEvent(owner, reinforceMap);
@@ -274,39 +288,41 @@ public final class HumanStrategyImpl implements HumanStrategy {
         }
 
         private void setTroopsMoved(final int troopsMoved) {
+            if (troopsMoved < 1) {
+                throw new IllegalArgumentException("can't move " + troopsMoved + ARMIES);
+            }
             this.troopsMoved = troopsMoved;
         }
     }
 
     private final class CardPlayBuilder {
 
-        private List<Collection<Card>> played;
-        private int armies;
+        private Collection<Card> played;
+        private final CardBonus calc;
+
+        CardPlayBuilder(final GameMap map) {
+            calc = new CardBonus(map);
+        }
 
         private CardEvent build(final Player owner) {
-
+            final var armies = calculateArmies(played, owner);
             final var out = new CardEvent(this.played, owner, armies);
             clear();
             return out;
         }
 
         private void addCombo(final Collection<Card> combo) {
-            if (played == null) {
-                played = new ArrayList<>();
-            }
             if (combo.size() != 3) {
                 throw new IllegalArgumentException("The combo must be of only 3 cards");
             }
-            played.add(combo);
-            calculateArmies();
+            played = List.copyOf(combo);
         }
 
-        private void calculateArmies() {
-            //TODO missing method to get armies from combo
+        private int calculateArmies(final Collection<Card> combo, final Player owner) {
+            return calc.calculateThreeBonus(List.copyOf(combo), owner.getId());
         }
 
         private void clear() {
-            this.armies = 0;
             this.played = null;
         }
 

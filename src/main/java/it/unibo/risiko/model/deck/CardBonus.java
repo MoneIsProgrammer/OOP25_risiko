@@ -3,6 +3,7 @@ package it.unibo.risiko.model.deck;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.Territory;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -59,16 +60,32 @@ public class CardBonus {
         return troopsDeployable;
     }
 
-    public int calculateThreeBonus (ArrayList<Card> setOfCards, String playerId) {
+    public int calculateThreeBonus (List<Card> setOfCards, String playerId) {
         /* Variable to store the number of bonus troops */
         int bonus = 0;
         /**
          * Calculate the number of jolly cards in the set
          */
-        long nJolly = setOfCards.stream().filter(c -> "JOLLY".equals(c.getCardType())).count();
-        long nCannons = setOfCards.stream().filter(c -> "CANNONS".equals(c.getTroop())).count();
-        long nCavalry = setOfCards.stream().filter(c -> "CAVALRY".equals(c.getTroop())).count();
-        long nInfantry = setOfCards.stream().filter(c -> "INFANTRY".equals(c.getTroop())).count();
+        int nJolly = 0;
+        for (Card card : setOfCards) {
+            if (card.getCardType().equals(CardType.JOLLY.getCardType())) {
+                nJolly++;
+            }
+        }
+        int nCannons = 0;
+        int nCavalry = 0;
+        int nInfantry = 0;
+        for (Card card : setOfCards) {
+            if (card.getCardType().equals(CardType.TERRITORY.getCardType())) {
+                if (card.getTroop().equals(CardTroops.CANNONS.getTroopName())) {
+                    nCannons++;
+                } else if (card.getTroop().equals(CardTroops.CAVALRY.getTroopName())) {
+                    nCavalry++;
+                } else if (card.getTroop().equals(CardTroops.INFANTRY.getTroopName())) {
+                    nInfantry++;
+                }
+            }
+        }
 
         /* If the number of jolly cards is more than one, return 0 */
         if (nJolly > 1) {
@@ -111,7 +128,7 @@ public class CardBonus {
      * represented on the cards, as each territory present on the cards and occupied by the 
      * player, grants two extra troops
      */
-    int checkTerritory(String playerId, ArrayList<Card> setOfCards) {
+    int checkTerritory(String playerId, List<Card> setOfCards) {
         int reinforcements = 0;
         /* Gets a collection of all the territories occupied by the player */
         Set<Territory> territoriesOccupied = this.map.getTerritoriesOf(playerId);

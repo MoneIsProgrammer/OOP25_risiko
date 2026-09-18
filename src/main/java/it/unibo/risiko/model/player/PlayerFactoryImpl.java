@@ -29,6 +29,30 @@ public final class PlayerFactoryImpl implements PlayerFactory {
         startingForces(players));
     }
 
+    /**
+     * Generate player but the randoms all have same seed, useful for debug purposes.
+     * 
+     * @param playerRequest same as default
+     * @param roster same as default
+     * @param map same as default
+     * @param players same as default
+     * @return same as default
+     */
+    public Player generateSeededRandom(
+        final PlayerRequest playerRequest,
+        final Roster roster, 
+        final GameMap map, 
+        final int players
+    ) {
+        if (playerRequest.ai() == PlayerStrategyRequest.RANDOM) {
+            return new PlayerImpl(playerRequest.color(), 
+            playerRequest.name(), 
+            new RandomStrategy(roster, map, 10), 
+            startingForces(players));
+        }
+        return generatePlayer(playerRequest, roster, map, players);
+    }
+
     private int startingForces(final int n) {
         if (n < MIN_PLAYERS || n > MAX_PLAYERS) {
             throw new IllegalArgumentException("players are not between 3 and 6 inclusive");
