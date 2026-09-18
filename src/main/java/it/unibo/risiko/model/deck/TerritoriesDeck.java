@@ -12,24 +12,23 @@ public class TerritoriesDeck extends Deck {
 
     /** This deck will be the collection of all the territory cards,
     with eventually added Jolly cards after the Preparation Phase **/
-    TerritoriesDeck deckTerritoryCards = new TerritoriesDeck();
 
     /* Create the deck with all the territory cards */
     void createTerritoryDeck () {
-        deckTerritoryCards.populateTerritoryDeck();
-        deckTerritoryCards.shuffle();
+        this.populateTerritoryDeck();
+        this.shuffle();
     }
 
     /* Add the Jolly cards to the deck that already contains all
     the territory cards */
     void addJollyTerritoryDeck () {
-        deckTerritoryCards.addJolly();
-        deckTerritoryCards.shuffle();
+        this.addJolly();
+        this.shuffle();
     }
 
     /* Getter; Returns all the territory cards in the decks */
     TerritoriesDeck getTerritoriesDeck () {
-        return deckTerritoryCards;
+        return this;
     }
     
 }

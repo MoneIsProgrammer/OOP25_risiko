@@ -65,10 +65,26 @@ public class CardBonus {
         /**
          * Calculate the number of jolly cards in the set
          */
-        long nJolly = setOfCards.stream().filter(c -> "JOLLY".equals(c.getCardType())).count();
-        long nCannons = setOfCards.stream().filter(c -> "CANNONS".equals(c.getTroop())).count();
-        long nCavalry = setOfCards.stream().filter(c -> "CAVALRY".equals(c.getTroop())).count();
-        long nInfantry = setOfCards.stream().filter(c -> "INFANTRY".equals(c.getTroop())).count();
+        int nJolly = 0;
+        for (Card card : setOfCards) {
+            if (card.getCardType().equals(CardType.JOLLY.getCardType())) {
+                nJolly++;
+            }
+        }
+        int nCannons = 0;
+        int nCavalry = 0;
+        int nInfantry = 0;
+        for (Card card : setOfCards) {
+            if (card.getCardType().equals(CardType.TERRITORY.getCardType())) {
+                if (card.getTroop().equals(CardTroops.CANNONS.getTroopName())) {
+                    nCannons++;
+                } else if (card.getTroop().equals(CardTroops.CAVALRY.getTroopName())) {
+                    nCavalry++;
+                } else if (card.getTroop().equals(CardTroops.INFANTRY.getTroopName())) {
+                    nInfantry++;
+                }
+            }
+        }
 
         /* If the number of jolly cards is more than one, return 0 */
         if (nJolly > 1) {

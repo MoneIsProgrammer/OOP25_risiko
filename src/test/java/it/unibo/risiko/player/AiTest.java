@@ -2,6 +2,7 @@ package it.unibo.risiko.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,6 +20,11 @@ import it.unibo.risiko.model.player.PlayerRequest;
 import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
+import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CardTerritories;
+import it.unibo.risiko.model.deck.CardTroops;
+import it.unibo.risiko.model.deck.CardType;
+import it.unibo.risiko.model.deck.TerritoriesDeck;
 
 /**
  * Test the 3 types of ai.
@@ -221,11 +227,32 @@ final class AiTest {
         assertNotEquals(reinforce2.reinforcement(), reinforce.reinforcement());
 
         final var move = this.random.move();
-        final int expected = 6;
+        final int expected = 2;
         assertEquals(expected, move.get().troopsMoved());
-        assertEquals(A_ID, move.get().destinationTerritory().getId());
-        assertEquals(D_ID, move.get().sourceTerritory().getId());
+        assertEquals(E_ID, move.get().sourceTerritory().getId());
+        assertEquals(D_ID, move.get().destinationTerritory().getId());
         final var move2 = this.random.move();
         assertNotEquals(move, move2);
+    }
+
+    @Test void cardTest() {
+        TerritoriesDeck deck = new TerritoriesDeck();
+        this.defensive.addCard(new Card());
+        var cardPlay = this.defensive.playCard();
+        assertEquals(Optional.empty(), cardPlay);
+        this.defensive.addCard(new Card(CardTerritories.AFGHANISTAN, CardTroops.CAVALRY));
+        cardPlay = this.defensive.playCard();
+        assertEquals(Optional.empty(), cardPlay);
+        this.defensive.addCard(new Card(CardTerritories.CHILE, CardTroops.CANNONS));
+        cardPlay = this.defensive.playCard();
+        assertEquals(Optional.empty(), cardPlay);
+        this.defensive.addCard(new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY));
+        cardPlay = this.defensive.playCard();
+        assertNotEquals(Optional.empty(), cardPlay);
+        assertEquals(10, cardPlay.get().gainedArmies());
+        this.defensive.addCard(new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY));
+        cardPlay = this.defensive.playCard();
+        assertNotEquals(Optional.empty(), cardPlay);
+        assertEquals(12, cardPlay.get().gainedArmies());
     }
 }
