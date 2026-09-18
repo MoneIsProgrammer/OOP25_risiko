@@ -85,6 +85,22 @@ public interface Player extends Identifiable {
     void setArmies(int armies);
 
     /**
+     * Setter for the player's objective
+     */
+    void setObjective(Card objective);
+
+    /**
+     * Setter for new objective
+     * If the objective of the player is one of the objectives 
+     * where they have to eliminate a certain color troop but 
+     * cannot do so as the said color troop does not exist or 
+     * is the color of the player's own troop or has been 
+     * eliminated by another player, a new objective is set.
+     * This new objective is always "conquer 24 territories"
+     */
+    void setNewObjective();
+
+    /**
      * Used to get the {@link Cards} to play to get additional reinforcements.
      * 
      * @return an {@link Optional} containing the event if it can be generated, {@link Optional#empty()} otherwise
@@ -115,4 +131,10 @@ public interface Player extends Identifiable {
      */
     List<Card> getHand();
 
+    /**
+     * Gets the player's objective.
+     * 
+     * @return A card that contains the description of the player's objective
+     */
+    Card getObjective();
 }

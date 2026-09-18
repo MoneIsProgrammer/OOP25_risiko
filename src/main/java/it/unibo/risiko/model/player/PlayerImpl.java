@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CardObjectives;
 import it.unibo.risiko.model.event.AttackEvent;
 import it.unibo.risiko.model.event.CardEvent;
 import it.unibo.risiko.model.event.MoveEvent;
@@ -22,6 +23,7 @@ public final class PlayerImpl implements Player {
     private final String id;
     private int reinforces;
     private final List<Card> hand = new ArrayList<>();
+    private Card objective;
 
     /**
      * Can only be created from {@link PlayerFactory} following a request.
@@ -31,12 +33,13 @@ public final class PlayerImpl implements Player {
      * @param strategy  strategy that this player will use during its turns
      * @param startingForces the number of armies in the setup phase
      */
-    protected PlayerImpl(final RisikoColors color, final String name, final PlayerStrategy strategy, final int startingForces) {
+    protected PlayerImpl(final RisikoColors color, final String name, final PlayerStrategy strategy, final int startingForces, final Card objective) {
         this.name = name;
         this.strategy = strategy;
         this.color = color;
         this.id = color + name;
         this.reinforces = startingForces;
+        this.objective = objective;
     }
 
     @Override
@@ -109,6 +112,19 @@ public final class PlayerImpl implements Player {
     @Override
     public void setArmies(final int armies) {
         this.reinforces = armies;
+    }
+
+    public void setObjective(Card objective) {
+        this.objective = objective;
+    }
+
+    @Override 
+    public Card getObjective() {
+        return this.objective;
+    }
+
+    public void setNewObjective() {
+        this.objective = new Card(CardObjectives.OBJECTIVEX);
     }
 
 }

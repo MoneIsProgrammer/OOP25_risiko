@@ -38,6 +38,6 @@ public enum CardObjectives {
 
     // Getter
     public String getObjectiveDescription () {
-        return objectiveDescription;
+        return this.objectiveDescription;
     }
 }
