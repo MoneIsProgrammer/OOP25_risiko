@@ -1,15 +1,16 @@
 package it.unibo.risiko.model.deck;
 
-import it.unibo.risiko.model.map.*;
+import it.unibo.risiko.model.map.GameMap;
+import it.unibo.risiko.model.map.Territory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-    /**
-     * CardStrategy contains the method:
-     * bonusReinforcements, returns the number of troops a player can 
-     * deploy as reinforcements
-     */
+/**
+ * CardBonus contains the method:
+ * bonusReinforcements, returns the number of troops a player can 
+ * deploy as reinforcements
+ */
 public class CardBonus {
     String troopname;   
     

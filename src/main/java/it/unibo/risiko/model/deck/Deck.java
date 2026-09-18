@@ -8,7 +8,9 @@ import java.util.Random;
  * This is a super class. It forms the basis of all decks including 
  * territories deck and objectives deck
  * Attributes: cards
- * Methods: clear(), add(card), remove(card), shuffle()
+ * Methods: clear(), add(card), remove(card), shuffle(),
+ * dealCard(), dealObjectiveCard(), populateTerritoryDeck(),
+ * addJolly(), populateObjectiveDeck()
  */
 public class Deck {
     /**
@@ -22,14 +24,30 @@ public class Deck {
     private final Random random = new Random();
     /**
      * cardsUsed is a variable used to keep track of the number of cards
-     * that have been dealt from the deck
+     * that have been dealt from the territory deck
      */
     private int cardsUsed = 0;
 
-    /** deckLength helps calculate the length of the deck, for when we need 
-     * to deal cards
+    /**
+     * objectiveCardsUsed keeps track of the number of objective cards 
+     * that have been dealt from the objective deck
      */
-    int deckLength;
+    private int objectiveCardsUsed = 0;
+
+    /** deckLength helps calculate the length of the territory deck, for 
+     * when we need to deal cards
+     */
+    private int deckLength = 0;
+
+    /** 
+     * objectiveDeckLength helps calculate the length of the objectives deck, 
+     * for when we need to deal objective cards
+     */
+    private int objectiveDeckLength = 0;
+
+    /** can aka cannon, cav aka cavalry, inf aka infantry are variables used 
+     * as counters for populating the territory deck
+     */
     int can = 0, cav = 0, inf = 0;
 
     /* Constructor */
@@ -50,14 +68,6 @@ public class Deck {
     /* To remove a card from a hand */
     public void remove(Card card) {
         deck.remove(card);
-    }
-
-    /**
-     * @return returns true if the deck is empty, 
-     * false if it is not empty
-     */
-    public boolean isEmpty() {
-        return this.isEmpty();
     }
 
     /**
@@ -92,13 +102,39 @@ public class Deck {
         return card;
     }
 
-    /* To shuffle the cards in the territory deck */
+    /**
+     * Everytime the dealObjectiveCard method is called, it check whether
+     * all the cards have been used by comparing the number of cards used 
+     * to the length of the deck
+     */
+    public Card dealObjectiveCard() {
+        if (objectiveCardsUsed == objectiveDeckLength) {
+            this.populateObjectiveDeck();
+            this.shuffle();
+            objectiveCardsUsed = 0;
+        }
+        /**
+         * index: using the random variable from the Random class
+         * it gets a random number between 0 and 14 (not included)
+         */
+        int index = random.nextInt(deck.size());
+        Card card = this.deck.get(index);
+        remove(card);
+        objectiveCardsUsed++;
+        return card;
+    }
+
+    /* To shuffle the cards in a deck */
     public void shuffle() {
         Collections.shuffle(this.deck);
     }
 
     /* Function that returns a random value from the enum CardTroops */
     CardTroops getRandomTroop() {
+        /** Given that the deck needs to have 14 cards per troop, we'll
+         * first return 14 cannon troops, then 14 cavalry troops, 
+         * then 14 infantry troops
+         */
         if (can < 14) {
             can++;
             return CardTroops.CANNONS;
@@ -152,5 +188,6 @@ public class Deck {
             Card card = new Card(objectiveDescription);
             this.add(card);
         }
+        objectiveDeckLength = deck.size();
     }
 }

@@ -10,9 +10,6 @@ package it.unibo.risiko.model.deck;
  **/
 public class TerritoriesDeck extends Deck {
 
-    /** This deck will be the collection of all the territory cards,
-    with eventually added Jolly cards after the Preparation Phase **/
-
     /* Create the deck with all the territory cards */
     void createTerritoryDeck () {
         this.populateTerritoryDeck();
@@ -24,11 +21,6 @@ public class TerritoriesDeck extends Deck {
     void addJollyTerritoryDeck () {
         this.addJolly();
         this.shuffle();
-    }
-
-    /* Getter; Returns all the territory cards in the decks */
-    TerritoriesDeck getTerritoriesDeck () {
-        return this;
     }
     
 }
