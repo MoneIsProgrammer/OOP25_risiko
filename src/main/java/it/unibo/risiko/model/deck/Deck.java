@@ -10,51 +10,127 @@ import java.util.Random;
  * Attributes: cards
  * Methods: clear(), add(card), remove(card), shuffle()
  */
-public class Deck { //TODO Forse mancano metodi per ripopolare il deck dopo che è finito con le carte già giocate
-    private ArrayList<Card> cards;
+public class Deck {
+    /**
+     * deck is a list of all the cards inside the array list
+     */
+    private ArrayList<Card> deck;
+    /**
+     * In order to not create a new object everytime we need a random number,
+     * we'll use this random number generator
+     */
     private final Random random = new Random();
+    /**
+     * cardsUsed is a variable used to keep track of the number of cards
+     * that have been dealt from the deck
+     */
+    private int cardsUsed = 0;
+
+    /** deckLength helps calculate the length of the deck, for when we need 
+     * to deal cards
+     */
+    int deckLength;
+    int can = 0, cav = 0, inf = 0;
 
     /* Constructor */
     public Deck() {
-        cards = new ArrayList<Card>();
+        deck = new ArrayList<Card>();
     }
 
-    /*  To clear the hand and the cards in hand */
+    /*  To clear the hand and the cards in deck */
     public void clear() {
-        cards.clear();
+        deck.clear();
     }
 
-    /* To add a card to a hand*/
+    /* To add a card to a deck */
     public void add(Card card) {
-        cards.add(card);
+        deck.add(card);
     }
 
     /* To remove a card from a hand */
     public void remove(Card card) {
-        cards.remove(card);
+        deck.remove(card);
     }
 
-    /* To shuffle the cards */
+    /**
+     * @return returns true if the deck is empty, 
+     * false if it is not empty
+     */
+    public boolean isEmpty() {
+        return this.isEmpty();
+    }
+
+    /**
+     * dealCard is a method that deals a random card, if all 
+     * the cards in the deck have already been dealt, it 
+     * re-populates the deck.
+     * @return returns a random card from the deck
+     * The card that is dealt, gets removed from the deck 
+     * using the remove() method. The reference of the object 
+     * is removed and then eventually the memory allocated for 
+     * the object is freed thanks to the garbage collector.
+     */
+    public Card dealCard() {
+        /**
+         * Everytime the dealCard method is called, it checks 
+         * whether all the cards have been used by comparing 
+         * the number of cards used to the length of the deck
+         */
+        if (cardsUsed == deckLength) {
+            this.populateTerritoryDeck();
+            this.addJolly();
+            this.shuffle();
+            cardsUsed = 0;
+        }
+        /**
+         * index: Using the random variable from the Random class,
+        it gets a random number between 0 and 42 (not included) */
+        int index = random.nextInt(deck.size());
+        Card card = this.deck.get(index);
+        remove(card);
+        cardsUsed++;
+        return card;
+    }
+
+    /* To shuffle the cards in the territory deck */
     public void shuffle() {
-        Collections.shuffle(this.cards);
+        Collections.shuffle(this.deck);
     }
 
     /* Function that returns a random value from the enum CardTroops */
     CardTroops getRandomTroop() {
-        return (CardTroops.values()[random.nextInt(CardTroops.values().length)]);
+        if (can < 14) {
+            can++;
+            return CardTroops.CANNONS;
+        } else if (cav < 14) {
+            cav++;
+            return CardTroops.CAVALRY;
+        } else {
+            inf++;
+            return CardTroops.INFANTRY;
+        }
     }
 
-    /* In order to populate our deck, we don't need any values, 
-    so this is a void method */
+    /* Populates the deck by creating 42 cards with 3 troops*14 territories i.e.
+    each troop has 14 territories associated */
     public void populateTerritoryDeck() {
+        /**
+         * territoriesForTroop helps evenly divide the number of territories per troop
+        */
+        int territoriesForTroop = CardTerritories.values().length / CardTroops.values().length;
         /* To populate, we're going to loop through all of our 
-        territories and for each territory we'll add a random troop 
-        using the getRandomTroop() */
-        for (CardTerritories territoryName: CardTerritories.values()) { //TODO se ho capito bene questo potrebbe creare tutte e 42 le carte con la stessa truppa quando dovrebbero essere 14 per truppa
-                Card card = new Card(territoryName, getRandomTroop());
+        troops and for each troop we'll add 14 territories */
+        for (CardTroops troopsName: CardTroops.values()) {
+            for (int i = 0; i < territoriesForTroop; i++) {
+                Card card = new Card(CardTerritories.values()[i++], troopsName);
                 /* Here "this" refers to each individual deck we create */
                 this.add(card);
+            }
         }
+        /** Now that the card has been populated
+         * we'll update the length of the deck
+         */
+        deckLength = deck.size();
     }
 
     /* Adds two jolly cards to our territories deck */
@@ -65,6 +141,9 @@ public class Deck { //TODO Forse mancano metodi per ripopolare il deck dopo che 
         Card cj2 = new Card();
         this.add(cj1);
         this.add(cj2);
+        /** Now that more cards have been added, we'll update the length 
+         * of the deck */
+        deckLength = deck.size();
     }
 
     /* Populate the objectives deck */

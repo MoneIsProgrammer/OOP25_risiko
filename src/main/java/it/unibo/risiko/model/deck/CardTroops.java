@@ -11,12 +11,12 @@ public enum CardTroops {
 
     private final String troopsName;
 
-    // Constructor
+    /* Constructor */
     private CardTroops(String troopsName) {
         this.troopsName = troopsName;
     }
 
-    // Getter
+    /* Getter */
     public String getTroopName() {
         return troopsName;
     }
