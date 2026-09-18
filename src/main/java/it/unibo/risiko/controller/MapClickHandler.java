@@ -38,19 +38,27 @@ public final class MapClickHandler implements TerritoryClickListener {
     }
 
     /**
-     * Sets the player and the phase of the turn.
+     * Says who is playing now.
      *
      * @param playerId id of the player
-     * @param phase the phase
      */
-    public void setTurn(final String playerId, final Phase phase) {
+    public void setPlayer(final String playerId) {
         this.currentPlayer = playerId;
+        clear();
+    }
+
+    /**
+     * Says the phase, the clicks work only in the attack and in the move.
+     *
+     * @param phase the phase of the turn
+     */
+    public void setPhase(final Phase phase) {
         this.currentPhase = phase;
         clear();
     }
 
     /**
-     * Clicks do nothing until the next turn, for example while a bot plays.
+     * Clicks do nothing until the next player is set, for example while a bot plays.
      */
     public void ignoreClicks() {
         this.currentPlayer = null;
