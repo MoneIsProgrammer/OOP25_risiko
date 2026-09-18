@@ -9,7 +9,7 @@ public enum Phase {
     /** Start of the game, everyone places their first armies. */
     SETUP,
 
-    /*play cards before reinforcing*/
+    /** Before the reinforcement, you can play a set of cards. */
     PLAYCARDS,
 
     /** Start of the turn, you place your new armies. */
@@ -19,6 +19,5 @@ public enum Phase {
     ATTACK,
 
     /** End of the turn, you can move armies between your territories. */
-    MOVE;
-    
+    MOVE
 }
