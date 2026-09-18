@@ -1,5 +1,7 @@
 package it.unibo.risiko.controller;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +18,8 @@ public final class PlayerTurn {
     private List<Player> playerOrder = new ArrayList<>();
     private int counter = -1;
     private Phase currentPhase;
+    private final PropertyChangeSupport phaseChange = new PropertyChangeSupport(this);
+
 
     /**
      * Default constructor, already shuffles the players.
@@ -57,7 +61,7 @@ public final class PlayerTurn {
     }
 
     /**
-     * Advaces to the next phase.
+     * Advaces to the next phase,and notifies listeners.
      */
     public void advancePhase() {
         switch (currentPhase) {
@@ -77,12 +81,14 @@ public final class PlayerTurn {
     }
 
     /**
-     * Sets the current game phase.
+     * Sets the current game phase, and notifies listeners.
      * 
      * @param phase the new phase
      */
     public void setPhase(Phase phase) {
+        var old = this.currentPhase;
         this.currentPhase = phase;
+        phaseChange.firePropertyChange("phase", old, this.currentPhase);
     }
 
     /**
@@ -94,8 +100,15 @@ public final class PlayerTurn {
         return this.currentPhase;
     }
 
+    /**
+     * Finishes the setup and lets turn procede
+     */
     public void setupFinished() {
         setPhase(Phase.PLAYCARDS);
         setupDone = true;
+    }
+
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+        phaseChange.addPropertyChangeListener(listener);
     }
 }

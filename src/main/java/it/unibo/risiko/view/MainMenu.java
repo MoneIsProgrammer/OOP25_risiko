@@ -36,8 +36,8 @@ public final class MainMenu extends Application {
      */
     public EventHandler<ActionEvent> newGame() {
         return e -> mainStage.setScene(new PlayerSelectScene(a -> {
-            final var game = new GameController(a);
-            game.start(mainStage);
+            final var game = new GameController(a, mainStage);
+            game.registerView(new GameScene(game));
         }));
     }
 }

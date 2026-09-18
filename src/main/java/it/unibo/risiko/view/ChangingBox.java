@@ -1,5 +1,6 @@
 package it.unibo.risiko.view;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -30,24 +31,33 @@ public class ChangingBox extends HBox {
      * @param counter Tracks the number of armies the player has to use or wants to use
      * @param canGenerate if the controller allows to generate an action
      * @param maxArmyforAction the number of troops the players can utilize
+     * @param advancePhase 
      */
     public ChangingBox(
         final Consumer<Integer> getStrenght,
         final IntegerProperty counter, 
         final BooleanProperty canGenerate, 
-        final IntegerProperty maxArmyforAction
+        final IntegerProperty maxArmyforAction,
+        final Consumer<PropertyChangeListener> addListener,
+        final Runnable advancePhase
     ) {
         super();
         this.counter = counter;
         buttonActive.bind(canGenerate.and(counter.greaterThan(-1).and(counter.lessThanOrEqualTo(maxArmyforAction))));
+
+        final var doneButton = new Button("done");
+        doneButton.setOnAction(e -> advancePhase.run());
+
         final var addButton = new Button("+");
         addButton.setOnAction(e -> this.counter.set(this.counter.get() + 1));
+
         final var subtractButton = new Button("-");
         subtractButton.setOnAction(e -> {
             this.counter.set(this.counter.get() - 1);
         });
         final var armiesCounter = new Text();
         armiesCounter.textProperty().bind(counter.asString());
+
         final var confirmButton = new Button("confirm");
         confirmButton.disableProperty().bind(buttonActive.not());
         confirmButton.setOnAction(e -> {
@@ -64,6 +74,8 @@ public class ChangingBox extends HBox {
         reinforceSetup = List.of(new Text("Armies to place:"), armies, reinforceButton);
 
         super.getChildren().addAll(attackSetup);
+
+        addListener.accept(null);
     }
 
     /**
