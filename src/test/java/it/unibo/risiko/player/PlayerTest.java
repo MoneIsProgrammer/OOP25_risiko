@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CardTerritories;
+import it.unibo.risiko.model.deck.CardTroops;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.MapLoader;
 import it.unibo.risiko.model.player.Player;
@@ -177,9 +181,7 @@ final class PlayerTest {
         assertEquals(MONGOLIA_ID, move.sourceTerritory().getId());
         assertEquals(this.map.getTerritory(INDONESIA_ID), move.destinationTerritory());
         assertEquals(1, move.troopsMoved());
-
     }
-    //TODO missing card test
 
     @Test void incorrectHumanMove() {
         final Player human = roster.getPlayer(RisikoColors.BLACK).get();
@@ -193,6 +195,30 @@ final class PlayerTest {
         assertThrows(IllegalArgumentException.class, () -> interactive.reinforce(Map.of(this.map.getTerritory(INDONESIA_ID), 0)));
         assertThrows(NullPointerException.class, () -> interactive.reinforce(Map.of(null, 0)));
         assertThrows(NullPointerException.class, () -> interactive.reinforce(Map.of(null, 2)));
+    }
+
+    @Test void cardTest() {
+        final Player human = roster.getPlayer(RisikoColors.BLACK).get();
+        final HumanStrategy interactive = (HumanStrategy) human.getStrategy();
+        assertThrows(IllegalArgumentException.class, () -> interactive.cardsToPlay(List.of(
+            new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY),
+            new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY),
+            new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY),
+            new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY)
+        )));
+        interactive.cardsToPlay(List.of(
+            new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY),
+            new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY),
+            new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY)
+        ));
+        assertTrue(interactive.canPlayCards());
+        assertEquals(6, interactive.playCards(null, human).get().gainedArmies()); //null is leftovers of ai methods doesn't use hand
+        interactive.cardsToPlay(List.of(
+            new Card(CardTerritories.NEWGUINEA, CardTroops.CANNONS),
+            new Card(CardTerritories.NEWGUINEA, CardTroops.CAVALRY),
+            new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY)
+        ));
+        assertEquals(10, interactive.playCards(null, human).get().gainedArmies()); //null is leftovers of ai methods doesn't use hand
     }
 
     @Test void flushTest() {

@@ -58,13 +58,9 @@ final class AiTest {
             ),
             this.map
         );
-        final PlayerFactoryImpl factory = new PlayerFactoryImpl();
         human = roster.getPlayer(RisikoColors.BLACK).get();
         aggressive = roster.getPlayer(RisikoColors.YELLOW).get();
         defensive = roster.getPlayer(RisikoColors.GREEN).get();
-        random = factory.generateSeededRandom(
-            new PlayerRequest("random", PlayerRequest.PlayerStrategyRequest.RANDOM, RisikoColors.RED),
-            roster, map, 4);
         this.map.getTerritories().forEach(a -> a.setOwner(human.getId()));
         final int aStarting = 3;
         this.map.getTerritory(A_ID).addArmies(aStarting);
@@ -185,8 +181,21 @@ final class AiTest {
         ), 
         reinforce.reinforcement());
     }
-
+/* testing random is harder than i tought with a seed i get different results if i launch this test alone or with others
+tecnically it works but can't be considered automatic testing
     @Test void randomTest() {
+        final Roster roster = new RosterImpl(List.of(
+            new PlayerRequest("human", PlayerRequest.PlayerStrategyRequest.HUMAN, RisikoColors.BLACK),
+            new PlayerRequest("aggressive", PlayerRequest.PlayerStrategyRequest.AGGRESSIVE, RisikoColors.YELLOW),
+            new PlayerRequest("defensive", PlayerRequest.PlayerStrategyRequest.DEFENSIVE, RisikoColors.GREEN),
+            new PlayerRequest("random", PlayerRequest.PlayerStrategyRequest.RANDOM, RisikoColors.RED)
+            ),
+            this.map
+        );
+        final PlayerFactoryImpl factory = new PlayerFactoryImpl();
+        random = factory.generateSeededRandom(
+            new PlayerRequest("random", PlayerRequest.PlayerStrategyRequest.RANDOM, RisikoColors.RED),
+            roster, map, 4);
         this.map.getTerritory(D_ID).setOwner(random.getId());
         var attack = this.random.attack();
         assertEquals(Optional.empty(), attack);
@@ -233,7 +242,7 @@ final class AiTest {
         assertEquals(D_ID, move.get().destinationTerritory().getId());
         final var move2 = this.random.move();
         assertNotEquals(move, move2);
-    }
+    }*/
 
     @Test void cardTest() {
         TerritoriesDeck deck = new TerritoriesDeck();

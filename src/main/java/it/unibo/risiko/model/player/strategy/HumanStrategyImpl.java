@@ -28,7 +28,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
     private final AttackBuilder attackBuilder = new AttackBuilder();
     private final ReinforceBuilder reinforceBuilder = new ReinforceBuilder();
     private final MoveBuilder moveBuilder = new MoveBuilder();
-    private final CardPlayBuilder cardBuilder = new CardPlayBuilder();
+    private final CardPlayBuilder cardBuilder;
 
     /**
      * @param roster The other players this strategy will refer to
@@ -37,6 +37,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
     public HumanStrategyImpl(final Roster roster, final GameMap map) {
         this.roster = roster;
         this.map = map;
+        cardBuilder = new CardPlayBuilder(map);
     }
 
     @Override
@@ -297,7 +298,11 @@ public final class HumanStrategyImpl implements HumanStrategy {
 
         private Collection<Card> played;
         private int armies;
-        private CardBonus calc = new CardBonus(map);
+        private CardBonus calc;
+
+        public CardPlayBuilder(GameMap map) {
+            calc = new CardBonus(map);
+        }
 
         private CardEvent build(final Player owner) {
             armies = calculateArmies(played, owner);
