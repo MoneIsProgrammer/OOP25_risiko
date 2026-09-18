@@ -2,6 +2,7 @@ package it.unibo.risiko.model.deck;
 
 import it.unibo.risiko.model.map.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
     /**
@@ -58,7 +59,7 @@ public class CardBonus {
         return troopsDeployable;
     }
 
-    public int calculateThreeBonus (ArrayList<Card> setOfCards, String playerId) {
+    public int calculateThreeBonus (List<Card> setOfCards, String playerId) {
         /* Variable to store the number of bonus troops */
         int bonus = 0;
         /**
@@ -110,7 +111,7 @@ public class CardBonus {
      * represented on the cards, as each territory present on the cards and occupied by the 
      * player, grants two extra troops
      */
-    int checkTerritory(String playerId, ArrayList<Card> setOfCards) {
+    int checkTerritory(String playerId, List<Card> setOfCards) {
         int reinforcements = 0;
         /* Gets a collection of all the territories occupied by the player */
         Set<Territory> territoriesOccupied = this.map.getTerritoriesOf(playerId);

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CardBonus;
 import it.unibo.risiko.model.event.AttackEvent;
 import it.unibo.risiko.model.event.CardEvent;
 import it.unibo.risiko.model.event.MoveEvent;
@@ -294,29 +295,27 @@ public final class HumanStrategyImpl implements HumanStrategy {
 
     private final class CardPlayBuilder {
 
-        private List<Collection<Card>> played;
+        private Collection<Card> played;
         private int armies;
+        private CardBonus calc = new CardBonus(map);
 
         private CardEvent build(final Player owner) {
-
+            armies = calculateArmies(played, owner);
             final var out = new CardEvent(this.played, owner, armies);
             clear();
             return out;
         }
 
         private void addCombo(final Collection<Card> combo) {
-            if (played == null) {
-                played = new ArrayList<>();
-            }
             if (combo.size() != 3) {
                 throw new IllegalArgumentException("The combo must be of only 3 cards");
             }
-            played.add(combo);
-            calculateArmies();
+            played = List.copyOf(combo);
         }
 
-        private void calculateArmies() {
-            //TODO missing method to get armies from combo
+        private int calculateArmies(Collection<Card> combo, Player owner) {
+            var armies = calc.calculateThreeBonus(List.copyOf(combo), owner.getId());
+            return armies;
         }
 
         private void clear() {

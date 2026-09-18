@@ -1,5 +1,6 @@
 package it.unibo.risiko.model.player.strategy.ai;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,8 +141,7 @@ public final class AggressiveStrategy implements PlayerStrategy {
 
     @Override
     public Optional<CardEvent> playCards(final List<Card> hand, final Player owner) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'playCards'");
+        return StrategyUtils.genericCardPlay(hand,owner,this.map);
     }
 
     @Override

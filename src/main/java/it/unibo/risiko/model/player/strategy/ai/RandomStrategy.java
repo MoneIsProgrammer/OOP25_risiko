@@ -112,8 +112,7 @@ public final class RandomStrategy implements PlayerStrategy {
 
     @Override
     public Optional<CardEvent> playCards(final List<Card> hand, final Player owner) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'playCards'");
+        return StrategyUtils.genericCardPlay(hand, owner, map);
     }
 
     @Override

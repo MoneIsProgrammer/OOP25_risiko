@@ -1,11 +1,18 @@
 package it.unibo.risiko.model.player.strategy;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.event.CardEvent;
 import it.unibo.risiko.model.map.GameMap;
+import it.unibo.risiko.model.deck.CardBonus;
 import it.unibo.risiko.model.map.Territory;
+import it.unibo.risiko.model.player.Player;
 
 /**
  * Utilities for Strategy implementation.
@@ -66,5 +73,31 @@ public final class StrategyUtils {
         }
     }
         return counter >= 3;
+    }
+
+    public static Optional<CardEvent> genericCardPlay(List<Card> hand, Player owner, GameMap map) {
+        Collection<Card> best = null;
+        int value = 0;
+        CardBonus calc = new CardBonus(map);
+        if (hand.size() < 3) {
+            return Optional.empty();
+        }
+        for (int i = 0; i < hand.size(); i++) { //stolen from https://www.cs.cornell.edu/courses/cs1112/2011sp/Notes/egL20/L20post.pdf?
+            for (int j = i + 1; j < hand.size(); j++) {
+                for (int z = j + 1; z < hand.size(); z++) {
+                    var combination = List.of(hand.get(i), hand.get(j), hand.get(z));
+                    var temp = calc.calculateThreeBonus(combination, owner.getId());
+                    if (value < temp) {
+                        value = temp;
+                        best = combination;
+                    }
+                }
+            }
+        }
+        if (best == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new CardEvent(best,owner,value));
+    
     }
 }
