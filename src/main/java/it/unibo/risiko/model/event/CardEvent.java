@@ -1,7 +1,6 @@
 package it.unibo.risiko.model.event;
 
 import java.util.Collection;
-import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.deck.Card;

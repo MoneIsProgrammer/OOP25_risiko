@@ -66,7 +66,15 @@ public final class StrategyUtils {
         return counter >= 2;
     }
 
-    private static boolean secondIsolatedCheck(final Territory territory, final GameMap map) {var counter = 0;
+    /**
+     * Advanced check for isolated territories.
+     * 
+     * @param territory the father
+     * @param map game map
+     * @return true if both territory is isolated
+     */
+    private static boolean secondIsolatedCheck(final Territory territory, final GameMap map) {
+    var counter = 0;
     for (final String adj : territory.getAdjacentIds()) {
         if (map.getTerritory(adj).getOwnerId().get().equals(territory.getOwnerId().get())) {
             counter++;
@@ -75,18 +83,31 @@ public final class StrategyUtils {
         return counter >= 3;
     }
 
-    public static Optional<CardEvent> genericCardPlay(List<Card> hand, Player owner, GameMap map) {
-        Collection<Card> best = null;
-        int value = 0;
-        CardBonus calc = new CardBonus(map);
+    /**
+     * Plays the strongest hand avabile.
+     * 
+     * @param hand the hand
+     * @param owner the owner
+     * @param map the game map
+     * @return the Card event regarding the combo
+     */
+    public static Optional<CardEvent> genericCardPlay(
+        final List<Card> hand,
+        final Player owner,
+        final GameMap map
+    ) {
+        final CardBonus calc = new CardBonus(map);
         if (hand.size() < 3) {
             return Optional.empty();
         }
-        for (int i = 0; i < hand.size(); i++) { //stolen from https://www.cs.cornell.edu/courses/cs1112/2011sp/Notes/egL20/L20post.pdf?
+        Collection<Card> best = null;
+        int value = 0;
+        //stolen from https://www.cs.cornell.edu/courses/cs1112/2011sp/Notes/egL20/L20post.pdf?
+        for (int i = 0; i < hand.size(); i++) {
             for (int j = i + 1; j < hand.size(); j++) {
                 for (int z = j + 1; z < hand.size(); z++) {
-                    var combination = List.of(hand.get(i), hand.get(j), hand.get(z));
-                    var temp = calc.calculateThreeBonus(combination, owner.getId());
+                    final var combination = List.of(hand.get(i), hand.get(j), hand.get(z));
+                    final var temp = calc.calculateThreeBonus(combination, owner.getId());
                     if (value < temp) {
                         value = temp;
                         best = combination;
@@ -97,7 +118,6 @@ public final class StrategyUtils {
         if (best == null) {
             return Optional.empty();
         }
-        return Optional.of(new CardEvent(best,owner,value));
-    
+        return Optional.of(new CardEvent(best, owner, value));
     }
 }

@@ -2,7 +2,6 @@ package it.unibo.risiko.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,8 +9,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CardTerritories;
+import it.unibo.risiko.model.deck.CardTroops;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.MapLoader;
 import it.unibo.risiko.model.player.Player;
@@ -20,17 +23,13 @@ import it.unibo.risiko.model.player.PlayerRequest;
 import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
-import it.unibo.risiko.model.deck.Card;
-import it.unibo.risiko.model.deck.CardTerritories;
-import it.unibo.risiko.model.deck.CardTroops;
-import it.unibo.risiko.model.deck.CardType;
-import it.unibo.risiko.model.deck.TerritoriesDeck;
 
 /**
  * Test the 3 types of ai.
  */
 final class AiTest {
 
+    private static final int JOLLY_COMBO = 12;
     private static final String A_ID = "a";
     private static final String B_ID = "b";
     private static final String C_ID = "c";
@@ -41,7 +40,6 @@ final class AiTest {
     private Player human; //dummy not tested
     private Player aggressive;
     private Player defensive;
-    private Player random;
 
     @BeforeEach void init() throws IOException {
         this.map = MapLoader.load(
@@ -181,9 +179,12 @@ final class AiTest {
         ), 
         reinforce.reinforcement());
     }
-/* testing random is harder than i tought with a seed i get different results if i launch this test alone or with others
-tecnically it works but can't be considered automatic testing
-    @Test void randomTest() {
+
+    /* testing random is harder than i tought with a seed i get different results if i launch this test alone or with others
+    tecnically it works but can't be considered automatic testing*/
+    @Test
+    @Disabled("The architecture for a randomized test requires a totally different approach")  
+    void randomTest() {
         final Roster roster = new RosterImpl(List.of(
             new PlayerRequest("human", PlayerRequest.PlayerStrategyRequest.HUMAN, RisikoColors.BLACK),
             new PlayerRequest("aggressive", PlayerRequest.PlayerStrategyRequest.AGGRESSIVE, RisikoColors.YELLOW),
@@ -193,60 +194,59 @@ tecnically it works but can't be considered automatic testing
             this.map
         );
         final PlayerFactoryImpl factory = new PlayerFactoryImpl();
-        random = factory.generateSeededRandom(
-            new PlayerRequest("random", PlayerRequest.PlayerStrategyRequest.RANDOM, RisikoColors.RED),
+        final Player random = factory.generateSeededRandom(
+            new PlayerRequest("rando", PlayerRequest.PlayerStrategyRequest.RANDOM, RisikoColors.RED),
             roster, map, 4);
         this.map.getTerritory(D_ID).setOwner(random.getId());
-        var attack = this.random.attack();
+        var attack = random.attack();
         assertEquals(Optional.empty(), attack);
-        attack = this.random.attack();
+        attack = random.attack();
         assertEquals(Optional.empty(), attack);
-        attack = this.random.attack();
+        attack = random.attack();
         assertEquals(Optional.empty(), attack);
-        attack = this.random.attack();
+        attack = random.attack();
         assertEquals(Optional.empty(), attack);
-        attack = this.random.attack();
+        attack = random.attack();
         assertNotEquals(Optional.empty(), attack);
         assertEquals(2, attack.get().attackerStrength()); //doesnt attack with full force
         assertEquals(3, attack.get().defenderStrength());
         assertEquals(D_ID, attack.get().attackSource().getId());
         assertEquals(A_ID, attack.get().attackDestination().getId());
-        attack = this.random.attack();
+        attack = random.attack();
         assertNotEquals(Optional.empty(), attack); //kinda random
-        attack = this.random.attack();
+        attack = random.attack();
         assertEquals(Optional.empty(), attack);
 
         this.map.getTerritory(A_ID).setOwner(random.getId());
         this.map.getTerritory(E_ID).setOwner(random.getId());
         this.map.getTerritory(D_ID).addArmies(10);
 
-        var moveAc = this.random.getMoveAfterConquest(D_ID, A_ID);
+        var moveAc = random.getMoveAfterConquest(D_ID, A_ID);
         assertEquals(A_ID, moveAc.destinationTerritory().getId());
         assertEquals(D_ID, moveAc.sourceTerritory().getId());
         assertEquals(3, moveAc.troopsMoved());
-        moveAc = this.random.getMoveAfterConquest(D_ID, A_ID);
+        moveAc = random.getMoveAfterConquest(D_ID, A_ID);
         assertEquals(A_ID, moveAc.destinationTerritory().getId());
         assertEquals(D_ID, moveAc.sourceTerritory().getId());
         assertNotEquals(3, moveAc.troopsMoved());
 
-        var reinforce = this.random.reinforce(100);
-        final var reinforce2 = this.random.reinforce(100);
+        var reinforce = random.reinforce(100);
+        final var reinforce2 = random.reinforce(100);
         assertNotEquals(reinforce2.reinforcement(), reinforce.reinforcement());
-        reinforce = this.random.reinforce(100);
+        reinforce = random.reinforce(100);
         assertNotEquals(reinforce2.reinforcement(), reinforce.reinforcement());
 
-        final var move = this.random.move();
+        final var move = random.move();
         final int expected = 2;
         assertEquals(expected, move.get().troopsMoved());
         assertEquals(E_ID, move.get().sourceTerritory().getId());
         assertEquals(D_ID, move.get().destinationTerritory().getId());
-        final var move2 = this.random.move();
+        final var move2 = random.move();
         assertNotEquals(move, move2);
-    }*/
+    }
 
     @Test void cardTest() {
-        TerritoriesDeck deck = new TerritoriesDeck();
-        this.defensive.addCard(new Card());
+        this.defensive.addCard(new Card()); //jolly
         var cardPlay = this.defensive.playCard();
         assertEquals(Optional.empty(), cardPlay);
         this.defensive.addCard(new Card(CardTerritories.AFGHANISTAN, CardTroops.CAVALRY));
@@ -258,10 +258,12 @@ tecnically it works but can't be considered automatic testing
         this.defensive.addCard(new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY));
         cardPlay = this.defensive.playCard();
         assertNotEquals(Optional.empty(), cardPlay);
-        assertEquals(10, cardPlay.get().gainedArmies());
+        int expectedArmies = 10;
+        assertEquals(expectedArmies, cardPlay.get().gainedArmies());
         this.defensive.addCard(new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY));
         cardPlay = this.defensive.playCard();
         assertNotEquals(Optional.empty(), cardPlay);
-        assertEquals(12, cardPlay.get().gainedArmies());
+        expectedArmies = JOLLY_COMBO;
+        assertEquals(expectedArmies, cardPlay.get().gainedArmies());
     }
 }

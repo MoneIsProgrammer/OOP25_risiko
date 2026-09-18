@@ -1,6 +1,5 @@
 package it.unibo.risiko.model.player.strategy;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +22,7 @@ import it.unibo.risiko.model.player.Roster;
  */
 public final class HumanStrategyImpl implements HumanStrategy {
 
+    public static final String ARMIES = " armies";
     private final Roster roster;
     private final GameMap map;
     private final AttackBuilder attackBuilder = new AttackBuilder();
@@ -151,6 +151,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
     }
 
     private final class AttackBuilder {
+        private static final String ARMIES = " armies";
         private Player victim;
         private Integer attackStrenght;
         private Integer defenderStrenght;
@@ -159,14 +160,14 @@ public final class HumanStrategyImpl implements HumanStrategy {
 
         private void setAttackStrenght(final int strength) {
             if (strength < 1) {
-                throw new IllegalArgumentException("can't attack with " + strength + " armies");
+                throw new IllegalArgumentException("can't attack with " + strength + ARMIES);
             }
             this.attackStrenght = strength;
         }
 
         private void setDefenderStrenght(final int strength) {
             if (strength < 1) {
-                throw new IllegalArgumentException("can't defend with " + strength + " armies");
+                throw new IllegalArgumentException("can't defend with " + strength + ARMIES);
             }
             this.defenderStrenght = strength;
         }
@@ -221,9 +222,9 @@ public final class HumanStrategyImpl implements HumanStrategy {
             if (this.reinforceMap == null) {
                 this.reinforceMap = new HashMap<>();
             }
-            for (int val : reinforcements.values()) {
+            for (final int val : reinforcements.values()) {
                 if (val < 1) {
-                    throw new IllegalArgumentException("cant reinforce with " + val + " troops");
+                    throw new IllegalArgumentException("cant reinforce with " + val + ARMIES);
                 }
             }
             this.reinforceMap.putAll(reinforcements);
@@ -235,7 +236,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
 
         private ReinforceEvent build(final Player owner, final int armies) {
             if (reinforceMap.values().stream().reduce(Integer::sum).get() != armies && canBuild()) {
-                throw new IllegalStateException("The reinforcements can't be different from declared armies");
+                throw new IllegalStateException("The reinforcements can't be different from declared" + ARMIES);
                 //this is a check as i can't check if map is empty due to the minimum reinforce avabile are 0
             }
             final var out = new ReinforceEvent(owner, reinforceMap);
@@ -288,7 +289,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
 
         private void setTroopsMoved(final int troopsMoved) {
             if (troopsMoved < 1) {
-                throw new IllegalArgumentException("can't move " + troopsMoved + " armies");
+                throw new IllegalArgumentException("can't move " + troopsMoved + ARMIES);
             }
             this.troopsMoved = troopsMoved;
         }
@@ -297,15 +298,14 @@ public final class HumanStrategyImpl implements HumanStrategy {
     private final class CardPlayBuilder {
 
         private Collection<Card> played;
-        private int armies;
-        private CardBonus calc;
+        private final CardBonus calc;
 
-        public CardPlayBuilder(GameMap map) {
+        CardPlayBuilder(final GameMap map) {
             calc = new CardBonus(map);
         }
 
         private CardEvent build(final Player owner) {
-            armies = calculateArmies(played, owner);
+            final var armies = calculateArmies(played, owner);
             final var out = new CardEvent(this.played, owner, armies);
             clear();
             return out;
@@ -318,13 +318,11 @@ public final class HumanStrategyImpl implements HumanStrategy {
             played = List.copyOf(combo);
         }
 
-        private int calculateArmies(Collection<Card> combo, Player owner) {
-            var armies = calc.calculateThreeBonus(List.copyOf(combo), owner.getId());
-            return armies;
+        private int calculateArmies(final Collection<Card> combo, final Player owner) {
+            return calc.calculateThreeBonus(List.copyOf(combo), owner.getId());
         }
 
         private void clear() {
-            this.armies = 0;
             this.played = null;
         }
 

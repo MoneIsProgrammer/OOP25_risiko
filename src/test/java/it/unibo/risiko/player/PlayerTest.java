@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +33,8 @@ import it.unibo.risiko.model.player.strategy.ai.RandomStrategy;
  * Test class for player general player and "human interactions".
  */
 final class PlayerTest {
+    private static final int TRIS = 10;
+    private static final int INFANTRY = 6;
     private static final String HUMAN_NAME = "human";
     private static final String AGGRESSIVE_NAME = "aggressive";
     private static final String DEFENSIVE_NAME = "defensive";
@@ -212,13 +213,16 @@ final class PlayerTest {
             new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY)
         ));
         assertTrue(interactive.canPlayCards());
-        assertEquals(6, interactive.playCards(null, human).get().gainedArmies()); //null is leftovers of ai methods doesn't use hand
+        //null is leftovers of ai methods doesn't use hand
+        int expectedArmies = INFANTRY;
+        assertEquals(expectedArmies, interactive.playCards(null, human).get().gainedArmies());
         interactive.cardsToPlay(List.of(
             new Card(CardTerritories.NEWGUINEA, CardTroops.CANNONS),
             new Card(CardTerritories.NEWGUINEA, CardTroops.CAVALRY),
             new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY)
         ));
-        assertEquals(10, interactive.playCards(null, human).get().gainedArmies()); //null is leftovers of ai methods doesn't use hand
+        expectedArmies = TRIS;
+        assertEquals(expectedArmies, interactive.playCards(null, human).get().gainedArmies());
     }
 
     @Test void flushTest() {

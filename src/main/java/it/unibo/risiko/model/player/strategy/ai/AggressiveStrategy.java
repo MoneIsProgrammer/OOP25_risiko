@@ -1,6 +1,5 @@
 package it.unibo.risiko.model.player.strategy.ai;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,18 +98,20 @@ public final class AggressiveStrategy implements PlayerStrategy {
         final Map<Territory, Integer> reinforceMap = new HashMap<>();
         final var playerTerritories = map.getTerritoriesOf(owner.getId());
         final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
-        for (Territory territory : playerTerritories) {
+        for (final Territory territory : playerTerritories) {
             reinforceMap.put(territory, territory.getArmies());
         }
         for (int i = 0; i < armies; i++) {
             var min = reinforceMap.entrySet().stream().filter(a -> a.getValue() < 2).findAny();
             if (min.isEmpty()) {
-                min = reinforceMap.entrySet().stream().filter(a -> borders.contains(a.getKey())).min((a,b) ->Integer.compare(a.getValue(), b.getValue()));
+                min = reinforceMap.entrySet().stream()
+                    .filter(a -> borders.contains(a.getKey()))
+                    .min((a, b) -> Integer.compare(a.getValue(), b.getValue()));
             }
             // sets the number of time a territory is to be reinforced with 1 troop
             reinforceMap.merge(min.get().getKey(), 1, Integer::sum);
         }
-        reinforceMap.replaceAll((k,v) -> v - k.getArmies());
+        reinforceMap.replaceAll((k, v) -> v - k.getArmies());
         reinforceMap.entrySet().removeIf(a -> a.getValue() == 0);
         return new ReinforceEvent(owner, reinforceMap);
 
@@ -141,7 +142,7 @@ public final class AggressiveStrategy implements PlayerStrategy {
 
     @Override
     public Optional<CardEvent> playCards(final List<Card> hand, final Player owner) {
-        return StrategyUtils.genericCardPlay(hand,owner,this.map);
+        return StrategyUtils.genericCardPlay(hand, owner, this.map);
     }
 
     @Override
