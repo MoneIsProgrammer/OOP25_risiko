@@ -107,14 +107,34 @@ public class Deck {
      * all the cards have been used by comparing the number of cards used 
      * to the length of the deck
      */
+    public Card dealObjectiveCard() {
+        if (objectiveCardsUsed == objectiveDeckLength) {
+            this.populateObjectiveDeck();
+            this.shuffle();
+            objectiveCardsUsed = 0;
+        }
+        /**
+         * index: using the random variable from the Random class
+         * it gets a random number between 0 and 14 (not included)
+         */
+        int index = random.nextInt(deck.size());
+        Card card = this.deck.get(index);
+        remove(card);
+        objectiveCardsUsed++;
+        return card;
+    }
 
-    /* To shuffle the cards in the territory deck */
+    /* To shuffle the cards in a deck */
     public void shuffle() {
         Collections.shuffle(this.deck);
     }
 
     /* Function that returns a random value from the enum CardTroops */
     CardTroops getRandomTroop() {
+        /** Given that the deck needs to have 14 cards per troop, we'll
+         * first return 14 cannon troops, then 14 cavalry troops, 
+         * then 14 infantry troops
+         */
         if (can < 14) {
             can++;
             return CardTroops.CANNONS;
@@ -168,5 +188,6 @@ public class Deck {
             Card card = new Card(objectiveDescription);
             this.add(card);
         }
+        objectiveDeckLength = deck.size();
     }
 }
