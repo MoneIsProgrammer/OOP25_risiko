@@ -36,7 +36,7 @@ public enum CardObjectives {
     }
 
     // Getter
-    public String getObjective () {
+    public String getObjectiveDescription () {
         return objectiveDescription;
     }
 }

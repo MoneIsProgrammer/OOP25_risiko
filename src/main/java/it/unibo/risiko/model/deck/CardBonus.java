@@ -1,6 +1,7 @@
 package it.unibo.risiko.model.deck;
 
-import it.unibo.risiko.model.map.*;
+import it.unibo.risiko.model.map.GameMap;
+import it.unibo.risiko.model.map.Territory;
 import java.util.ArrayList;
 import java.util.Set;
 

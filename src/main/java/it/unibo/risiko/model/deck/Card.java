@@ -55,7 +55,7 @@ public class Card {
     }
 
     public String getObjectiveDescription() {
-        return objectiveDescription.getObjective();
+        return objectiveDescription.getObjectiveDescription();
     }
 
     public String getCardType() {
@@ -72,7 +72,7 @@ public class Card {
     public String getCard(CardType cardType) {
         switch (cardType) {
             case TERRITORY: return territoryName.getTerritoryName() + " " + troop.getTroopName();
-            case OBJECTIVE: return objectiveDescription.getObjective();
+            case OBJECTIVE: return objectiveDescription.getObjectiveDescription();
             case JOLLY: return cardType.getCardType();
             default: return "Not a card type";
         }
