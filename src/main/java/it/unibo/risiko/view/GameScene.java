@@ -11,6 +11,7 @@ import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
+import it.unibo.risiko.model.turn.Phase;
 import it.unibo.risiko.view.map.DiceCanvas;
 import it.unibo.risiko.view.map.MapCanvas;
 import it.unibo.risiko.view.map.MapLayout;
@@ -76,7 +77,10 @@ public class GameScene {
             controller.getTerritories(from, to);
             // TODO put here the HumanStrategy calls, from and to are the ids of the territories
         });
-        // TODO call clickHandler.setTurn when the turn or the phase changes
+        // when the phase changes the clicks change too
+        // getNewValue is an Object so i cast it
+        controller.addListener(event -> clickHandler.setPhase((Phase) event.getNewValue()));
+        // TODO call clickHandler.setPlayer when the turn passes to another player
 
         final var box = new VBox();
         for (final Player player : roster.getAllPlayers()) {
