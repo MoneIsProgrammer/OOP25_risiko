@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import it.unibo.risiko.model.deck.Card;
-import it.unibo.risiko.model.deck.CardObjectives;
+import it.unibo.risiko.model.deck.Objective;
 import it.unibo.risiko.model.event.AttackEvent;
 import it.unibo.risiko.model.event.CardEvent;
 import it.unibo.risiko.model.event.MoveEvent;
@@ -124,7 +124,7 @@ public final class PlayerImpl implements Player {
     }
 
     public void setNewObjective() {
-        this.objective = new Card(CardObjectives.OBJECTIVEX);
+        this.objective = new Card(Objective.OBJECTIVEX);
     }
 
 }

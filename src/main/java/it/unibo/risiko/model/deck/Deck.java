@@ -156,9 +156,9 @@ public class Deck {
         int territoriesForTroop = CardTerritories.values().length / CardTroops.values().length;
         /* To populate, we're going to loop through all of our 
         troops and for each troop we'll add 14 territories */
-        for (CardTroops troopsName: CardTroops.values()) {
+        for (CardTroops troop: CardTroops.values()) {
             for (int i = 0; i < territoriesForTroop; i++) {
-                Card card = new Card(CardTerritories.values()[i++], troopsName);
+                Card card = new Card(CardTerritories.values()[i++], troop);
                 /* Here "this" refers to each individual deck we create */
                 this.add(card);
             }
@@ -184,8 +184,8 @@ public class Deck {
 
     /* Populate the objectives deck */
     public void populateObjectiveDeck() {
-        for (CardObjectives objectiveDescription: CardObjectives.values()) {
-            Card card = new Card(objectiveDescription);
+        for (Objective objective: Objective.values()) {
+            Card card = new Card(objective);
             this.add(card);
         }
         objectiveDeckLength = deck.size();

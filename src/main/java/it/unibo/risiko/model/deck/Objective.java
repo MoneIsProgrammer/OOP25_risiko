@@ -1,6 +1,6 @@
 package it.unibo.risiko.model.deck;
 
-public enum CardObjectives {
+public enum Objective {
     OBJECTIVE1("Conquer 18 territories, the territories must have atleast two troops each"),
     OBJECTIVE2("Conquer 24 territories"),
     OBJECTIVE3("Conquer all of North America and Africa"),
@@ -32,7 +32,7 @@ public enum CardObjectives {
     private final String objectiveDescription;
 
     // Constructor
-    private CardObjectives (String objectiveDescription) {
+    Objective (String objectiveDescription) {
         this.objectiveDescription = objectiveDescription;
     }
 

@@ -13,21 +13,20 @@ package it.unibo.risiko.model.deck;
 public class Card {
 
     /* Private Fields, each Territory card has a territory and a troop */
-    private CardTerritories territoryName;
+    private CardTerritories territory;
     private CardTroops troop;
     /* Private Field, each Objective card has an objective description */
-    private CardObjectives objectiveDescription;
+    private Objective objective;
     /* Private Field, specifies the type of the card (Territory, Objective or Jolly) */
     private CardType cardType;
 
     /** Constructor for territory cards, creates a card with a specified 
-     * territory name and troop. It also sets the card type, i.e. TERRITORY
-     * @param territoryName is the name of the territory represented on the card
-     * @param troop is the type of troop represented on the card. It can be either
-     * cavalry, cannons or infantry.
+     * territory and troop. It also sets the card type, i.e. TERRITORY
+     * @param territory is the territory represented on the card
+     * @param troop is the troop represented on the card
     */
-    public Card(CardTerritories territoryName, CardTroops troop) {
-        this.territoryName = territoryName;
+    public Card(CardTerritories territory, CardTroops troop) {
+        this.territory = territory;
         this.troop = troop;
         this.cardType = CardType.TERRITORY;
     }
@@ -38,43 +37,26 @@ public class Card {
     }
 
     /** Constructor for objective cards, sets the card type as OBJECTIVE
-     * @param objectiveDescription is the description of an objective
      */
-    public Card(CardObjectives objectiveDescription) {
-        this.objectiveDescription = objectiveDescription;
+    public Card(Objective objective) {
+        this.objective = objective;
         this.cardType = CardType.OBJECTIVE;
     }
 
     /* Getters */
-    public String getTerritoryName() {
-        return territoryName.getTerritoryName();
+    public CardTerritories getTerritory() {
+        return territory;
     }
 
-    public String getTroop() {
-        return troop.getTroopName();
+    public CardTroops getTroop() {
+        return troop;
     }
 
-    public String getObjectiveDescription() {
-        return objectiveDescription.getObjectiveDescription();
+    public Objective getObjective() {
+        return objective;
     }
 
     public String getCardType() {
         return cardType.getCardType();
-    }
-
-    /**
-     * Returns the cards values based on the type of card, i.e.
-     * for TERRITORY cards, it returns the territory's name and 
-     * troop's name.
-     * for OBJECTIVE cards, it returns the description of the objective.
-     * for JOLLY cards, it just returns the type of the card
-     */
-    public String getCard(CardType cardType) {
-        switch (cardType) {
-            case TERRITORY: return territoryName.getTerritoryName() + " " + troop.getTroopName();
-            case OBJECTIVE: return objectiveDescription.getObjectiveDescription();
-            case JOLLY: return cardType.getCardType();
-            default: return "Not a card type";
-        }
     }
 }

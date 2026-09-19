@@ -16,6 +16,9 @@ public class SetupPhase {
         this.players = players;
     }
 
+    /* Player order is already set by PlayerTurn */
+    /* Player color has already been chosen */
+
     /** The setup phase requires a deck of Territory cards and a deck of Objective cards, 
      * each player is granted one objective card and an evenly divided number of territory 
      * cards, 
@@ -37,11 +40,12 @@ public class SetupPhase {
         this.territoryDeck.createTerritoryDeck();
     }
 
+    /* Deal the territory cards */
     public void dealTerritoryCards() {
         /* Counter to assure that when dealing cards during the setup phase, 
         it stops after dealing 42 cards */
         int cardsDealt = 0;
-        if (cardsDealt < 42) {
+        while (cardsDealt < 42) {
             for (Player player: players.getAllPlayers()) {
                 if (cardsDealt < 42) {   
                     player.addCard(territoryDeck.dealCard());
@@ -50,5 +54,4 @@ public class SetupPhase {
             }
         }
     }
-    
 }

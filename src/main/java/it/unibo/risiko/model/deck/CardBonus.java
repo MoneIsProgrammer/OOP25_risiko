@@ -12,7 +12,6 @@ import java.util.Set;
  * deploy as reinforcements
  */
 public class CardBonus {
-    String troopname;   
     
     /** GameMap methods cannot be directly used within the class,
      * therefore, we add the following private field and constructor 
@@ -68,7 +67,7 @@ public class CardBonus {
          */
         int nJolly = 0;
         for (Card card : setOfCards) {
-            if (card.getCardType().equals(CardType.JOLLY.getCardType())) {
+            if (card.getCardType().equals(CardType.JOLLY)) {
                 nJolly++;
             }
         }
@@ -76,12 +75,12 @@ public class CardBonus {
         int nCavalry = 0;
         int nInfantry = 0;
         for (Card card : setOfCards) {
-            if (card.getCardType().equals(CardType.TERRITORY.getCardType())) {
-                if (card.getTroop().equals(CardTroops.CANNONS.getTroopName())) {
+            if (card.getCardType().equals(CardType.TERRITORY)) {
+                if (card.getTroop().equals(CardTroops.CANNONS)) {
                     nCannons++;
-                } else if (card.getTroop().equals(CardTroops.CAVALRY.getTroopName())) {
+                } else if (card.getTroop().equals(CardTroops.CAVALRY)) {
                     nCavalry++;
-                } else if (card.getTroop().equals(CardTroops.INFANTRY.getTroopName())) {
+                } else if (card.getTroop().equals(CardTroops.INFANTRY)) {
                     nInfantry++;
                 }
             }
@@ -140,7 +139,7 @@ public class CardBonus {
          */
         for (Card card: setOfCards) {
             for (Territory territory: territoriesOccupied) {
-                if (card.getTerritoryName().equals(territory.getName())) {
+                if (card.getTerritory().equals(territory)) {
                     reinforcements = reinforcements + 2;
                 }
             }

@@ -1,7 +1,7 @@
 package it.unibo.risiko.model.turn;
 
 import it.unibo.risiko.model.deck.Card;
-import it.unibo.risiko.model.deck.CardObjectives;
+import it.unibo.risiko.model.deck.Objective;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.RisikoColors;
@@ -35,7 +35,7 @@ public class MovePhase {
                  * player has completed their objective and won the game.
                  * 
                  */
-                if (managePlayerElimination(player)) {
+                if (managePlayerElimination(player, currentPlayer)) {
                     return "Player: " + currentPlayer.getName() + " achieved objective.";
                 }
             }
@@ -58,122 +58,71 @@ public class MovePhase {
      * If it was the objective of another player, changes the objective 
      * of said player
      * In all the other cases, returns false
-     * @return returns false if the elimination of the player that has been
-     * eliminated was not the objective of the current player
-     * returns true if the elimination of the player that has been
-     * eliminated was the player's objective
      */
-    boolean managePlayerElimination(Player playerEliminated){
+    boolean managePlayerElimination(Player playerEliminated, Player currentPlayer){
+        RisikoColors eliminatedColor = playerEliminated.getColor();
+
+        /** objectiveEliminateColor() checks whether a player's objective was to eliminate 
+         * eliminated color's troop, if the current player's objective was to eliminate the 
+         * eliminated player -> current player wins */
+        if (objectiveEliminateColor(currentPlayer, eliminatedColor)) {
+            return true;
+        }
+
+        /** Loop through all the players and check whether a player's (a player other tha current player) 
+         * objective was to eliminate eliminated colour, if it was set a new objective (conquer 24 
+         * territories) for that player
+         */
         for (Player player: players.getAllPlayers()) {
-            for (CardObjectives objectiveDescription: CardObjectives.values()) {
-                Card card = new Card(objectiveDescription);
-                if ((player.getObjective()).equals(card)) {
-                    switch (objectiveDescription) {
-                        /** The objective is "Destroy all the Yellow troops. Note: If the Yellow troops are not present 
-                         * in the game, or if your own troops are Yellow, or if the Yellow troops are 
-                         * eliminated by another player, your objective becomes conquering 24 territories." */
-                        case OBJECTIVE9:
-                            /** If the player who got eliminated was YELLOW, check whether the objective 
-                             * to eliminate YELLOW troops was the current player's,
-                             * if not, then change the objective of the player whose objective was to 
-                             * eliminate the player to conquer 24 territories */
-                            if ((playerEliminated.getColor()).equals(RisikoColors.YELLOW)) {
-                                if (player.getId().equals(currentPlayer.getId())) {
-                                    return true;
-                                } else {
-                                    player.setNewObjective();
-                                }
-                            }
-                        /** The objective is "Destroy all the Red troops. Note: If the Red troops are not present 
-                         * in the game, or if your own troops are Red, or if the Red troops are 
-                         * eliminated by another player, your objective becomes conquering 24 territories." */
-                        case OBJECTIVE10:
-                            /** If the player who got eliminated was RED, check whether the objective 
-                             * to eliminate RED troops was the current player's:
-                             * - if yes, return true
-                             * - if not, then change the objective of the player whose objective was to 
-                             * eliminate the player to conquer 24 territories */
-                            if ((playerEliminated.getColor()).equals(RisikoColors.RED)) {
-                                if (player.getId().equals(currentPlayer.getId())) {
-                                    return true;
-                                } else {
-                                    player.setNewObjective();
-                                }
-                            }
-                        /** The objective is "Destroy all the Green troops. Note: If the Green troops are not present 
-                         * in the game, or if your own troops are Green, or if the Green troops are 
-                         * eliminated by another player, your objective becomes conquering 24 territories." */
-                        case CardObjectives.OBJECTIVE11:
-                            /** If the player who got eliminated was GREEN, check whether the objective 
-                             * to eliminate GREEN troops was the current player's:
-                             * - if yes, return true
-                             * - if not, then change the objective of the player whose objective was to 
-                             * eliminate the player to conquer 24 territories */
-                        if ((playerEliminated.getColor()).equals(RisikoColors.GREEN)) {
-                            if (player.getId().equals(currentPlayer.getId())) {
-                                return true;
-                            } else {
-                                player.setNewObjective();
-                            }
-                        }
-                        /** The objective is "Destroy all the Blue troops. Note: If the Blue troops are not present 
-                         * in the game, or if your own troops are Blue, or if the Blue troops are 
-                         * eliminated by another player, your objective becomes conquering 24 territories." */
-                        case CardObjectives.OBJECTIVE12:
-                            /** If the player who got eliminated was BLUE, check whether the objective 
-                             * to eliminate BLUE troops was the current player's:
-                             * - if yes, return true
-                             * - if not, then change the objective of the player whose objective was to 
-                             * eliminate the player to conquer 24 territories */
-                            if ((playerEliminated.getColor()).equals(RisikoColors.BLUE)) {
-                                if (player.getId().equals(currentPlayer.getId())) {
-                                    return true;
-                                } else {
-                                    player.setNewObjective();
-                                }
-                            }
-                        /** The objective is "Destroy all the Pink troops. Note: If the Pink troops are not present 
-                         * in the game, or if your own troops are Pink, or if the Pink troops are 
-                         * eliminated by another player, your objective becomes conquering 24 territories." */
-                        case CardObjectives.OBJECTIVE13:
-                            /** If the player who got eliminated was PINK, check whether the objective 
-                             * to eliminate PINK troops was the current player's:
-                             * - if yes, return true
-                             * - if not, then change the objective of the player whose objective was to 
-                             * eliminate the player to conquer 24 territories */
-                            if ((playerEliminated.getColor()).equals(RisikoColors.PINK)) {
-                                if (player.getId().equals(currentPlayer.getId())) {
-                                    return true;
-                                } else {
-                                    player.setNewObjective();
-                                }
-                            }
-                        /** The objective is "Destroy all the Black troops. Note: If the Black troops are not present 
-                         * in the game, or if your own troops are Black, or if the Black troops are 
-                         * eliminated by another player, your objective becomes conquering 24 territories." */
-                        case CardObjectives.OBJECTIVE14:
-                            /** If the player who got eliminated was BLACK, check whether the objective 
-                             * to eliminate BLACK troops was the current player's:
-                             * - if yes, return true
-                             * - if not, then change the objective of the player whose objective was to 
-                             * eliminate the player to conquer 24 territories */
-                            if ((playerEliminated.getColor()).equals(RisikoColors.BLACK)) {
-                                if (player.getId().equals(currentPlayer.getId())) {
-                                    return true;
-                                } else {
-                                    player.setNewObjective();
-                                }
-                            }
-                        default:
-                            /* Nothing to do in any of the other cases */
-                    }
-                }
+            if ( !((player).equals(currentPlayer)) && objectiveEliminateColor(player, eliminatedColor) ) {
+                player.setNewObjective();
             }
         }
-        /** At the end of the for loop, if none of the conditions returned true, then the 
-         * player elimination was not the current player's objective and if it was the 
-         * objective of someone other than the current player, then the objective was changed.
-         */
+
+        /* At this point, the current player's objective was not eliminating eliminated colour, therefore, 
+        return false */
         return false;
+    }
+
+    /**
+     * check whether the player's objective was eliminating eliminated colour
+     * @param player the player for whose objective is being checked
+     * @param eliminatedColor the color of the eliminated player
+     * @return returns false if eliminating the colour was not the player's 
+     * objective, returns true if it was the player's objective
+     */
+    boolean objectiveEliminateColor(Player player, RisikoColors eliminatedColor) {
+        Card playerObjective = player.getObjective();
+        /* controllo se l'obiettivo del player era eliminare quel colore */
+        return (eliminateColorObjective(playerObjective.getObjective())) && (playerTargetColour(playerObjective.getObjective()) == eliminatedColor);
+    }
+
+    /** Check whether a player's objective was between objectives 9 and 14, 
+     * i.e. to eliminate a certain colour troop
+     * @return returns true if it was any of the colour objectives
+     * returns false otherwise
+     */
+    boolean eliminateColorObjective(Objective objective) {
+        return ( (objective.equals(Objective.OBJECTIVE9)) || (objective.equals(Objective.OBJECTIVE10)) || (objective.equals(Objective.OBJECTIVE11)) || (objective.equals(Objective.OBJECTIVE12)) || (objective.equals(Objective.OBJECTIVE13)) || (objective.equals(Objective.OBJECTIVE14)) );
+    }
+
+    /* Returns the colour of the troop who the player has to eliminate */
+    RisikoColors playerTargetColour(Objective objective) {
+        switch (objective) {
+            case OBJECTIVE9:
+                return RisikoColors.YELLOW;
+            case OBJECTIVE10:
+                return RisikoColors.RED;
+            case OBJECTIVE11:
+                return RisikoColors.GREEN;
+            case OBJECTIVE12:
+                return RisikoColors.BLUE;
+            case OBJECTIVE13:
+                return RisikoColors.PINK;
+            case OBJECTIVE14:
+                return RisikoColors.BLACK;
+            default:
+                throw new IllegalArgumentException("colour does not match");
+        }
     }
 }
