@@ -26,7 +26,8 @@ public enum CardObjectives {
                 "eliminated by another player, your objective becomes conquering 24 territories."),
     OBJECTIVE14("Destroy all the Black troops. Note: If the Black troops are not present " +  
                 "in the game, or if your own troops are Black, or if the Black troops are " +  
-                "eliminated by another player, your objective becomes conquering 24 territories.");
+                "eliminated by another player, your objective becomes conquering 24 territories."),
+    OBJECTIVEX("Your last objective could not be met. New Objective: Conquer 24 territories");
 
     private final String objectiveDescription;
 
@@ -37,6 +38,6 @@ public enum CardObjectives {
 
     // Getter
     public String getObjectiveDescription () {
-        return objectiveDescription;
+        return this.objectiveDescription;
     }
 }

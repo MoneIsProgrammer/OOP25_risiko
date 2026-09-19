@@ -7,8 +7,12 @@ package it.unibo.risiko.model.deck;
 public class ObjectivesDeck extends Deck {
 
     /* Creates a deck with all the objective cards */
-    void createObjectiveDeck() {
+    public void createObjectiveDeck() {
         this.populateObjectiveDeck();
         this.shuffle();
+    }
+
+    public Card setObjectiveCard() {
+        return this.dealObjectiveCard();
     }
 }
