@@ -28,7 +28,7 @@ public class CardBonus {
      * In input, this method gets: 
      * the player's ID;
      * the cards that the player wants to play */
-    int bonusReinforcements(String playerId, ArrayList<Card> setOfCards) {
+    public int bonusReinforcements(String playerId, ArrayList<Card> setOfCards) {
         
         int nOfTerritoriesOccupied = this.map.getTerritoriesOf(playerId).size();
         int troopsDeployable = 0;

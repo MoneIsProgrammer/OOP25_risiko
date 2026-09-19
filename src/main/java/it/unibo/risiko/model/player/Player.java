@@ -55,6 +55,13 @@ public interface Player extends Identifiable {
     ReinforceEvent reinforce(int armies);
 
     /**
+     * Getter for the starting forces.
+     * 
+     * @return the starting forces
+     */
+    int getStartingForces();
+
+    /**
      * Creates reinforce events with assigning at maximum 3 troops at a time,
      * useful during the setup phase as it knows how many troops has to place.
      * 
