@@ -1,37 +1,38 @@
 classDiagram
 
 
-    class Umano
-    class AI
-    class Continente
-    class Territorio {
-        <<interface>>
-        +getArmies()
+    class Continent {
+        composedOf() Terriories
+        bonus() integer
     }
-    class Giocatore {
-        +getTerritories()
-        +isHuman()
-        +getEvent()
+    class Territory {
+        +getArmies() integer
+        +OwnedBy() Player
     }
-    class Mano {
-        +getCards()
-        +getComboes()
+    class Map {
+        +getTerritories Terriories
+        +getContinents getContinents
     }
-    class Mazzo {
+    class Player {
+        +isHuman() boolean
+        +generateEvent() Event
+    }
+    
+    class Deck {
         +shuffle()
-        +deal()
+        +deal() Card
     }
-    class Carta
-    class Evento
 
-    Giocatore <|.. Umano
-    Giocatore <|.. AI
+    class Card
+    class Event
 
-    Continente *-- Territorio
-
-    Giocatore  >--  Mano
-    Mano  *--  Carta
-    Mazzo *--  Carta
-
-    Territorio  --> Giocatore
-    Giocatore  -->  Evento
+    Continent *-- Territory
+    Player --> Card
+    Deck *--  Card
+    Player  -->  Event
+    Player --> Map
+    Map *-- Territory
+    Map *-- Continent
+    Decision ..> Human
+    Decision <.. AI
+    Decision <-- Player

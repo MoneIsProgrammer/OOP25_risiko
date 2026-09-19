@@ -183,7 +183,7 @@ final class AiTest {
     /* testing random is harder than i tought with a seed i get different results if i launch this test alone or with others
     tecnically it works but can't be considered automatic testing*/
     @Test
-    @Disabled("The architecture for a randomized test requires a totally different approach")  
+    @Disabled("The architecture for a randomized test requires a totally different approach")
     void randomTest() {
         final Roster roster = new RosterImpl(List.of(
             new PlayerRequest("human", PlayerRequest.PlayerStrategyRequest.HUMAN, RisikoColors.BLACK),
