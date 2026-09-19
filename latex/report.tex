@@ -30,7 +30,7 @@ Questo progetto porta a riprodurre il gioco del RisiKo!, o come viene conosciuto
 
 \chapter{Analisi}
 \section{Descrizione e requisiti}
-Il software vuole essere un mockup di risiko utilizzando come riferimento il manuale fornito da ludolega.it \footnote{\url{http://www.ludolega.it/media/Risiko_Prestige.pdf}} ignorando per semplicità le regole da torneo.
+Il software vuole essere un mockup di risiko utilizzando come riferimento il manuale fornito da risiko.it\footnote{https://risiko.it/wp-content/uploads/2017/10/Regolamento-Risiko.pdf} prendendo una regola da torneo, ovvero che il difensore si difende sempre col masimo dell sue forze, e ignorando per semplicità tutte le atrre regole da torneo.
 \newline RisiKo ha vari elementi distinti fra di loro necessari per il funzionamento del gioco tra cui:
 \begin{itemize}
 \item Un tabellone di gioco dove sono rappresentati i vari territori.
@@ -52,13 +52,14 @@ Questo ci porta ad avere dei giocatori che devono essere consapevoli delle loro 
 
 \section{Modello del Dominio
 }
-Durante una partita i giocatori possono consultare il tabellone che contiene continenti che a loro volta sono composti dai vari territori che contengono le armate posizionate da ciascun giocatore.
-\newline Ogni giocatore dispone di una propra mano, ovvero delle carte fornite dal mazzo composto da queste ultime.
-\newline I giocatori che possono essere umani o aventi un ai, entrambi generano degli eventi a seguito delle loro azioni
+Durante una partita i giocatori possono consultare il tabellone che rappresenta la mappa di gioco contenente i vari continenti che a loro volta sono composti da  territori che contengono le armate posizionate da ciascun giocatore. Un territorio si definisce in possesso di uno specifico giocatore se quest'ultimo ha delle armate nel territorio.
+\newline Ogni giocatore dispone di una propria mano, ovvero delle carte fornite dal mazzo composto da queste ultime.
+\newline I giocatori che possono essere umani o aventi un ai, entrambi generano degli eventi a seguito delle loro azioni, interagendo con la mappa.
+
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{latex/resources/ModelloDominio.png}
-    \caption{Caption}
+    \includegraphics[width=1\linewidth]{latex/resources/ModelloDominio.png}
+    
     \label{fig:placeholder}
 \end{figure}
 
@@ -110,48 +111,33 @@ Raccomandiamo di porre particolare attenzione al design dell'interazione fra vie
  \item Si discutono aspetti implementativi, ad esempio eventuali librerie usate oppure dettagli di codice.
 \end{itemize}
 
-\subsection*{Esempio}
-
-L'architettura di GLaDOS segue il pattern architetturale MVC.
-%
-Più nello specifico, a livello architetturale, si è scelto di utilizzare MVC in forma ``ECB'', ossia ``entity-control-boundary''\footnote{
-Si fa presente che il pattern ECB effettivamente esiste in letteratura come ``istanza'' di MVC, e chi volesse può utilizzarlo come reificazione di MVC.
-}.
-%
-GLaDOS implementa l'interfaccia AI, ed è il controller del sistema.
-Essendo una intelligenza artificiale, è una classe attiva.
-%
-GLaDOS accetta la registrazione di Input ed Output, che fanno parte della ``view'' di MVC, e sono il ``boundary'' di ECB.
-Gli Input rappresentano delle nuove informazioni che vengono fornite all'IA, ad esempio delle modifiche nel valore di un sensore, oppure un comando da parte dell'operatore.
-Questi input infatti forniscono eventi.
-Ottenere un evento è un'operazione bloccante: chi la esegue resta in attesa di un effettivo evento.
-Di fatto, quindi, GLaDOS si configura come entità \textit{reattiva}.
-Ogni volta che c'è un cambio alla situazione del soggetto, GLaDOS notifica i suoi Output,
-informandoli su quale sia la situazione corrente.
-%
-Conseguentemente, GLaDOS è un ``observable'' per Output.
-
-\begin{figure}[h]
-\centering{}
-\includegraphics[width=\textwidth]{img/arch}
-\caption{Schema UML architetturale di GLaDOS. L'interfaccia \texttt{GLaDOS} è il controller del sistema, mentre \texttt{Input} ed \texttt{Output} sono le interfacce che mappano la view (o, più correttamente in questo specifico esempio, il boundary). Un'eventuale interfaccia grafica interattiva dovrà implementarle entrambe.}
-\label{img:goodarch}
-\end{figure}
-
-Con questa architettura, possono essere aggiunti un numero arbitrario di input ed output
-all'intelligenza artificiale.
-%
-Ovviamente, mentre l'aggiunta di output è semplice e non richiede alcuna modifica all'IA, la
-presenza di nuovi tipi di evento richiede invece in potenza aggiunte o rifiniture a GLaDOS.
-%
-Questo è dovuto al fatto che nuovi Input rappresentano di fatto nuovi elementi della business
-logic, la cui alterazione od espansione inevitabilmente impatta il controller del progetto.
-
-In \Cref{img:goodarch} è esemplificato il diagramma UML architetturale.
-
-
 \section{Design dettagliato}
 
+\subsection {Far produrre allo stesso tipo di entità risultati differenti. Morri Simone}
+Il primo e principale problema è : come far prendere decisioni o/e avere comportamenti diversi in base al tipo di giocatore, qui mi sono imbattuto in una necessità di dare a ogni giocatore in campo il proprio comportamento, quindi lo Strategy Pattern è stato essenziale nella progettazione. Questo pattern mi permette di ridurre le implementazioni di player da quanti comportamenti diversi volevo a 1 dove espone ciò che un vero giocatore può fare, delegando le decisioni a PlayerStrategy dove ogni sua implementazione può fornire un risultato diverso, nel caso delle ai producono un risultato in base al contesto fornito e i giocatori umani tramite dei Builder interni possono costruire il risultato passo per passo. Facendo così non solo ho ridotto la quantità di codice duplicato ma è anche possibile aggiungerne diversi tipi di strategie ed eventualmente anche combinarne varie in uno stesso giocatore.
+%
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{latex//resources/PlayerStrategyDiagram.png}
+    \caption{Strategy per i Player}
+    \label{fig:Strategy}
+\end{figure}
+\subsection{Comunicazione per i Player. Morri Simone}
+Un altro problema è come comunicare le intenzioni dei giocatori al controller, quindi ho creato dei DTO nominandoli Event in modo da poter impacchettare tutto ciò che potrebbe servire ad un controller per eseguire l'azione, utili anche per poter creare uno storico della partita, fin da subito però sono sorti problemi in quanto esistono diversi tipi di eventi tutti con campi diversi, ciò rende impossibile utilizzarli senza fare un cast esplicito, ma anche qui non sappiamo la loro classe originale, quindi utilizzando il Visitor Pattern è possibile dare un'implementazione specifica a seconda di cosa voglio generare a partire da uno specifico Event, questa cosa è tornata utile nella History che è passata da un contenitore di eventi a un contenitore di Stringhe che rappresentano gli eventi attraverso una implementazione specifica di Visitor. Utilizzando questo pattern inoltre permette anche ad altro programmatori di modificare gli eventi per ad esempio renderli persistenti oppure esportarli in altri formati per il salvataggio in ad esempio Json.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{latex/resources/EventVisitor.png}
+    \caption{Modello per visitor}
+    \label{fig:Visitor}
+\end{figure}
+\subsection{Creare i Giocatori}
+Un ultimo problema non meno importante è come far costruire i vari giocatori che parteciperanno alla partita, visto che ognuno deve avere delle specifiche proprie. Qui utilizzando sempre dei DTO chiamati PlayerRequest posso gestire la creazione astraendo il giocatore dalla richiesta di creazione, e per rendere la creazione più pulita e facile da fare ho creato una Simple Factory che riceve le varie richieste dei giocatori e produce una lista di Player pronti da utilizzare create sotto le specifiche e per aderire all'utilizzo di ID proposto il tutto viene raccolto in Roster che alla creazione richiede tutte le richieste e permette di interrogare i giocatori chiedendo chi è il possessore di uno specifico ID o Colore,quest'ultimo astratto in RisikoColors. 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{latex/resources/FactoryPipeline.png}
+    \caption{The player creation pipeline}
+    \label{fig:factoryPipeline}
+\end{figure}
 In questa sezione si possono approfondire alcuni elementi del design con maggior dettaglio.
 %
 Mentre ci attendiamo principalmente (o solo) interfacce negli schemi UML delle sezioni precedenti,
@@ -229,28 +215,13 @@ il motore di un videogioco, sarebbe impossibile riusarlo per costruire un server
 
 \subsubsection{Personalità intercambiabili}
 
-\begin{figure}[H]
-\centering{}
-\includegraphics[width=\textwidth]{img/strategy}
-\caption{Rappresentazione UML del pattern Strategy per la personalità di GLaDOS}
-\label{img:strategy}
-\end{figure}
-
 \paragraph{Problema} GLaDOS ha più personalità intercambiabili, la cui presenza deve essere trasparente al client.
 
 \paragraph{Soluzione} Il sistema per la gestione della personalità utilizza il \textit{pattern Strategy}, come da
-\Cref{img:strategy}: le implementazioni di \texttt{Personality} possono essere modificate, e la
+ le implementazioni di \texttt{Personality} possono essere modificate, e la
 modifica impatta direttamente sul comportamento di GLaDOS.
 
 \subsubsection{Riuso del codice delle personalità}
-
-\begin{figure}[H]
-\centering{}
-\includegraphics[width=\textwidth]{img/template}
-\caption{Rappresentazione UML dell'applicazione del pattern Template Method alla gerarchia delle Personalità}
-\label{img:template}
-\end{figure}
-
 \paragraph{Problema} In fase di sviluppo, sono state sviluppate due personalità, una buona ed una cattiva.
 Quella buona restituisce sempre una torta vera, mentre quella cattiva restituisce sempre la
 promessa di una torta che verrà in realtà disattesa.
@@ -258,18 +229,11 @@ Ci si è accorti che diverse personalità condividevano molto del comportamento,
 portando a classi molto simili e a duplicazione.
 
 \paragraph{Soluzione} Dato che le due personalità differiscono solo per il comportamento da effettuarsi in caso di percorso completato con successo,
-è stato utilizzato il \textit{pattern template method} per massimizzare il riuso, come da \Cref{img:template}.
+è stato utilizzato il \textit{pattern template method} per massimizzare il riuso, come da
 Il metodo template è \texttt{onSuccess()}, che chiama un metodo astratto e protetto
 \texttt{makeCake()}.
 
 \subsubsection{Gestione di output multipli}
-
-\begin{figure}[H]
-\centering{}
-\includegraphics[width=.7\textwidth]{img/observer}
-\caption{Il pattern Observer è usato per consentire a GLaDOS di informare tutti i sistemi di output in ascolto}
-\label{img:observer}
-\end{figure}
 
 \paragraph{Problema} Il sistema deve supportare output multipli. In particolare, si richiede che vi sia un logger che stampa a terminale o su file,
 e un'interfaccia grafica che mostri una rappresentazione grafica del sistema.
@@ -280,12 +244,12 @@ Invece di fare un sistema in cui questi output sono obbligatori e connessi, si �
 e di adottare una comunicazione uno-a-molti fra \texttt{GLaDOS} ed i sistemi di output.
 La scelta è quindi ricaduta sul \textit{pattern Observer}: \texttt{GLaDOS} è observable, e le istanze di \texttt{Output} sono observer.
 %
-Il suo utilizzo è esemplificato in \Cref{img:observer}
+Il suo utilizzo è esemplificato in 
 
 
 \subsection*{Contro-esempio: pessimo diagramma UML}
 
-In \Cref{img:badarch} è mostrato il modo \textbf{sbagliato} di fare le cose.
+In  è mostrato il modo \textbf{sbagliato} di fare le cose.
 %
 Questo schema è fatto male perché:
 \begin{itemize}
@@ -299,22 +263,11 @@ Questo schema è fatto male perché:
 \end{itemize}
 
 
-\begin{figure}[h]
-\centering{}
-\includegraphics[width=\textwidth]{img/badarch}
-\caption{Schema UML mal fatto e con una pessima descrizione, che non aiuta a capire. Don't try this at home.}
-\label{img:badarch}
-\end{figure}
-
-
 \chapter{Sviluppo}
 \section{Testing automatizzato}
 
-Il testing automatizzato è un requisito di qualunque progetto software che si rispetti, e consente di verificare che non vi siano regressioni nelle funzionalità a fronte di aggiornamenti.
-%
-Per quanto riguarda questo progetto è considerato sufficiente un test minimale, a patto che sia completamente automatico.
-%
-Test che richiedono l'intervento da parte dell'utente sono considerati \textit{negativamente} nel computo del punteggio finale.
+La parte di testing  per i giocatori ho dovuto sottoporre a testing praticamente ogni mia implementazione delle strategy verificando che dessero l'output desiderato su una mappa fittizia e i vari builder di HumanStrategy producessero un output corretto, l'unico test che non è possibile considerare automatizzato è quello riguardante la RandomStrategy in quanto la sua implementazione sarebbe dovuta essere cambiata troppo, infatti anche fornendogli un seed gli output cambiano se vengono eseguiti tutti i test o no.
+
 
 \subsection*{Elementi positivi}
 
@@ -335,6 +288,16 @@ Test che richiedono l'intervento da parte dell'utente sono considerati \textit{n
 
 \section{Note di sviluppo}
 
+\subsection{Morri Simone}
+\begin{itemize}
+    \item Stream, Lambda e Optional utilizzo pervasivo \href{https://github.com/MoneIsProgrammer/risiko/blob/1ef3e0756d3ff5c10e6d098ca0f10d445c8c83aa/src/main/java/it/unibo/risiko/model/player/strategy/ai/AggressiveStrategy.java#L67-L94}{ad esempio}
+    \item JavaFx e le sue componenti \href{https://github.com/MoneIsProgrammer/risiko/blob/1ef3e0756d3ff5c10e6d098ca0f10d445c8c83aa/src/main/java/it/unibo/risiko/view/PlayerSelectScene.java#L176-L223}{ad esempio}
+
+\end{itemize}
+Inoltre potrebbero essere presenti pattern di codice simile a quello altrui in quanto per imparare (principalmente JavaFx) ho seguito guide e discussioni sui forum su come utilizzare vari componenti che mi servivano. L'unico pezzo di codice copiato è \href{https://github.com/MoneIsProgrammer/risiko/blob/1ef3e0756d3ff5c10e6d098ca0f10d445c8c83aa/src/main/java/it/unibo/risiko/model/player/strategy/StrategyUtils.java#L106-L108}{questo} dove appare più volte per risolvere lo stesso problema di ottenere combinazioni di un set di oggetti, appare come metodo di libreria di ApacheCommons, ma non volendo importare una intera libreria solo per uno snippet di codice lungo 3 righe la fonte più "affidabile" che ho trovato è probabilmente una \href{https://www.cs.cornell.edu/courses/cs1112/2011sp/Notes/egL20/L20post.pdf?}{slide} di una lezione della Cornell, nello specifico la numero 16.
+%
+%
+%
 Questa sezione, come quella riguardante il design dettagliato va svolta \textbf{singolarmente da ogni membro del gruppo}.
 %
 Nella prima parte, ciascuno dovrà mostrare degli esempi di codice particolarmente ben realizzati,
@@ -461,6 +424,8 @@ futuri.
 Al fine di evitare pregiudizi involontari, l'intero capitolo verrà letto dai docenti solo dopo aver formulato la valutazione.
 
 \section{Autovalutazione e lavori futuri}
+\subsection{Morri Simone}
+Ritengo che la mia parte sia in parte troppo ingegnerizzata sia che si mantenga in piedi grazie a pezze e fix, questo forse è dovuto al tempo mal gestito, a una poca comunicazione iniziale e alla mala gestione delle parti in comune. La mia parte la credo forte in quanto più punti sono stati gestiti per avere una quanto più facile integrazione nelle altre componenti. Una evidente debolezza è la troppa dipendenza dalle componenti dei miei compagni che non sono riuscito a risolvere anche a livello teorico.
 
 \textbf{È richiesta una sezione per ciascun membro del gruppo, obbligatoriamente}.
 %
