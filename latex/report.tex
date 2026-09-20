@@ -48,6 +48,7 @@ Questo ci porta ad avere dei giocatori che devono essere consapevoli delle loro 
     \item Un mazzo che può simulare le azioni di un mazzo reale(Mischiare le carte, dare le carte, etc...).
     \item Una mappa che tiene traccia delle armate presenti e mostra quali territori formano vari continenti.
     \item Bot che possono giocare in mancanza di giocatori umani.
+\end{itemize}
 
 
 \section{Modello del Dominio
@@ -74,6 +75,20 @@ In particolare, è necessario descrivere accuratamente in che modo i componenti 
 A seguire, si dettagliano alcune parti del design, quelle maggiormente rilevanti al fine di chiarificare la logica con cui sono stati affrontati i principali aspetti dell'applicazione.
 
 \section{Architettura}
+
+Abbiamo usato il pattern MVC, con il codice diviso nei package \texttt{model}, \texttt{view} e \texttt{controller}.
+
+La parte che ho fatto io è divisa così: mappa, dadi e combattimento stanno nel model e non sanno niente né della grafica né del controller; il disegno della mappa sta nella view, ma da fuori si usa solo tramite l'interfaccia \texttt{MapView}, che non contiene tipi di JavaFX; \texttt{MapClickHandler} sta nel controller, riceve i click dalla view, legge la mappa e non modifica niente. Per tenere aggiornato lo schermo uso il pattern Observer: \texttt{MapView} estende \texttt{GameObserver}, quindi riceve gli \texttt{Event} e la mappa si ridisegna da sola.
+
+Per la mia parte cambiare libreria grafica vuol dire riscrivere solo \texttt{MapCanvas} e \texttt{DiceCanvas}: il model e \texttt{MapClickHandler} restano uguali.
+
+% TODO Simone: aggiungi qui la tua parte, cioè i punti d'ingresso di giocatori, eventi e storico,
+% e come si parlano GameController e GameScene. Segnala anche che GameController conosce
+% direttamente GameScene e usa property di JavaFX, e che History usa le liste di JavaFX.
+% TODO Hamail: aggiungi la tua parte, carte e fasi del turno, e come si aggancia al resto.
+% TODO: lo schema UML dell'architettura e' gia' pronto, lo aggiungo quando ci saranno
+% anche il mazzo e le fasi del turno, se no e' incompleto.
+
 
 Questa sezione spiega come le componenti principali del software interagiscono fra loro.
 %
@@ -138,6 +153,55 @@ Un ultimo problema non meno importante è come far costruire i vari giocatori ch
     \caption{The player creation pipeline}
     \label{fig:factoryPipeline}
 \end{figure}
+
+\subsection{Zangheri Marco. Costruire la mappa e collegarla ai giocatori}
+La mappa ha 42 territori, 6 continenti e 83 confini. Scriverla nel codice voleva dire centinaia di righe e ricompilare ogni volta che sbagliavo un confine, quindi l'ho messa in un file di testo, \texttt{world.txt}, che \texttt{MapLoader} legge riga per riga. \texttt{MapLoader} però non controlla niente: passa tutto a \texttt{GameMapBuilder}, e qui ho usato il pattern Builder. Il builder raccoglie continenti, territori e confini e solo alla fine, in \texttt{build()}, controlla che la mappa abbia senso: niente id doppi, niente confini verso territori che non esistono, nessun territorio isolato. Così una mappa sbagliata non si può creare: o esce giusta o ti dà errore.
+
+Poi c'era da decidere come legare i territori ai giocatori. Avevamo valutato anche l'alternativa di far restituire a \texttt{Territory} direttamente il \texttt{Player} proprietario, che era più comoda, ma così la mappa dipendeva dai giocatori, che a loro volta usano già la mappa, e non si poteva più usare né testare da sola. Ho tenuto quindi solo l'id del proprietario, e anche i confini sono id. Per decidere ci siamo basati sulla meta-relazione, che tra gli errori di architettura mette proprio un modello che non si può riusare. Il prezzo è che l'id è una \texttt{String} e il compilatore non ti ferma se ne passi uno sbagliato. Per non riscrivere ogni volta la ricerca per id ho fatto \texttt{Registry<T extends Identifiable>}, che poi è stato usato anche per i giocatori.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{latex/resources/MapBuilder.png}
+    \caption{Costruzione della mappa}
+    \label{fig:MapBuilder}
+\end{figure}
+
+\subsection{Zangheri Marco. Dadi sostituibili e combattimento}
+Per il combattimento il problema era testarlo: con i dadi veri il risultato cambia ogni volta e non puoi controllare se le perdite sono giuste. Quindi \texttt{Dice} l'ho fatto come interfaccia (pattern Strategy): in partita \texttt{CombatSystemImpl} usa \texttt{RandomDice}, nei test gli passo \texttt{FixedDice}, un dado finto a cui dico prima cosa deve uscire.
+
+\texttt{resolve} tira i dadi, li confronta a coppie partendo dal più alto (in parità vince chi difende) e restituisce un \texttt{BattleResult} con i dadi usciti, le perdite di tutti e due e se il territorio è conquistato. All'inizio mi sembrava una complicazione che \texttt{resolve} non tocchi la mappa, e che le armate le debba togliere chi gestisce il turno, ma è proprio quello che lo rende facile da testare: c'è un test apposta che controlla che dopo uno scontro i territori siano rimasti uguali.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{latex/resources/Combat.png}
+    \caption{Dadi sostituibili e combattimento}
+    \label{fig:Combat}
+\end{figure}
+
+\subsection{Zangheri Marco. La mappa a schermo}
+La mappa si deve ridisegnare dopo ogni attacco o spostamento, ma chiamarla dal codice del turno voleva dire mettere la grafica dentro alla logica di gioco. Ho usato il pattern Observer: \texttt{GameObserver} ha un solo metodo, \texttt{onEvent}, la mappa lo implementa e si aggiorna da sola quando le arriva un evento. Per capire se un evento cambia il disegno uso un visitor, \texttt{RedrawIfNeeded} dentro \texttt{MapCanvas}: un attacco appena dichiarato no, il risultato di un attacco sì. Qui ho visto pro e contro del visitor: quando Simone ha aggiunto \texttt{CardEvent} la mia classe non compilava più finché non ho deciso cosa farne. Fastidioso, però me ne sono accorto subito e non giocando.
+
+Il controller non vede mai \texttt{MapCanvas}, lo crea solo la schermata di gioco, e usa l'interfaccia \texttt{MapView}, dentro cui non c'è niente di JavaFX: i colori sono i \texttt{RisikoColors} del model e i territori sono id. Le posizioni stanno su una griglia fissa di 1000 per 600 e \texttt{ViewTransform} le riscala sulla finestra; siccome disegno e click usano la stessa trasformazione, il territorio che clicchi è sempre quello che vedi.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{latex/resources/MapView.png}
+    \caption{La mappa come osservatore degli eventi}
+    \label{fig:MapView}
+\end{figure}
+
+\subsection{Zangheri Marco. Cosa vuol dire un click}
+La mappa sa solo quale territorio hai cliccato, ma lo stesso click vuol dire cose diverse in base alla fase: in attacco il primo click è da dove attacchi e il secondo il bersaglio, nello spostamento il secondo è dove vai. Invece di mettere queste regole in \texttt{MapCanvas} ho fatto \texttt{MapClickHandler}, nel controller: col primo click scegli un tuo territorio con almeno due armate e la mappa evidenzia dove puoi andare, col secondo, se la destinazione va bene, avvisa chi ascolta e gli passa i due id. La mossa non la crea lui, quella resta alla parte dei giocatori.
+
+All'inizio c'era un metodo solo, \texttt{setTurn(giocatore, fase)}, perché pensavo che chi faceva il gestore dei turni avesse sempre tutte e due le cose insieme. Con \texttt{PlayerTurn} di Simone si è visto che non è così: la fase cambia più volte nello stesso turno e viene annunciata da sola, il giocatore cambia una volta per turno. L'ho quindi diviso in \texttt{setPlayer} e \texttt{setPhase}, e ho collegato \texttt{setPhase} ai cambi di fase.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{latex/resources/Click.png}
+    \caption{Gestione dei click}
+    \label{fig:Click}
+\end{figure}
+
 In questa sezione si possono approfondire alcuni elementi del design con maggior dettaglio.
 %
 Mentre ci attendiamo principalmente (o solo) interfacce negli schemi UML delle sezioni precedenti,
@@ -268,6 +332,12 @@ Questo schema è fatto male perché:
 
 La parte di testing  per i giocatori ho dovuto sottoporre a testing praticamente ogni mia implementazione delle strategy verificando che dessero l'output desiderato su una mappa fittizia e i vari builder di HumanStrategy producessero un output corretto, l'unico test che non è possibile considerare automatizzato è quello riguardante la RandomStrategy in quanto la sua implementazione sarebbe dovuta essere cambiata troppo, infatti anche fornendogli un seed gli output cambiano se vengono eseguiti tutti i test o no.
 
+\subsection{Zangheri Marco}
+Ho testato con JUnit 5 la parte di model: mappa, lettura del file, posizioni dei territori e combattimento, 14 test in tutto. Per mappa e combattimento uso mappe piccole fatte a mano, così ogni test prova una cosa sola e non dipende dal file, e i dadi li do io con \texttt{FixedDice}. \texttt{MapLoaderTest} e \texttt{MapLayoutTest} invece caricano la mappa vera e controllano che il file sia giusto: 42 territori, 6 continenti, confini che valgono nei due sensi e coordinate per ogni territorio, perché un territorio senza coordinate sarebbe in gioco ma non lo vedresti.
+
+Per \texttt{MapCanvas}, \texttt{DiceCanvas} e \texttt{MapClickHandler} non ho fatto test automatici per mancanza di tempo. \texttt{MapClickHandler} si potrebbe testare con una \texttt{MapView} finta, visto che non usa JavaFX.
+
+
 
 \subsection*{Elementi positivi}
 
@@ -295,6 +365,27 @@ La parte di testing  per i giocatori ho dovuto sottoporre a testing praticamente
 
 \end{itemize}
 Inoltre potrebbero essere presenti pattern di codice simile a quello altrui in quanto per imparare (principalmente JavaFx) ho seguito guide e discussioni sui forum su come utilizzare vari componenti che mi servivano. L'unico pezzo di codice copiato è \href{https://github.com/MoneIsProgrammer/risiko/blob/1ef3e0756d3ff5c10e6d098ca0f10d445c8c83aa/src/main/java/it/unibo/risiko/model/player/strategy/StrategyUtils.java#L106-L108}{questo} dove appare più volte per risolvere lo stesso problema di ottenere combinazioni di un set di oggetti, appare come metodo di libreria di ApacheCommons, ma non volendo importare una intera libreria solo per uno snippet di codice lungo 3 righe la fonte più "affidabile" che ho trovato è probabilmente una \href{https://www.cs.cornell.edu/courses/cs1112/2011sp/Notes/egL20/L20post.pdf?}{slide} di una lezione della Cornell, nello specifico la numero 16.
+
+\subsection{Zangheri Marco}
+\begin{itemize}
+    \item Generici con parametro vincolato, \texttt{Registry<T extends Identifiable>} \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/model/common/Registry.java#L18}{ad esempio}
+    \item Stream, lambda, method reference e Optional per sommare i bonus dei continenti \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/model/map/GameMapImpl.java#L85-L90}{ad esempio}
+    \item Ricerca in ampiezza (algoritmo classico di visita dei grafi, descritto per esempio in Cormen et al., \emph{Introduction to Algorithms}) sui territori di un giocatore, per controllare lo spostamento \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/model/map/GameMapImpl.java#L93-L121}{ad esempio}
+    \item Record per la trasformazione delle coordinate \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/ViewTransform.java#L13}{ad esempio}
+    \item Lambda per gli eventi di JavaFX sul \texttt{Canvas} \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/MapCanvas.java#L93-L95}{ad esempio}
+    \item JavaFX per la parte grafica: il \texttt{Canvas} su cui disegno mappa e dadi, e il legame tra le sue dimensioni e quelle della finestra \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/MapCanvas.java#L89-L100}{ad esempio}
+    \item Varargs nei test, per passare le righe di un file finto direttamente come argomenti \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/test/java/it/unibo/risiko/model/map/MapLoaderTest.java#L60-L62}{ad esempio}
+    \item Switch con le frecce per smistare le righe del file della mappa \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/model/map/MapLoader.java#L82-L99}{ad esempio}
+    \item \texttt{Registry} implementa \texttt{Iterable}, così territori e continenti si scorrono con un for-each \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/model/common/Registry.java#L106-L110}{ad esempio}
+\end{itemize}
+Per alcune parti, segnalate qui sotto, ho preso spunto da guide e discussioni sui forum:
+\begin{itemize}
+    \item La formula che decide se il numero delle armate va scritto in bianco o in nero sopra il colore del giocatore \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/MapCanvas.java#L303-L308}{qui}: i pesi 0.299, 0.587 e 0.114 sono quelli della luminosità percepita dello standard ITU-R BT.601.
+    \item Il calcolo per adattare la mappa alla finestra senza deformarla e tenerla centrata \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/ViewTransform.java#L22-L28}{qui}: la scala è il minimo tra i due rapporti di larghezza e altezza, e i margini servono per centrarla.
+    \item Il modo per far seguire al \texttt{Canvas} la grandezza della finestra, visto che in JavaFX non si ridimensiona da solo: gli leghi larghezza e altezza a quelle del contenitore \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/GameScene.java#L103-L104}{qui} e lo ridisegni quando cambiano \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/MapCanvas.java#L93-L94}{qui}.
+    \item Il metodo dei test che trasforma delle righe di testo in un \texttt{InputStream}, così \texttt{MapLoader} e \texttt{MapLayout} leggono un file finto senza doverlo creare davvero \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/test/java/it/unibo/risiko/model/map/MapLoaderTest.java#L60-L62}{qui}: questo l'ho copiato così com'è da una discussione su un forum, e lo stesso metodo è anche in \texttt{MapLayoutTest}.
+\end{itemize}
+
 %
 %
 %
@@ -427,6 +518,22 @@ Al fine di evitare pregiudizi involontari, l'intero capitolo verrà letto dai do
 \subsection{Morri Simone}
 Ritengo che la mia parte sia in parte troppo ingegnerizzata sia che si mantenga in piedi grazie a pezze e fix, questo forse è dovuto al tempo mal gestito, a una poca comunicazione iniziale e alla mala gestione delle parti in comune. La mia parte la credo forte in quanto più punti sono stati gestiti per avere una quanto più facile integrazione nelle altre componenti. Una evidente debolezza è la troppa dipendenza dalle componenti dei miei compagni che non sono riuscito a risolvere anche a livello teorico.
 
+\subsection{Zangheri Marco}
+Mi sono occupato della mappa e dei continenti, dei dadi e del combattimento, del disegno della mappa e della gestione dei click. Siccome la mia parte è quella su cui poggiano le altre, ho cercato di chiudere presto le interfacce, tenerle piccole e non dipendere dalle classi degli altri: la mappa usa solo id e la grafica si usa solo tramite \texttt{MapView}. Secondo me è stata la scelta giusta, perché quando gli altri hanno collegato le loro parti non ho dovuto cambiare niente di importante.
+
+Però ci sono cose che potevo fare meglio. La prima è il disegno: i territori sono cerchi collegati da linee e non le forme vere dei continenti, quindi si capisce chi confina con chi ma non sembra un tabellone. In più \texttt{MapCanvas} è la mia classe più grande e fa un sacco di cose insieme, l'avrei dovuta dividere in due, una per i continenti e una per i territori.
+
+La seconda sono gli id: usare le \texttt{String} ha tenuto separate mappa e giocatori, però il compilatore non distingue l'id di un territorio da quello di un giocatore, e se ne passi uno sbagliato te ne accorgi solo quando il programma gira. Col senno di poi avrei fatto due record piccoli, \texttt{TerritoryId} e \texttt{PlayerId}.
+
+La terza è che la mappa si fida troppo di chi la usa: \texttt{GameMap} restituisce i territori veri, quindi chiunque può cambiare proprietario e armate senza passare da nessuna regola, e lo stesso vale per il combattimento, visto che \texttt{resolve} calcola e basta. Erano scelte per tenere le cose semplici e testabili, ma potevo dare i territori in sola lettura e mettere nella mappa dei metodi che fanno i controlli.
+
+Queste cose le ho viste verso la fine, soprattutto per il tempo e per la poca comunicazione che c'è stata tra di noi all'inizio: alcune decisioni che riguardavano tutti e tre le abbiamo prese ognuno per conto suo.
+
+Nella proposta iniziale mi ero preso anche il salvataggio della partita, che era fra le funzionalità opzionali, e non sono riuscito a farlo. Il motivo è che per salvare non basta la mia parte: servono anche i giocatori, le carte e soprattutto la fase in cui il turno si trova, e quella parte non era finita quando ho chiuso la mia. Aspettare che fosse pronta voleva dire finire la mia parte oltre la data di consegna, quindi ho preferito chiudere quello che dipendeva solo da me. La strada però è aperta: la mappa si carica già da un file di testo, quindi per salvarla basterebbe riscrivere lo stesso formato con proprietari e armate aggiornati, e nel menu il pulsante per ricaricare una partita è già predisposto, solo disattivato.
+
+Se si andasse avanti, la prima cosa che farei è una mappa a poligoni: le coordinate stanno già in un file separato dal model, quindi basterebbe estendere \texttt{MapLayout} per fargli leggere una lista di punti invece di un punto solo.
+
+
 \textbf{È richiesta una sezione per ciascun membro del gruppo, obbligatoriamente}.
 %
 Ciascuno dovrà autovalutare il proprio lavoro, elencando i punti di forza e di debolezza in quanto prodotto.
@@ -435,6 +542,12 @@ Si ricorda, a tal proposito, che ciascuno studente è responsabile solo della pr
 Nel caso in cui si pensasse di portare avanti il progetto, ad esempio perché effettivamente impiegato, o perché sufficientemente ben riuscito da poter esser usato come dimostrazione di esser capaci progettisti, si descriva brevemente verso che direzione portarlo.
 
 \section{Difficoltà incontrate e commenti per i docenti}
+
+\subsection{Zangheri Marco}
+Le difficoltà più grosse non sono state di programmazione ma di coordinamento. Gli eventi, che sono il punto dove si toccano le parti di tutti e tre, sono passati dagli id agli oggetti quando avevo già scritto codice che li usava, e me ne sono accorto rileggendo il repository. Stessa cosa per i territori: la mappa li chiama con un id (\texttt{central\_america}) e le carte con il nome (\texttt{"Central America"}). La prima cosa da decidere insieme doveva essere proprio l'identificatore.
+
+Dal lato opposto, la cosa che mi sono portato dietro da questo progetto è Git: non l'avevo mai usato prima, e lavorando in tre ho imparato a usarlo sul serio, con i commit, i branch e le pull request su un repository condiviso.
+
 
 Questa sezione, \textbf{opzionale}, può essere utilizzata per segnalare ai docenti eventuali problemi o difficoltà incontrate nel corso o nello svolgimento del progetto, può essere vista come una seconda possibilità di valutare il corso (dopo quella offerta dalle rilevazioni della didattica) avendo anche conoscenza delle modalità e delle difficoltà collegate all'esame, cosa impossibile da fare usando le valutazioni in aula per ovvie ragioni.
 %
