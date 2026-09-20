@@ -1,36 +1,30 @@
 package it.unibo.risiko.model.turn;
 
-import it.unibo.risiko.controller.PlayerTurn;
-import it.unibo.risiko.model.deck.CardBonus;
 import it.unibo.risiko.model.player.Player;
+import it.unibo.risiko.controller.PhaseController;
 
 /**
  * This phase allows the current player to play cards before 
  * the reinforcement phase
+ * Before entering this phase, check whether the player has 
+ * at least three cards they can play
  * PlayCards
  */
-public class PlaycardsPhase {
-    private Player player;
-    private CardBonus bonus;
-    private final PlayerTurn phase;
-    int armies;
+public class PlaycardsPhase implements PhaseController{
+    // TODO: this class needs to receive current player
+    private final Player player;
 
-    PlaycardsPhase(Player player, CardBonus bonus, PlayerTurn phase) {
+    public void phaseStart() {
+        playCard();
+    }
+
+    PlaycardsPhase(final Player player) {
         this.player = player;
-        this.bonus = bonus;
-        this.phase = phase;
     }
 
-    /*FIXME: The player chooses the cards he wants to play, do I 
-    implement that part here or has it already been implemented? */
-
-    public int getTotaltArmies() {
-        // FIXME: add parameter setofcards i.e. cards that the player wants to play
-        return armies = this.bonus.bonusReinforcements(player.getId(), null);
+    // FIXME: does strategy.playCards automatically do everything
+    void playCard() {
+        player.playCard();
+        //strategy.playCards(player.getHand(), player);
     }
-
-    void playcardFinished() {
-        phase.advancePhase();
-    }
-
 }

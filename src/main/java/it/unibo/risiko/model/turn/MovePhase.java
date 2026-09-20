@@ -1,5 +1,6 @@
 package it.unibo.risiko.model.turn;
 
+import it.unibo.risiko.controller.PhaseController;
 import it.unibo.risiko.controller.PlayerTurn;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.Objective;
@@ -8,13 +9,17 @@ import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
 
-public class MovePhase {
+public class MovePhase implements PhaseController{
     private final GameMap map;
     private final Roster players;
     private final VictoryCheck check;
     private final PlayerTurn phase;
     // TODO: remove after rest of the move phase is completed
     private Player currentPlayer;
+
+    public void phaseStart() {
+        //
+    }
 
     public MovePhase (final GameMap map, final Roster players, final VictoryCheck check, final PlayerTurn phase) {
         this.map = map;
@@ -23,6 +28,10 @@ public class MovePhase {
         this.phase = phase;
     }
     // TODO: the player can move his armies from one of his territories to another
+    void moveArmies() {
+        currentPlayer.move();
+    }
+
 
     /** After the player has moved armies between territories, 
      * check whether they've achieved their objective or has a 

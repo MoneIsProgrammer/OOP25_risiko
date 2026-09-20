@@ -2,7 +2,6 @@ package it.unibo.risiko.model.deck;
 
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.Territory;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +27,7 @@ public class CardBonus {
      * In input, this method gets: 
      * the player's ID;
      * the cards that the player wants to play */
-    public int bonusReinforcements(String playerId, ArrayList<Card> setOfCards) {
+    public int bonusReinforcements(String playerId, List<Card> setOfCards) {
         
         int nOfTerritoriesOccupied = this.map.getTerritoriesOf(playerId).size();
         int troopsDeployable = 0;

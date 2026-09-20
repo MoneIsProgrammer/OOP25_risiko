@@ -319,7 +319,7 @@ public final class HumanStrategyImpl implements HumanStrategy {
         }
 
         private int calculateArmies(final Collection<Card> combo, final Player owner) {
-            return calc.calculateThreeBonus(List.copyOf(combo), owner.getId());
+            return calc.bonusReinforcements(owner.getId(), List.copyOf(combo));
         }
 
         private void clear() {

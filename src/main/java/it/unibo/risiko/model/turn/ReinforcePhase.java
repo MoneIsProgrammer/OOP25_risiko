@@ -1,6 +1,6 @@
 package it.unibo.risiko.model.turn;
 
-import it.unibo.risiko.controller.PlayerTurn;
+import it.unibo.risiko.controller.PhaseController;
 import it.unibo.risiko.model.player.Player;
 
 /**
@@ -8,19 +8,31 @@ import it.unibo.risiko.model.player.Player;
  * armies
  * ReinforcePhase
  */
-public class ReinforcePhase {
+public class ReinforcePhase implements PhaseController{
+    // TODO: this class needs to receive current player
 
     private final Player player;
-    private final PlayerTurn phase;
+    private boolean completed = false;
     
-    ReinforcePhase(final Player player, PlayerTurn phase) {
+    public void phaseStart() {
+        player.reinforce(player.getArmies());
+
+        completed = true;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    ReinforcePhase(final Player player) {
         this.player = player;
-        this.phase = phase;
     }
 
-    // TODO: the player can now place his armies
-
-    void reinforceFinished () {
-        phase.advancePhase();
-    }
+    // FIXME: setupPlacement is enough for this? or getReinforce is?
+    /* o devo solo chiamare getReinforce(player.getArmies()) qua?
+    private void placeArmies() {
+        while(player.getArmies() > 0) {
+            player.setupPlacement();
+        }
+    }*/
 }

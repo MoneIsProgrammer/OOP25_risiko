@@ -17,7 +17,7 @@ public final class PlayerTurn {
     private boolean setupDone = false;
     private List<Player> playerOrder = new ArrayList<>();
     private int counter = -1;
-    private Phase currentPhase = Phase.REINFORCE; //TODO change to setup
+    private Phase currentPhase = Phase.SETUP;
     private final PropertyChangeSupport phaseChange = new PropertyChangeSupport(this);
 
 
@@ -29,6 +29,15 @@ public final class PlayerTurn {
     public PlayerTurn(final Roster roster) {
         playerOrder.addAll(roster.getAllPlayers());
         Collections.shuffle(playerOrder);
+    }
+
+    /**
+     * Gets the current player
+     * 
+     * @return the current player
+     */
+    public Player currentPlayer() {
+        return playerOrder.get(counter);
     }
 
     /**
@@ -97,7 +106,7 @@ public final class PlayerTurn {
      * @return the current game phase
      */
     public Phase getCurrentPhase() {
-        return this.currentPhase;
+        return currentPhase;
     }
 
     /**

@@ -1,5 +1,6 @@
 package it.unibo.risiko.model.turn;
 
+import it.unibo.risiko.controller.PhaseController;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.CardTerritories;
 import it.unibo.risiko.model.deck.ObjectivesDeck;
@@ -7,25 +8,40 @@ import it.unibo.risiko.model.deck.TerritoriesDeck;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
-import it.unibo.risiko.controller.PlayerTurn;
 
 /**
  * This is the phase before the game starts, initial cards, territories, 
  * army positioning, etc are set
  * SetupPhase
  */
-public class SetupPhase {
+public class SetupPhase implements PhaseController{
 
     private ObjectivesDeck objectiveDeck = new ObjectivesDeck();
     private TerritoriesDeck territoryDeck = new TerritoriesDeck();
     private final Roster players;
-    private final PlayerTurn phase;
     private final GameMap map;
+    private boolean completed = false;
 
-    public SetupPhase(ObjectivesDeck objectiveDeck, final Roster players, final PlayerTurn phase, final GameMap map) {
+    public void phaseStart() {
+        setObjectivesDeck();
+        dealObjectiveCards();
+        setInitialTerritoryDeck();
+        dealInitialTerritoryCards();
+        setStartingForces();
+        setInitialTerritories();
+        armiesPlacement();
+        setTerritoryDeck();
+
+        completed = true;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public SetupPhase(ObjectivesDeck objectiveDeck, final Roster players, final GameMap map) {
         this.objectiveDeck = objectiveDeck;
         this.players = players;
-        this.phase = phase;
         this.map = map;
     }
 
@@ -38,23 +54,23 @@ public class SetupPhase {
      * therefore, create an objectives deck and deal one objective card to each player
      * and create a territory deck and deal territory cards to each player
      */
-    public void setObjectivesDeck() {
+    private void setObjectivesDeck() {
         this.objectiveDeck.createObjectiveDeck();
     }
 
-    public void dealObjectiveCards() {
+    private void dealObjectiveCards() {
         for(Player player: players.getAllPlayers()) {
             player.setObjective(objectiveDeck.setObjectiveCard());
         }
     }
 
     /* Populate the territory deck with all territory cards, no jolly cards */
-    public void setInitialTerritoryDeck() {
+    private void setInitialTerritoryDeck() {
         this.territoryDeck.createTerritoryDeck();
     }
 
     /* Deal the territory cards */
-    public void dealInitialTerritoryCards() {
+    private void dealInitialTerritoryCards() {
         /* Counter to assure that when dealing cards during the setup phase, 
         it stops after dealing 42 cards */
         int cardsDealt = 0;
@@ -72,20 +88,22 @@ public class SetupPhase {
      * gives starting forces to each player, subtract the 
      * amount of territories initially assigned to the player,
      * as each territory needs one army at setup */
-    public void setStartingForces() {
+    private void setStartingForces() {
         for (Player player: players.getAllPlayers()) {
-            player.setArmies(player.getStartingForces() - player.getHand().size());
+            player.setArmies(player.getArmies() - player.getHand().size());
         }
     }
 
     /** Assign the player's id to the territory's owner id, so that each territory that the 
      * player got has the player's id associated
      */
-    public void setInitialTerritories() {
+    private void setInitialTerritories() {
         for (Player player: players.getAllPlayers()) {
             for (Card card: player.getHand()) {
-                setTerritoryOwner(card.getTerritory().getTerritoryName(), player.getId());                
+                setTerritoryOwner(card.getTerritory().getTerritoryName(), player.getId());
             }
+            /* now that the territories have been assigned to the player, clear the player's hand */
+            player.getHand().clear();
         }
     }
 
@@ -104,23 +122,36 @@ public class SetupPhase {
         }
     }
 
-    // TODO: posizionamento di tre armate alla volta (le armate sono prese dalla dotazione iniziale)
-    public void armiesPlacement() {
-        for (Player player: players.getAllPlayers()) {
-            //
-        }
+    // TODO: chiamando setupPlacement() faccio posizionare le armate al player o serve un metodo per farglieli posizionare?
+    // TODO: chiamando getSetup(player, player.getArmies()); dentro il foreach loop per i players, non serve armiesRemaining, player.setupPlacement?
+    /**
+     * Allows players to set up armies in their territories
+     * Uses an int variable (armiesRemaining) to check whether all the armies 
+     * have been placed
+     * Using a do-while, it uses setupPlacement() method to set up armies, the 
+     * number of remaining armies is set to the amount of armies the player has 
+     * remaining
+     * armiesRemaining is set before setting up armies in case a player has more 
+     * armies than others
+     */
+    private void armiesPlacement() {
+        int armiesRemaining = 0;
+        do {
+            for (Player player: players.getAllPlayers()) {
+                armiesRemaining = player.getArmies();
+                if (armiesRemaining > 0) {
+                    player.setupPlacement();
+                }
+            }
+        } while(armiesRemaining > 0);
     }
 
     /** The armies have been positioned, the territory deck is repopulated 
      * this time it contains the jolly cards too
      * This deck will now be used for the rest of the game
      */
-    public void setTerritoryDeck() {
+    private void setTerritoryDeck() {
         this.territoryDeck.createTerritoryDeck();
         this.territoryDeck.addJollyTerritoryDeck();
-    }
-
-    void setUpFinished(){
-        phase.setupFinished();
     }
 }

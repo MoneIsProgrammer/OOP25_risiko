@@ -1,22 +1,26 @@
 package it.unibo.risiko.model.turn;
 
-import it.unibo.risiko.controller.PlayerTurn;
+import it.unibo.risiko.controller.PhaseController;
+import it.unibo.risiko.model.player.Player;
 
 /**
  * This phase allows the current player to attack
  * AttackPhase
  */
-public class AttackPhase {
+public class AttackPhase implements PhaseController{
 
-    private final PlayerTurn phase;
+    private final Player player;
 
-    AttackPhase (final PlayerTurn phase) {
-        this.phase = phase;
+    public void phaseStart() {
+        player.attack();
     }
-    // TODO: Attack Implementation or already method exists?
 
-    void attackFinished() {
-        phase.advancePhase();
+    AttackPhase (final Player player) {
+        this.player = player;
     }
+    // TODO: Attack Implementation or already method exists? is it player.attack() or player.strategy.attack?
+    /*void canAttack() {
+        player.attack();
+    }*/
 
 }

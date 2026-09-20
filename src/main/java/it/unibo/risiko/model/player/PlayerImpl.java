@@ -67,7 +67,7 @@ public final class PlayerImpl implements Player {
         return this.strategy.getReinforce(this, armies);
     }
 
-    public int getStartingForces() {
+    public int getArmies() {
         return this.reinforces;
     }
 
