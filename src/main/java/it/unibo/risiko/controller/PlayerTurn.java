@@ -19,6 +19,10 @@ public final class PlayerTurn {
     private int counter = -1;
     private Phase currentPhase = Phase.SETUP;
     private final PropertyChangeSupport phaseChange = new PropertyChangeSupport(this);
+    /** Initially gets the current player when the playerOrder is decided, 
+     * when it's the next player's turn, it changes current player to the new player
+    */
+    private Player currentPlayer;
 
 
     /**
@@ -29,15 +33,7 @@ public final class PlayerTurn {
     public PlayerTurn(final Roster roster) {
         playerOrder.addAll(roster.getAllPlayers());
         Collections.shuffle(playerOrder);
-    }
-
-    /**
-     * Gets the current player
-     * 
-     * @return the current player
-     */
-    public Player currentPlayer() {
-        return playerOrder.get(counter);
+        currentPlayer = playerOrder.getFirst();
     }
 
     /**
@@ -50,6 +46,7 @@ public final class PlayerTurn {
         if (setupDone) {
             this.currentPhase = Phase.PLAYCARDS;
         }
+        currentPlayer = playerOrder.get(counter % playerOrder.size());
         return playerOrder.get(counter % playerOrder.size());
     }
 
@@ -107,6 +104,13 @@ public final class PlayerTurn {
      */
     public Phase getCurrentPhase() {
         return currentPhase;
+    }
+
+    /**
+     * Gets the curreny player
+     */
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     /**

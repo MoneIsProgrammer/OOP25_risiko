@@ -1,6 +1,5 @@
 package it.unibo.risiko.model.turn;
 
-import it.unibo.risiko.controller.PhaseController;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.CardTerritories;
 import it.unibo.risiko.model.deck.ObjectivesDeck;
@@ -8,18 +7,22 @@ import it.unibo.risiko.model.deck.TerritoriesDeck;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
+import it.unibo.risiko.model.player.strategy.HumanStrategy;
+import it.unibo.risiko.model.player.strategy.PlayerStrategy;
 
 /**
  * This is the phase before the game starts, initial cards, territories, 
  * army positioning, etc are set
  * SetupPhase
  */
-public class SetupPhase implements PhaseController{
+public class SetupPhase{
 
     private ObjectivesDeck objectiveDeck = new ObjectivesDeck();
     private TerritoriesDeck territoryDeck = new TerritoriesDeck();
     private final Roster players;
     private final GameMap map;
+    private PlayerStrategy strategy;
+    private HumanStrategy humanStrategy;
     private boolean completed = false;
 
     public void phaseStart() {
@@ -39,10 +42,11 @@ public class SetupPhase implements PhaseController{
         return completed;
     }
 
-    public SetupPhase(ObjectivesDeck objectiveDeck, final Roster players, final GameMap map) {
+    public SetupPhase(ObjectivesDeck objectiveDeck, final Roster players, final GameMap map, final PlayerStrategy strategy) {
         this.objectiveDeck = objectiveDeck;
         this.players = players;
         this.map = map;
+        this.strategy = strategy;
     }
 
     /* Player order is already set by PlayerTurn */
@@ -122,28 +126,22 @@ public class SetupPhase implements PhaseController{
         }
     }
 
-    // TODO: chiamando setupPlacement() faccio posizionare le armate al player o serve un metodo per farglieli posizionare?
-    // TODO: chiamando getSetup(player, player.getArmies()); dentro il foreach loop per i players, non serve armiesRemaining, player.setupPlacement?
+    // FIXME: cosa devo passare a setupPlacement del human player?
     /**
      * Allows players to set up armies in their territories
-     * Uses an int variable (armiesRemaining) to check whether all the armies 
-     * have been placed
-     * Using a do-while, it uses setupPlacement() method to set up armies, the 
-     * number of remaining armies is set to the amount of armies the player has 
-     * remaining
-     * armiesRemaining is set before setting up armies in case a player has more 
-     * armies than others
+     * Calls different methods for placement, based on whether 
+     * the player is human or ai
      */
     private void armiesPlacement() {
-        int armiesRemaining = 0;
-        do {
-            for (Player player: players.getAllPlayers()) {
-                armiesRemaining = player.getArmies();
-                if (armiesRemaining > 0) {
-                    player.setupPlacement();
-                }
+        for (Player player: players.getAllPlayers()) {
+            if (!(player.isHuman())){
+                player.setupPlacement();
+            } else {
+                strategy = player.getStrategy();
+                humanStrategy = (HumanStrategy) strategy;
+                humanStrategy.setupPlacement(null);
             }
-        } while(armiesRemaining > 0);
+        }
     }
 
     /** The armies have been positioned, the territory deck is repopulated 

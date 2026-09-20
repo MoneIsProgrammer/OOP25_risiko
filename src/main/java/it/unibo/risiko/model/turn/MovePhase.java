@@ -1,6 +1,5 @@
 package it.unibo.risiko.model.turn;
 
-import it.unibo.risiko.controller.PhaseController;
 import it.unibo.risiko.controller.PlayerTurn;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.Objective;
@@ -8,28 +7,49 @@ import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
+import it.unibo.risiko.model.player.strategy.HumanStrategy;
+import it.unibo.risiko.model.player.strategy.PlayerStrategy;
 
-public class MovePhase implements PhaseController{
+public class MovePhase{
     private final GameMap map;
     private final Roster players;
     private final VictoryCheck check;
-    private final PlayerTurn phase;
-    // TODO: remove after rest of the move phase is completed
-    private Player currentPlayer;
+    private PlayerTurn turn;
+    private Player currentPlayer = turn.getCurrentPlayer();
+    private PlayerStrategy strategy;
+    private HumanStrategy humanStrategy;
+    private boolean isCompleted = false;
 
     public void phaseStart() {
-        //
+        moveArmies();
+        if (checkElimination()) {
+            // TODO: player ha vinto, cosa faccio?
+        }
+
+        isCompleted = true;
     }
 
-    public MovePhase (final GameMap map, final Roster players, final VictoryCheck check, final PlayerTurn phase) {
+    public boolean isCompleted () {
+        return isCompleted;
+    }
+
+    public MovePhase (final GameMap map, final Roster players, final VictoryCheck check) {
         this.map = map;
         this.players = players;
         this.check = check;
-        this.phase = phase;
     }
     // TODO: the player can move his armies from one of his territories to another
     void moveArmies() {
-        currentPlayer.move();
+        if (!(currentPlayer.isHuman())) {
+            currentPlayer.move();
+        } else {
+            strategy = currentPlayer.getStrategy();
+            humanStrategy = (HumanStrategy) strategy;
+            humanStrategy.moveDestination(null);
+            humanStrategy.moveSource(null);
+            humanStrategy.moveStrenght(0);
+            humanStrategy.getMoveAfterConquest(null, null, currentPlayer);
+        }
     }
 
 
@@ -38,7 +58,7 @@ public class MovePhase implements PhaseController{
      * player been eliminated
      */
 
-    public String checkElimination() {
+    public boolean checkElimination() {
         for (Player player: players.getAllPlayers()) {
             if (map.getTerritoriesOf(player.getId()).size() <= 0) {
                 /** Check whether a player has been eliminated and if 
@@ -47,19 +67,14 @@ public class MovePhase implements PhaseController{
                  * player has completed their objective and won the game.
                  * 
                  */
-                if (managePlayerElimination(player, currentPlayer)) {
-                    return "Player: " + currentPlayer.getName() + " achieved objective.";
-                }
+                return (managePlayerElimination(player, currentPlayer));
             }
         }
         /** If none of the players got eliminated or if a player got eliminated 
          * and this was not the objective of the current player, check if the 
          * player has achieved their objective
         */
-        if (check.victoryCheck(currentPlayer)) {
-            return "Player: " + currentPlayer.getName() + " achieved objective.";
-        }
-        return null;
+        return (check.victoryCheck(currentPlayer));
     }
 
 
@@ -136,9 +151,5 @@ public class MovePhase implements PhaseController{
             default:
                 throw new IllegalArgumentException("colour does not match");
         }
-    }
-
-    void moveFinished() {
-        phase.advancePhase();
     }
 }

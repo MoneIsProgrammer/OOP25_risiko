@@ -1,7 +1,9 @@
 package it.unibo.risiko.model.turn;
 
 import it.unibo.risiko.model.player.Player;
-import it.unibo.risiko.controller.PhaseController;
+import it.unibo.risiko.model.player.strategy.HumanStrategy;
+import it.unibo.risiko.model.player.strategy.PlayerStrategy;
+import it.unibo.risiko.controller.PlayerTurn;
 
 /**
  * This phase allows the current player to play cards before 
@@ -10,21 +12,47 @@ import it.unibo.risiko.controller.PhaseController;
  * at least three cards they can play
  * PlayCards
  */
-public class PlaycardsPhase implements PhaseController{
-    // TODO: this class needs to receive current player
-    private final Player player;
+public class PlaycardsPhase{
+    private PlayerTurn turn;
+
+    /* Receive current player from player turn */
+    private Player player = turn.getCurrentPlayer();
+    private PlayerStrategy strategy;
+    private HumanStrategy humanStrategy;
+    private boolean isCompleted = false;
+    private final int MIN_CARDS = 3;
 
     public void phaseStart() {
-        playCard();
+        /**
+         * Before allowing the player to play cards, 
+         * checks whether the player has at least three 
+         * cards to play
+         */
+        if (player.getHand().size() >= MIN_CARDS) {
+            playCard();
+        }
+
+        isCompleted = true;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
     }
 
     PlaycardsPhase(final Player player) {
         this.player = player;
     }
 
-    // FIXME: does strategy.playCards automatically do everything
+    // FIXME: how do i get the combo of cards to play for the human player?
+    /** Based on whether a player is human or ai, calls different methods to 
+     * allow player to play cards  */
     void playCard() {
-        player.playCard();
-        //strategy.playCards(player.getHand(), player);
+        if (player.isHuman()) {   
+            strategy = player.getStrategy();
+            humanStrategy = (HumanStrategy) strategy;
+            humanStrategy.cardsToPlay(null);
+        } else {
+            player.playCard();
+        }
     }
 }
