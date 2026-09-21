@@ -156,12 +156,10 @@ public class Deck {
         int territoriesForTroop = CardTerritories.values().length / CardTroops.values().length;
         /* To populate, we're going to loop through all of our 
         troops and for each troop we'll add 14 territories */
-        for (CardTroops troop: CardTroops.values()) {
-            for (int i = 0; i < territoriesForTroop; i++) {
-                Card card = new Card(CardTerritories.values()[i++], troop);
-                /* Here "this" refers to each individual deck we create */
-                this.add(card);
-            }
+        var terr = CardTerritories.values();
+        var troop = CardTroops.values();
+        for (int i = 0; i < terr.length; i++) {
+            this.add(new Card(terr[i],troop[i%CardTroops.values().length]));
         }
         /** Now that the card has been populated
          * we'll update the length of the deck
@@ -169,6 +167,7 @@ public class Deck {
         deckLength = deck.size();
     }
 
+    /* Adds two jolly cards to our territories deck */
     /* Adds two jolly cards to our territories deck */
     public void addJolly() {
         /* We'll add two jolly cards to the territories deck, they must have
