@@ -66,7 +66,7 @@ public class CardBonus {
          */
         int nJolly = 0;
         for (Card card : setOfCards) {
-            if (card.getCardType().equals(CardType.JOLLY)) {
+            if (card.getCardType().equals((CardType.JOLLY).getCardType())) {
                 nJolly++;
             }
         }
@@ -74,7 +74,7 @@ public class CardBonus {
         int nCavalry = 0;
         int nInfantry = 0;
         for (Card card : setOfCards) {
-            if (card.getCardType().equals(CardType.TERRITORY)) {
+            if (card.getCardType().equals((CardType.TERRITORY).getCardType())) {
                 if (card.getTroop().equals(CardTroops.CANNONS)) {
                     nCannons++;
                 } else if (card.getTroop().equals(CardTroops.CAVALRY)) {
