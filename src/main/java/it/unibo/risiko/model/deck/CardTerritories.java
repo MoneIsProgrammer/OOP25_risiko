@@ -5,62 +5,68 @@ package it.unibo.risiko.model.deck;
  * in the deck are fixed
  */
 public enum CardTerritories {
-    AFGHANISTAN("Afghanistan"),
-    NORTHAFRICA("North Africa"),
-    SOUTHAFRICA("South Africa"),
-    EASTAFRICA("East Africa"),
-    ALASKA("Alaska"),
-    ALBERTA("Alberta"),
-    CENTRALAMERICA("Central America"),
-    ARGENTINA("Argentina"),
-    WESTERNAUSTRALIA("Western Australia"),
-    EASTERNAUSTRALIA("Eastern Australia"),
-    BRAZIL("Brazil"),
-    CHINA("China"),
-    CHILE("Chile"),
-    CONGO("Congo"),
-    EGYPT("Egypt"),
-    SOUTHERNEUROPE("Southern Europe"),
-    WESTERNEUROPE("Western Europe"),
-    NORTHERNEUROPE("Northern Europe"),
-    JAPAN("Japan"),
-    GREATBRITAIN("Great Britain"),
-    GREENLAND("Greenland"),
-    INDIA("India"),
-    INDONESIA("Indonesia"),
-    ICELAND("Iceland"),
-    YAKUTIA("Yakutia"),
-    KAMCHATKA("Kamchatka"),
-    MADAGASCAR("Madagascar"),
-    MIDDLEEAST("Middle East"),
-    MONGOLIA("Mongolia"),
-    NEWGUINEA("New Guinea"),
-    ONTARIO("Ontario"),
-    PERU("Peru"),
-    QUEBEC("Quebec"),
-    SCANDINAVIA("Scandinavia"),
-    SIAM("Siam"),
-    SIBERIA("Siberia"),
-    WESTERNAMERICA("Western America"),
-    EASTERNAMERICA("Eastern America"),
-    NORTHWESTTERRITORIES("Northwest Territories"),
-    UKRAINE("Ukraine"),
-    URALS("Urals"),
-    VENEZUELA("Venezuela");
+    AFGHANISTAN("Afghanistan", "afghanistan"),
+    NORTHAFRICA("North Africa", "north_africa"),
+    SOUTHAFRICA("South Africa", "south_africa"),
+    EASTAFRICA("East Africa", "east_africa"),
+    ALASKA("Alaska", "alaska"),
+    ALBERTA("Alberta", "alberta"),
+    CENTRALAMERICA("Central America", "central_america"),
+    ARGENTINA("Argentina", "argentina"),
+    WESTERNAUSTRALIA("Western Australia", "western_australia"),
+    EASTERNAUSTRALIA("Eastern Australia", "eastern_australia"),
+    BRAZIL("Brazil", "brazil"),
+    CHINA("China", "china"),
+    IRKUTSK("Irkutsk", "irkutsk"),
+    CONGO("Congo", "congo"),
+    EGYPT("Egypt", "egypt"),
+    SOUTHERNEUROPE("Southern Europe", "southern_europe"),
+    WESTERNEUROPE("Western Europe", "western_europe"),
+    NORTHERNEUROPE("Northern Europe", "northern_europe"),
+    JAPAN("Japan", "japan"),
+    GREATBRITAIN("Great Britain", "great_britain"),
+    GREENLAND("Greenland", "greenland"),
+    INDIA("India", "india"),
+    INDONESIA("Indonesia", "indonesia"),
+    ICELAND("Iceland", "iceland"),
+    YAKUTIA("Yakutia", "yakutia"),
+    KAMCHATKA("Kamchatka", "kamchatka"),
+    MADAGASCAR("Madagascar", "madagascar"),
+    MIDDLEEAST("Middle East", "middle_east"),
+    MONGOLIA("Mongolia", "mongolia"),
+    NEWGUINEA("New Guinea", "new_guinea"),
+    ONTARIO("Ontario", "ontario"),
+    PERU("Peru", "peru"),
+    QUEBEC("Quebec", "quebec"),
+    SCANDINAVIA("Scandinavia", "scandinavia"),
+    SIAM("Siam", "siam"),
+    SIBERIA("Siberia", "siberia"),
+    WESTERNAMERICA("Western America", "western_america"),
+    EASTERNAMERICA("Eastern America", "eastern_america"),
+    NORTHWESTTERRITORIES("Northwest Territories", "northwest_territories"),
+    UKRAINE("Ukraine", "ukraine"),
+    URALS("Urals", "urals"),
+    VENEZUELA("Venezuela", "venezuela");
 
     /**
      * The private fields are final, to ensure
      * that they are not modified during runtime
      */
     private final String territoryName;
+    private final String id;
 
     /* Constructor */
-    private CardTerritories(String territoryName) {
+    private CardTerritories(String territoryName, String id) {
         this.territoryName = territoryName;
+        this.id = id;
     }
 
     /* Public Method - Getters */
     public String getTerritoryName() {
         return territoryName;
+    }
+
+    public String getTerritoryId() {
+        return id;
     }
 }

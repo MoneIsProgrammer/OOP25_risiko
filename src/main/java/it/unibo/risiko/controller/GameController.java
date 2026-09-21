@@ -4,9 +4,12 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import it.unibo.risiko.model.deck.ObjectivesDeck;
+import it.unibo.risiko.model.deck.TerritoriesDeck;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.history.HistoryImpl;
 import it.unibo.risiko.model.map.GameMap;
@@ -52,15 +55,24 @@ public final class GameController {
      */
     public GameController(final List<PlayerRequest> requests, Stage stage) {
         try {
-            map = MapLoader.loadDefault();
+            this.map = MapLoader.loadDefault();
         } catch (final IOException e) {
             e.printStackTrace();
         }
         //Build map before players then the territories must be assigned
-        this.roster = new RosterImpl(requests, map); 
+        this.roster = new RosterImpl(requests, this.map); 
         this.turn = new PlayerTurn(roster);
         this.phase = Phase.SETUP;
         this.stage = stage;
+        TerritoriesDeck territoryDeck = new TerritoriesDeck();
+        territoryDeck.populateTerritoryDeck();
+        for (int i = 0; i < 42; i++) {
+            var curr = this.turn.next();
+            var terr = territoryDeck.dealCard();
+            System.out.println(terr.getTerritory().getTerritoryName());
+            this.map.getTerritory(terr.getTerritory().getTerritoryId()).addArmies(1);
+            this.map.getTerritory(terr.getTerritory().getTerritoryId()).setOwner(curr.getId());
+        }
     }
 
     private Consumer<Integer> getStrenght() {
@@ -76,13 +88,12 @@ public final class GameController {
         };
     }
 
-    private Consumer<Map<String, Integer>> getReiforceMap() {
+    private Consumer<Entry<String, Integer>> getReiforceMap() {
         return new Consumer<>() {
 
             @Override
-            public void accept(final Map<String, Integer> t) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'accept'");
+            public void accept(final Entry<String, Integer> t) {
+                
             }
         };
     }
@@ -103,5 +114,17 @@ public final class GameController {
     public void addListener(PropertyChangeListener listener) {
         turn.addPropertyChangeListener(listener);
     }
+
+    public void confirmAction() {
+
+    }
+
+    public void startGame() {
+        while (true) {
+            
+        }
+    }
+
+    private void setupAction() {}
 
 }
