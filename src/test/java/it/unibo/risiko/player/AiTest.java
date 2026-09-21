@@ -252,7 +252,7 @@ final class AiTest {
         this.defensive.addCard(new Card(CardTerritories.AFGHANISTAN, CardTroops.CAVALRY));
         cardPlay = this.defensive.playCard();
         assertEquals(Optional.empty(), cardPlay);
-        this.defensive.addCard(new Card(CardTerritories.CHILE, CardTroops.CANNONS));
+        this.defensive.addCard(new Card(CardTerritories.IRKUTSK, CardTroops.CANNONS));
         cardPlay = this.defensive.playCard();
         assertEquals(Optional.empty(), cardPlay);
         this.defensive.addCard(new Card(CardTerritories.NEWGUINEA, CardTroops.INFANTRY));
