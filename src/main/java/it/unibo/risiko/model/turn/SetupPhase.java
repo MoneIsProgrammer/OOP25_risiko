@@ -126,7 +126,6 @@ public class SetupPhase{
         }
     }
 
-    // FIXME: cosa devo passare a setupPlacement del human player?
     /**
      * Allows players to set up armies in their territories
      * Calls different methods for placement, based on whether 
@@ -139,7 +138,9 @@ public class SetupPhase{
             } else {
                 strategy = player.getStrategy();
                 humanStrategy = (HumanStrategy) strategy;
-                humanStrategy.setupPlacement(null);
+                if (humanStrategy.canCreateReinforce()) {
+                    player.setupPlacement();
+                }
             }
         }
     }

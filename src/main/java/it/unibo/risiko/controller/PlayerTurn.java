@@ -25,6 +25,7 @@ public final class PlayerTurn {
      * when it's the next player's turn, it changes current player to the new player
     */
     private Player currentPlayer;
+    private Player winner = null;
 
 
     /**
@@ -44,16 +45,21 @@ public final class PlayerTurn {
      * @return the next player
      */
     public Player next() {
-        counter++;
-        final Player old = this.currentPlayer;
-        currentPlayer = playerOrder.get(counter % playerOrder.size());
-        if (setupDone) {
-            // with setPhase the listeners know it too
-            setPhase(Phase.PLAYCARDS);
+        if (isGameOver()) {
+            // TODO: trigger game over in view
+            return winner;
         }
-        // says who plays now, the map needs it for the clicks
-        playerChange.firePropertyChange("player", old, currentPlayer);
-        return playerOrder.get(counter % playerOrder.size());
+        else {
+            counter++;
+            final Player old = this.currentPlayer;
+            currentPlayer = playerOrder.get(counter % playerOrder.size());
+            if (setupDone) {
+                // with setPhase the listeners know it too
+                setPhase(Phase.PLAYCARDS);
+            }
+            // says who plays now, the map needs it for the clicks
+            playerChange.firePropertyChange("player", old, currentPlayer);
+            return playerOrder.get(counter % playerOrder.size());}
     }
 
     /**
@@ -117,6 +123,36 @@ public final class PlayerTurn {
      */
     public Player getCurrentPlayer() {
         return currentPlayer;
+    }
+
+    /**
+     * In the move phase, the checkElimination method, 
+     * checks whether a player has been eliminated and 
+     * manages that player's elimination. After that it 
+     * calls the victoryCheck method to check if the 
+     * current player has reached their objective, if they 
+     * have, checkElimination returns true and the current 
+     * player is set as winner 
+     * @param winner the player that reached their objective
+     */
+    public void setWinner(Player winner) {
+        this.winner = winner;
+    }
+
+    /**
+     * Checks if a winner has been set, if yes, 
+     * it means the game is over
+     * @return returns true if a winner has been set
+     */
+    public boolean isGameOver() {
+        return winner != null;
+    }
+
+    /**
+     * Getter for the player that won
+     */
+    public Player getWinner() {
+        return winner;
     }
 
     /**

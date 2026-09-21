@@ -20,12 +20,16 @@ import it.unibo.risiko.view.map.MapLayout;
 import it.unibo.risiko.view.map.MapView;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -82,6 +86,9 @@ public class GameScene {
             controller.getTerritories(from, to);
             // TODO put here the HumanStrategy calls, from and to are the ids of the territories
         });
+
+
+
         // when the phase changes the clicks change too
         // getNewValue is an Object so i cast it
         controller.addListener(event -> clickHandler.setPhase((Phase) event.getNewValue()));
@@ -146,6 +153,19 @@ public class GameScene {
     public GameScene(GameController controller) {
         super();
         this.controller = controller;
+    }
+
+    // FIXME: pass stage to init owner
+    /**
+     * sets what to do when a player wins / when game is over
+     * @param winner
+     */
+    public void showGameOver (Player winner) {   
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initOwner(mainStage);
+        alert.setTitle("GAME OVER");
+        alert.setHeaderText(null);
+        alert.setContentText(winner.getName() + " won!");
     }
 
 }
