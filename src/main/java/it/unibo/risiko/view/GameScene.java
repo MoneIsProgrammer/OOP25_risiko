@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 
 import it.unibo.risiko.controller.GameController;
 import it.unibo.risiko.controller.MapClickHandler;
+import it.unibo.risiko.model.battle.BattleResult;
+import it.unibo.risiko.model.event.Event;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
@@ -34,6 +36,9 @@ public class GameScene {
     //unused private static final double WINDOW_HEIGHT = 700;
 
     private GameController controller;
+    // kept here so the controller can pass them the events
+    private MapView mapView;
+    private final DiceCanvas dice = new DiceCanvas();
 
     /**
      * Default constructor.
@@ -65,7 +70,7 @@ public class GameScene {
         }
 
         // from here we use it only as a MapView
-        final MapView mapView = canvas;
+        this.mapView = canvas;
         for (final Player player : roster.getAllPlayers()) {
             mapView.setPlayerColor(player.getId(), player.getColor());
         }
@@ -80,7 +85,17 @@ public class GameScene {
         // when the phase changes the clicks change too
         // getNewValue is an Object so i cast it
         controller.addListener(event -> clickHandler.setPhase((Phase) event.getNewValue()));
-        // TODO call clickHandler.setPlayer when the turn passes to another player
+        // when the turn passes to another player, only a human can click
+        controller.addPlayerListener(event -> {
+            final var player = (Player) event.getNewValue();
+            if (player.isHuman()) {
+                clickHandler.setPlayer(player.getId());
+            } else {
+                // a bot is playing, the clicks do nothing
+                clickHandler.ignoreClicks();
+            }
+        });
+        // TODO the controller has to call next() when the game starts, so the first player gets here too
 
         final var box = new VBox();
         for (final Player player : roster.getAllPlayers()) {
@@ -88,10 +103,7 @@ public class GameScene {
         }
 
         // the dice of the last attack, under the players
-        final var dice = new DiceCanvas();
         box.getChildren().add(dice);
-        // TODO register mapView to the game events, redraw it after dealing the territories
-        // TODO give the result of every AttackResultEvent to dice.setResult
         final var spacing = 5;
         final var bottom = new ChangingBox(controller.getStrenght, controller.armyCounter, controller.ableToBuild, controller.maxArmyforAction, a -> controller.addListener(a) , () -> controller.advancePhase());
         bottom.setAlignment(Pos.CENTER);
@@ -106,6 +118,29 @@ public class GameScene {
         root.setRight(box);
         stage.setScene(new Scene(root));
 
+    }
+
+    /**
+     * Gives an event of the game to the map, the controller calls it with the events
+     * it gets from the players.
+     *
+     * @param event what just happened
+     */
+    public void onGameEvent(final Event event) {
+        // before start() there is no map on screen yet
+        if (this.mapView == null) {
+            return;
+        }
+        this.mapView.onEvent(event);
+    }
+
+    /**
+     * Shows the dice of a battle, the controller calls it after resolving an attack.
+     *
+     * @param result the result of the battle
+     */
+    public void onBattleResult(final BattleResult result) {
+        this.dice.setResult(result);
     }
 
     public GameScene(GameController controller) {

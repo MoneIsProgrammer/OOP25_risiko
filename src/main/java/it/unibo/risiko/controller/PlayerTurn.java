@@ -19,6 +19,8 @@ public final class PlayerTurn {
     private int counter = -1;
     private Phase currentPhase = Phase.SETUP;
     private final PropertyChangeSupport phaseChange = new PropertyChangeSupport(this);
+    // separate from the phase one, the phase listeners cast everything to Phase
+    private final PropertyChangeSupport playerChange = new PropertyChangeSupport(this);
     /** Initially gets the current player when the playerOrder is decided, 
      * when it's the next player's turn, it changes current player to the new player
     */
@@ -37,16 +39,20 @@ public final class PlayerTurn {
     }
 
     /**
-     * Gets the next player in turn order.
-     * 
+     * Gets the next player in turn order, and notifies listeners.
+     *
      * @return the next player
      */
     public Player next() {
         counter++;
-        if (setupDone) {
-            this.currentPhase = Phase.PLAYCARDS;
-        }
+        final Player old = this.currentPlayer;
         currentPlayer = playerOrder.get(counter % playerOrder.size());
+        if (setupDone) {
+            // with setPhase the listeners know it too
+            setPhase(Phase.PLAYCARDS);
+        }
+        // says who plays now, the map needs it for the clicks
+        playerChange.firePropertyChange("player", old, currentPlayer);
         return playerOrder.get(counter % playerOrder.size());
     }
 
@@ -123,5 +129,14 @@ public final class PlayerTurn {
 
     public void addPropertyChangeListener(final PropertyChangeListener listener) {
         phaseChange.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Adds someone to be told when the player of the turn changes.
+     *
+     * @param listener the listener to add
+     */
+    public void addPlayerChangeListener(final PropertyChangeListener listener) {
+        playerChange.addPropertyChangeListener(listener);
     }
 }

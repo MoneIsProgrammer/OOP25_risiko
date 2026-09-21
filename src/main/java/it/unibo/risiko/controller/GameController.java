@@ -115,6 +115,15 @@ public final class GameController {
         turn.addPropertyChangeListener(listener);
     }
 
+    /**
+     * Adds someone to be told when the player of the turn changes.
+     *
+     * @param listener the listener to add
+     */
+    public void addPlayerListener(final PropertyChangeListener listener) {
+        turn.addPlayerChangeListener(listener);
+    }
+
     public void confirmAction() {
 
     }
