@@ -98,7 +98,8 @@ public final class GameController {
         };
     }
     
-    public void getTerritories(String to, String from) {
+    // same order as the map clicks: first where it starts, then where it goes
+    public void getTerritories(String from, String to) {
 
     }
 
