@@ -125,6 +125,7 @@ public class VictoryCheck {
     /* Calculates the number of continents conquered by the player */
     int getNOfContinentsConquered(String playerId) {
         int nOfContinents = 0;
+
         /* Loops through all the continents */
         for (Continent continent: map.getContinents()) {
         /** Compare the player's id with that of the continent owner, 
