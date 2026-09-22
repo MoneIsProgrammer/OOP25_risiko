@@ -103,7 +103,6 @@ public class GameScene {
                 clickHandler.ignoreClicks();
             }
         });
-        // TODO the controller has to call next() when the game starts, so the first player gets here too
 
         final var box = new VBox();
         for (final Player player : roster.getAllPlayers()) {

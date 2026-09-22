@@ -161,6 +161,8 @@ public final class PlayerTurn {
     public void setupFinished() {
         setPhase(Phase.PLAYCARDS);
         setupDone = true;
+        // during the setup the map was not listening yet, so i say again who plays
+        playerChange.firePropertyChange("player", null, currentPlayer);
     }
 
     public void addPropertyChangeListener(final PropertyChangeListener listener) {
