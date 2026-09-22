@@ -23,7 +23,8 @@ public class MovePhase{
     public void phaseStart() {
         moveArmies();
         if (checkElimination()) {
-            // TODO: player ha vinto, cosa faccio?
+            Player winner = currentPlayer;
+            turn.setWinner(winner);
         }
 
         isCompleted = true;
@@ -38,17 +39,16 @@ public class MovePhase{
         this.players = players;
         this.check = check;
     }
-    // TODO: the player can move his armies from one of his territories to another
+
     void moveArmies() {
         if (!(currentPlayer.isHuman())) {
             currentPlayer.move();
         } else {
             strategy = currentPlayer.getStrategy();
             humanStrategy = (HumanStrategy) strategy;
-            humanStrategy.moveDestination(null);
-            humanStrategy.moveSource(null);
-            humanStrategy.moveStrenght(0);
-            humanStrategy.getMoveAfterConquest(null, null, currentPlayer);
+            if (humanStrategy.canCreateMove()) {
+                currentPlayer.move();
+            }
         }
     }
 

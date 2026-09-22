@@ -19,10 +19,13 @@ public final class PlayerTurn {
     private int counter = -1;
     private Phase currentPhase = Phase.SETUP;
     private final PropertyChangeSupport phaseChange = new PropertyChangeSupport(this);
+    // separate from the phase one, the phase listeners cast everything to Phase
+    private final PropertyChangeSupport playerChange = new PropertyChangeSupport(this);
     /** Initially gets the current player when the playerOrder is decided, 
      * when it's the next player's turn, it changes current player to the new player
     */
     private Player currentPlayer;
+    private Player winner = null;
 
 
     /**
@@ -37,17 +40,26 @@ public final class PlayerTurn {
     }
 
     /**
-     * Gets the next player in turn order.
-     * 
+     * Gets the next player in turn order, and notifies listeners.
+     *
      * @return the next player
      */
     public Player next() {
-        counter++;
-        if (setupDone) {
-            this.currentPhase = Phase.PLAYCARDS;
+        if (isGameOver()) {
+            // TODO: trigger game over in view
+            return winner;
         }
-        currentPlayer = playerOrder.get(counter % playerOrder.size());
-        return playerOrder.get(counter % playerOrder.size());
+        else {
+            counter++;
+            final Player old = this.currentPlayer;
+            currentPlayer = playerOrder.get(counter % playerOrder.size());
+            if (setupDone) {
+                // with setPhase the listeners know it too
+                setPhase(Phase.PLAYCARDS);
+            }
+            // says who plays now, the map needs it for the clicks
+            playerChange.firePropertyChange("player", old, currentPlayer);
+            return playerOrder.get(counter % playerOrder.size());}
     }
 
     /**
@@ -114,6 +126,36 @@ public final class PlayerTurn {
     }
 
     /**
+     * In the move phase, the checkElimination method, 
+     * checks whether a player has been eliminated and 
+     * manages that player's elimination. After that it 
+     * calls the victoryCheck method to check if the 
+     * current player has reached their objective, if they 
+     * have, checkElimination returns true and the current 
+     * player is set as winner 
+     * @param winner the player that reached their objective
+     */
+    public void setWinner(Player winner) {
+        this.winner = winner;
+    }
+
+    /**
+     * Checks if a winner has been set, if yes, 
+     * it means the game is over
+     * @return returns true if a winner has been set
+     */
+    public boolean isGameOver() {
+        return winner != null;
+    }
+
+    /**
+     * Getter for the player that won
+     */
+    public Player getWinner() {
+        return winner;
+    }
+
+    /**
      * Finishes the setup and lets turn procede
      */
     public void setupFinished() {
@@ -123,5 +165,14 @@ public final class PlayerTurn {
 
     public void addPropertyChangeListener(final PropertyChangeListener listener) {
         phaseChange.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Adds someone to be told when the player of the turn changes.
+     *
+     * @param listener the listener to add
+     */
+    public void addPlayerChangeListener(final PropertyChangeListener listener) {
+        playerChange.addPropertyChangeListener(listener);
     }
 }

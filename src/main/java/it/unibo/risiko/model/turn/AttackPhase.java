@@ -41,9 +41,9 @@ public class AttackPhase{
         } else {
             strategy = player.getStrategy();
             humanStrategy = (HumanStrategy) strategy;
-            humanStrategy.attackSource(null);
-            humanStrategy.attackDestination(null);
-            humanStrategy.attackStrenght(0);
+            if (humanStrategy.canCreateAttack()) {
+                player.attack();
+            }
         }
     }
 

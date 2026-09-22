@@ -98,7 +98,8 @@ public final class GameController {
         };
     }
     
-    public void getTerritories(String to, String from) {
+    // same order as the map clicks: first where it starts, then where it goes
+    public void getTerritories(String from, String to) {
 
     }
 
@@ -113,6 +114,15 @@ public final class GameController {
 
     public void addListener(PropertyChangeListener listener) {
         turn.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Adds someone to be told when the player of the turn changes.
+     *
+     * @param listener the listener to add
+     */
+    public void addPlayerListener(final PropertyChangeListener listener) {
+        turn.addPlayerChangeListener(listener);
     }
 
     public void confirmAction() {

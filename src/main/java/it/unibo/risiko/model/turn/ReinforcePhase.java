@@ -33,7 +33,6 @@ public class ReinforcePhase{
         this.player = player;
     }
 
-    // FIXME: cosa devo passare a reinforce di human player
     /**
      * Based on whether a player is ai or human, calls methods 
      * to place armies as reinforcements
@@ -42,8 +41,9 @@ public class ReinforcePhase{
         if (player.isHuman()) {
             strategy = player.getStrategy();
             humanStrategy = (HumanStrategy) strategy;
-            humanStrategy.reinforce(null);;
-
+            if (humanStrategy.canCreateReinforce()) {
+                player.reinforce(player.getArmies());
+            }
         } else {
             player.reinforce(player.getArmies());
 
