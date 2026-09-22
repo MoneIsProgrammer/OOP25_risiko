@@ -1,4 +1,4 @@
-package it.unibo.risiko.view.cards;
+/*package it.unibo.risiko.view.cards;
 
 import it.unibo.risiko.model.deck.Card;
 import javafx.scene.image.ImageView;
@@ -20,4 +20,4 @@ public class CardView {
         updatePlayButtonState();
     });
 
-}
+}*/
