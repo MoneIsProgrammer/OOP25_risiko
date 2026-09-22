@@ -39,6 +39,7 @@ public class GameScene {
     //unused private static final double WINDOW_WIDTH = 1100;
     //unused private static final double WINDOW_HEIGHT = 700;
 
+    private Stage stage;
     private GameController controller;
     // kept here so the controller can pass them the events
     private MapView mapView;
@@ -162,10 +163,11 @@ public class GameScene {
      */
     public void showGameOver (Player winner) {   
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.initOwner(mainStage);
+        alert.initOwner(stage);
         alert.setTitle("GAME OVER");
         alert.setHeaderText(null);
         alert.setContentText(winner.getName() + " won!");
+        alert.show();
     }
 
 }
