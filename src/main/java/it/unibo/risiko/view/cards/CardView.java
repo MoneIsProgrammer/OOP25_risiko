@@ -24,7 +24,7 @@ public class CardView {
     /** The amount of cards the player has to choose */
     private final int NUM_CARDS = 3;
 
-    public Optional<List<Card>> show(Player player) {
+    public Optional<List<Card>> askComboToPlay(Player player) {
 
         /** The hand of the player, who we're asking to play a combo */
         List<Card> playerHand = player.getHand();
@@ -91,17 +91,6 @@ public class CardView {
          * so we only check that exactly three cards are selected
         */
         okButton.setDisable(chosenCards.size() != 3);
-    }
-
-    /**
-     * Checks whether the cards selected are a valid combo
-     * @param combo the list of cards to validate
-     * @return returns true if the combo is valid
-     * 
-    
-    private boolean isValidTris(Set<Card>combo) {
-        
-        return false;
     }
 
     /**

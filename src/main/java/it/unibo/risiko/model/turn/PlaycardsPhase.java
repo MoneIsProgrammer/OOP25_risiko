@@ -14,10 +14,10 @@ import it.unibo.risiko.view.cards.CardView;
  * PlayCards
  */
 public class PlaycardsPhase{
-    private PlayerTurn turn;
+    private final PlayerTurn turn;
 
     /* Receive current player from player turn */
-    private Player player = turn.getCurrentPlayer();
+    private Player player;
     private PlayerStrategy strategy;
     private HumanStrategy humanStrategy;
     private CardView cView;
@@ -41,17 +41,18 @@ public class PlaycardsPhase{
         return isCompleted;
     }
 
-    PlaycardsPhase(final Player player) {
-        this.player = player;
+    PlaycardsPhase(final PlayerTurn turn) {
+        this.turn = turn;
     }
 
-    // FIXME: how do i get the combo of cards to play for the human player?
     /** Based on whether a player is human or ai, calls different methods to 
      * allow player to play cards  */
     void playCard() {
+        player = turn.getCurrentPlayer();
         if (player.isHuman()) {   
             strategy = player.getStrategy();
             humanStrategy = (HumanStrategy) strategy;
+            cView.askComboToPlay(player);
             humanStrategy.cardsToPlay(cView.getCombo());
         } else {
             player.playCard();

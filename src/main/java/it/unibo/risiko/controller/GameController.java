@@ -9,7 +9,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import it.unibo.risiko.model.battle.BattleResult;
-import it.unibo.risiko.model.deck.ObjectivesDeck;
 import it.unibo.risiko.model.deck.TerritoriesDeck;
 import it.unibo.risiko.model.event.AttackEvent;
 import it.unibo.risiko.model.event.AttackResultEvent;
@@ -27,7 +26,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
