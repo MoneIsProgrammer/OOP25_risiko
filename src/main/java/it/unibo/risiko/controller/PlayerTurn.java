@@ -9,6 +9,7 @@ import java.util.List;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.turn.Phase;
+import it.unibo.risiko.view.GameScene;
 
 /**
  * Handles the player turn order and their removal from the game.
@@ -26,6 +27,7 @@ public final class PlayerTurn {
     */
     private Player currentPlayer;
     private Player winner = null;
+    private final GameScene scene;
 
 
     /**
@@ -33,10 +35,11 @@ public final class PlayerTurn {
      * 
      * @param roster The players to shuffle
      */
-    public PlayerTurn(final Roster roster) {
+    public PlayerTurn(final Roster roster, final GameScene scene) {
         playerOrder.addAll(roster.getAllPlayers());
         Collections.shuffle(playerOrder);
         currentPlayer = playerOrder.getFirst();
+        this.scene = scene;
     }
 
     /**
@@ -46,7 +49,8 @@ public final class PlayerTurn {
      */
     public Player next() {
         if (isGameOver()) {
-            // TODO: trigger game over in view
+            scene.showGameOver(winner);
+            // FIXME: solve return problem
             return winner;
         }
         else {

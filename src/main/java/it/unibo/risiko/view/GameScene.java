@@ -6,14 +6,17 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import it.unibo.risiko.controller.GameController;
+import it.unibo.risiko.controller.PlayerTurn;
 import it.unibo.risiko.controller.MapClickHandler;
 import it.unibo.risiko.model.battle.BattleResult;
+import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.event.Event;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.turn.Phase;
+import it.unibo.risiko.view.cards.CardViewImpl;
 import it.unibo.risiko.view.map.DiceCanvas;
 import it.unibo.risiko.view.map.MapCanvas;
 import it.unibo.risiko.view.map.MapLayout;
@@ -25,6 +28,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -41,6 +46,7 @@ public class GameScene {
 
     private Stage stage;
     private GameController controller;
+    private PlayerTurn turn;
     // kept here so the controller can pass them the events
     private MapView mapView;
     private final DiceCanvas dice = new DiceCanvas();
@@ -155,7 +161,50 @@ public class GameScene {
         this.controller = controller;
     }
 
-    // FIXME: pass stage to init owner
+    /** when the button is clicked, it shows the objective card */
+    public void showObjective() {
+
+        /** Button that when clicked, shows the objective card of the player */
+        Button button = new Button("Show objective");
+        /** Gets the objective of the player */
+        Card card = turn.getCurrentPlayer().getObjective();
+
+        button.setOnAction(e -> {
+            showObjectiveWindow(card);
+        });        
+    }
+
+    /**
+     * shows a window that displays the objective card of the player
+     * @param card the objective of the player
+     */
+    private void showObjectiveWindow (Card card) {
+        /** Gets the image of the objective card from CardViewImpl */
+        ImageView objectiveView = CardViewImpl.createObjectiveView(card, 100);
+        objectiveView.setPreserveRatio(true);
+
+        /* Context for the objective, shows name of the player whose objective is being shown */
+        Label caption = new Label("Player: " + turn.getCurrentPlayer().getName());
+        caption.setWrapText(true);
+        caption.setStyle("-fx-font-size: 14px;");
+
+        /* Center the image */
+        VBox root = new VBox(10, objectiveView, caption);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(10));
+
+        Stage objectiveImageStage = new Stage();
+        objectiveImageStage.setTitle("Objective");
+        objectiveImageStage.setScene(new Scene(root));
+        objectiveImageStage.initOwner(stage);
+        /* Even while the objective image is showing, the player can 
+        still interact with the main window */
+        objectiveImageStage.initModality(Modality.NONE);
+
+        /* The window is shown until the player closes it */
+        objectiveImageStage.show();
+    }
+
     /**
      * sets what to do when a player wins / when game is over
      * @param winner

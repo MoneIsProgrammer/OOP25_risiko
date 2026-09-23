@@ -11,8 +11,8 @@ import it.unibo.risiko.model.player.strategy.PlayerStrategy;
  */
 public class AttackPhase{
 
-    private PlayerTurn turn;
-    private Player player = turn.getCurrentPlayer();
+    private final PlayerTurn turn;
+    private Player player;
     private PlayerStrategy strategy;
     private HumanStrategy humanStrategy;
     private boolean isCompleted = false;
@@ -27,15 +27,16 @@ public class AttackPhase{
         return isCompleted;
     }
 
-    AttackPhase (final Player player) {
-        this.player = player;
+    AttackPhase(final PlayerTurn turn) {
+        this.turn = turn;
     }
-    // FIXME: how do i get the player to attack, what values do I pass to the methods for human player?
+    
     /**
      * Based on whether a player is ai or human, allows player to attack other 
      * player's territories
      */
     void canAttack() {
+        player = turn.getCurrentPlayer();
         if (!(player.isHuman())) {
             player.attack();
         } else {

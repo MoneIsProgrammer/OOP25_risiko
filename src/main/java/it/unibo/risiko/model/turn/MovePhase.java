@@ -14,16 +14,17 @@ public class MovePhase{
     private final GameMap map;
     private final Roster players;
     private final VictoryCheck check;
-    private PlayerTurn turn;
-    private Player currentPlayer = turn.getCurrentPlayer();
+    private final PlayerTurn turn;
+    private Player currentPlayer;
     private PlayerStrategy strategy;
     private HumanStrategy humanStrategy;
     private boolean isCompleted = false;
+    private Player winner;
 
     public void phaseStart() {
         moveArmies();
         if (checkElimination()) {
-            Player winner = currentPlayer;
+            winner = currentPlayer;
             turn.setWinner(winner);
         }
 
@@ -34,13 +35,15 @@ public class MovePhase{
         return isCompleted;
     }
 
-    public MovePhase (final GameMap map, final Roster players, final VictoryCheck check) {
+    public MovePhase (final GameMap map, final Roster players, final VictoryCheck check, final PlayerTurn turn) {
         this.map = map;
         this.players = players;
         this.check = check;
+        this.turn = turn;
     }
 
     void moveArmies() {
+        currentPlayer = turn.getCurrentPlayer();
         if (!(currentPlayer.isHuman())) {
             currentPlayer.move();
         } else {
