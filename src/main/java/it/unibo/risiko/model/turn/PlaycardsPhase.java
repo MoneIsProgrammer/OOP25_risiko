@@ -4,6 +4,7 @@ import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.strategy.HumanStrategy;
 import it.unibo.risiko.model.player.strategy.PlayerStrategy;
 import it.unibo.risiko.controller.PlayerTurn;
+import it.unibo.risiko.view.cards.CardView;
 
 /**
  * This phase allows the current player to play cards before 
@@ -19,6 +20,7 @@ public class PlaycardsPhase{
     private Player player = turn.getCurrentPlayer();
     private PlayerStrategy strategy;
     private HumanStrategy humanStrategy;
+    private CardView cView;
     private boolean isCompleted = false;
     private final int MIN_CARDS = 3;
 
@@ -50,7 +52,7 @@ public class PlaycardsPhase{
         if (player.isHuman()) {   
             strategy = player.getStrategy();
             humanStrategy = (HumanStrategy) strategy;
-            humanStrategy.cardsToPlay(null);
+            humanStrategy.cardsToPlay(cView.getCombo());
         } else {
             player.playCard();
         }

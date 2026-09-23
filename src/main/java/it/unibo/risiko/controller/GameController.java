@@ -8,8 +8,12 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import it.unibo.risiko.model.battle.BattleResult;
 import it.unibo.risiko.model.deck.ObjectivesDeck;
 import it.unibo.risiko.model.deck.TerritoriesDeck;
+import it.unibo.risiko.model.event.AttackEvent;
+import it.unibo.risiko.model.event.AttackResultEvent;
+import it.unibo.risiko.model.event.Event;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.history.HistoryImpl;
 import it.unibo.risiko.model.map.GameMap;
@@ -123,6 +127,33 @@ public final class GameController {
      */
     public void addPlayerListener(final PropertyChangeListener listener) {
         turn.addPlayerChangeListener(listener);
+    }
+
+    /**
+     * Sends an event to the history and to the map.
+     *
+     * @param event the event
+     */
+    public void publish(final Event event) {
+        this.history.addEvent(event);
+        // the view is null until registerView
+        if (this.view != null) {
+            this.view.onGameEvent(event);
+        }
+    }
+
+    /**
+     * Same as publish but for an attack, it also shows the dice.
+     *
+     * @param attack the attack
+     * @param result the result of the battle
+     */
+    public void publishBattle(final AttackEvent attack, final BattleResult result) {
+        final var resultEvent = new AttackResultEvent(attack, result);
+        publish(resultEvent);
+        if (this.view != null) {
+            this.view.onBattleResult(result);
+        }
     }
 
     public void confirmAction() {
