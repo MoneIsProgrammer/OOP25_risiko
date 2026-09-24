@@ -64,7 +64,7 @@ public class SetupPhase{
 
     private void dealObjectiveCards() {
         for(Player player: players.getAllPlayers()) {
-            player.setObjective(objectiveDeck.setObjectiveCard());
+            player.setObjective(objectiveDeck.getObjectiveCard());
         }
     }
 
