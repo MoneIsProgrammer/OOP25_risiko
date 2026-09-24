@@ -160,7 +160,7 @@ public class CardBonus {
          */
         for (final Card card: setOfCards) {
             for (final Territory territory: territoriesOccupied) {
-                if ((card.getTerritory().getTerritoryId()).equals(territory.getId())) {
+                if (card.getTerritory().getTerritoryId().equals(territory.getId())) {
                     reinforcements = reinforcements + 2;
                 }
             }
