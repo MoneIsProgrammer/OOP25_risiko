@@ -175,6 +175,8 @@ public final class GameController {
         // one more army on this territory
         this.placements.put(territory, this.placements.getOrDefault(territory, 0) + 1);
         this.armyCounter.set(this.armyCounter.get() - 1);
+        // the army goes on the map now, so you see it while you click
+        territory.addArmies(1);
         // the strategy keeps one number for each territory, so i give it the new total
         final var placement = Map.of(territory, this.placements.get(territory));
         if (this.turn.getCurrentPhase() == Phase.SETUP) {
@@ -341,14 +343,15 @@ public final class GameController {
                 + this.map.getContinentBonus(player.getId());
     }
 
-    // at the end of the reinforce the armies placed with the clicks go on the map
+    // at the end of the reinforce everybody is told where the armies went,
+    // they are already on the map because every click puts one there
     private void placeReinforcements() {
         int placed = 0;
         for (final int armies : this.placements.values()) {
             placed = placed + armies;
         }
         if (placed > 0) {
-            applyReinforce(humanStrategy().getReinforce(this.turn.getCurrentPlayer(), placed));
+            publish(humanStrategy().getReinforce(this.turn.getCurrentPlayer(), placed));
         }
     }
 
