@@ -2,8 +2,8 @@ package it.unibo.risiko.model.deck;
 
 /**
  * Enum class is being used as the troops 
- * in the deck are fixed
-  */
+ * in the deck are fixed.
+ */
 public enum CardTroops {
     CANNONS("Cannons"),
     INFANTRY("Infantry"),
@@ -12,11 +12,13 @@ public enum CardTroops {
     private final String troopsName;
 
     /* Constructor */
-    private CardTroops(String troopsName) {
+    CardTroops(final String troopsName) {
         this.troopsName = troopsName;
     }
 
-    /* Getter */
+    /**
+     * @return the troop name
+     */
     public String getTroopName() {
         return troopsName;
     }
