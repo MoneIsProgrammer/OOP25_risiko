@@ -150,14 +150,15 @@ public class GameScene {
         /** Button that when clicked, shows the objective card of the player */
         Button button = new Button("Show objective");
         /** Gets the objective of the player */
-        Card card = turn.getCurrentPlayer().getObjective();
+        // turn is still null here, the controller knows who plays
+        Card card = controller.getCurrentPlayer().getObjective();
 
         button.setOnAction(e -> {
             showObjectiveWindow(card);
         });
 
         /* when a winner is set, this subscription event is called to show Game Over alert */
-        eventBus.subscribe(GameOverEvent.class, e -> showGameOver(turn.getWinner()));
+        eventBus.subscribe(GameOverEvent.class, e -> showGameOver(controller.getWinner()));
 
     }
 
@@ -199,7 +200,7 @@ public class GameScene {
         objectiveView.setPreserveRatio(true);
 
         /* Context for the objective, shows name of the player whose objective is being shown */
-        Label caption = new Label("Player: " + turn.getCurrentPlayer().getName());
+        Label caption = new Label("Player: " + controller.getCurrentPlayer().getName());
         caption.setWrapText(true);
         caption.setStyle("-fx-font-size: 14px;");
 
