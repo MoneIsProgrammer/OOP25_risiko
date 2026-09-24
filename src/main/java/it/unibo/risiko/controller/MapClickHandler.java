@@ -11,16 +11,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
- * Handles the clicks on the map in the attack and in the move. It doesn't attack or move
- * anything, it only says which two territories were picked.
+ * Handles the clicks on the map. It doesn't attack, move or place anything, it only says
+ * which territories were picked: two in the attack and in the move, one in the reinforce
+ * and in the setup.
  */
 public final class MapClickHandler implements TerritoryClickListener {
 
     private final GameMap map;
     private final MapView mapView;
     private final List<BiConsumer<String, String>> listeners = new ArrayList<>();
+    private final List<Consumer<String>> placementListeners = new ArrayList<>();
 
     private String currentPlayer;
     private Phase currentPhase = Phase.SETUP;
@@ -48,7 +51,7 @@ public final class MapClickHandler implements TerritoryClickListener {
     }
 
     /**
-     * Says the phase, the clicks work only in the attack and in the move.
+     * Says the phase, while playing the cards the clicks do nothing.
      *
      * @param phase the phase of the turn
      */
@@ -74,11 +77,33 @@ public final class MapClickHandler implements TerritoryClickListener {
         this.listeners.add(listener);
     }
 
+    /**
+     * Adds a listener for the reinforce and the setup, it gets the id of the territory
+     * where the armies go.
+     *
+     * @param listener the listener to add
+     */
+    public void addPlacementListener(final Consumer<String> listener) {
+        this.placementListeners.add(listener);
+    }
+
     @Override
     public void onTerritoryClicked(final String territoryId) {
         if (!canClick()) {
             return;
         }
+
+        // reinforce and setup, one click is enough: your territory, where the armies go
+        if (isPlacing()) {
+            if (isMine(this.map.getTerritory(territoryId))) {
+                this.mapView.setSelected(territoryId);
+                for (final var listener : this.placementListeners) {
+                    listener.accept(territoryId);
+                }
+            }
+            return;
+        }
+
         final var source = this.mapView.getSelected();
 
         // first click, your territory with at least 2 armies
@@ -107,10 +132,15 @@ public final class MapClickHandler implements TerritoryClickListener {
         }
     }
 
-    // only the player of the turn, only in attack or move
+    // only the player of the turn, and not while playing the cards
     private boolean canClick() {
         return this.currentPlayer != null
-                && (this.currentPhase == Phase.ATTACK || this.currentPhase == Phase.MOVE);
+                && (this.currentPhase == Phase.ATTACK || this.currentPhase == Phase.MOVE || isPlacing());
+    }
+
+    // in the reinforce and in the setup the clicks say where the armies go
+    private boolean isPlacing() {
+        return this.currentPhase == Phase.REINFORCE || this.currentPhase == Phase.SETUP;
     }
 
     // the territory is of the player of the turn
