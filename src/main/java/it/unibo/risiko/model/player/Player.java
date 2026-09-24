@@ -92,7 +92,9 @@ public interface Player extends Identifiable {
     void setArmies(int armies);
 
     /**
-     * Setter for the player's objective
+     * Setter for the player's objective.
+     * 
+     * @param objective the objective to set
      */
     void setObjective(Card objective);
 
