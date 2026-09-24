@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import it.unibo.risiko.model.event.EventBus;
+import it.unibo.risiko.model.event.GameOverEvent;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.turn.Phase;
-import it.unibo.risiko.view.GameScene;
 
 /**
  * Handles the player turn order and their removal from the game.
@@ -27,7 +28,7 @@ public final class PlayerTurn {
     */
     private Player currentPlayer;
     private Player winner = null;
-    private final GameScene scene;
+    private EventBus eventBus;
 
 
     /**
@@ -35,11 +36,10 @@ public final class PlayerTurn {
      * 
      * @param roster The players to shuffle
      */
-    public PlayerTurn(final Roster roster, final GameScene scene) {
+    public PlayerTurn(final Roster roster) {
         playerOrder.addAll(roster.getAllPlayers());
         Collections.shuffle(playerOrder);
         currentPlayer = playerOrder.getFirst();
-        this.scene = scene;
     }
 
     /**
@@ -49,8 +49,6 @@ public final class PlayerTurn {
      */
     public Player next() {
         if (isGameOver()) {
-            scene.showGameOver(winner);
-            // FIXME: solve return problem
             return winner;
         }
         else {
@@ -141,6 +139,7 @@ public final class PlayerTurn {
      */
     public void setWinner(Player winner) {
         this.winner = winner;
+        eventBus.publish(new GameOverEvent());
     }
 
     /**

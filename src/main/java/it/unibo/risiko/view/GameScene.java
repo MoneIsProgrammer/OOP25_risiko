@@ -11,6 +11,8 @@ import it.unibo.risiko.controller.MapClickHandler;
 import it.unibo.risiko.model.battle.BattleResult;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.event.Event;
+import it.unibo.risiko.model.event.EventBus;
+import it.unibo.risiko.model.event.GameOverEvent;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
@@ -47,6 +49,7 @@ public class GameScene {
     private Stage stage;
     private GameController controller;
     private PlayerTurn turn;
+    private EventBus eventBus = new EventBus();
     // kept here so the controller can pass them the events
     private MapView mapView;
     private final DiceCanvas dice = new DiceCanvas();
@@ -86,12 +89,16 @@ public class GameScene {
             mapView.setPlayerColor(player.getId(), player.getColor());
         }
 
-        // clicks for the attack and the move
+        // clicks for the attack, the move and the reinforce
         final var clickHandler = new MapClickHandler(map, mapView);
         mapView.addTerritoryClickListener(clickHandler);
         clickHandler.addChoiceListener((from, to) -> {
+            // the controller gives them to the strategy of the player
             controller.getTerritories(from, to);
-            // TODO put here the HumanStrategy calls, from and to are the ids of the territories
+        });
+        // in the reinforce and in the setup a click says where the armies go
+        clickHandler.addPlacementListener(territoryId -> {
+            controller.placementChosen(territoryId);
         });
 
 
@@ -131,6 +138,18 @@ public class GameScene {
         root.setRight(box);
         stage.setScene(new Scene(root));
 
+        /** Button that when clicked, shows the objective card of the player */
+        Button button = new Button("Show objective");
+        /** Gets the objective of the player */
+        Card card = turn.getCurrentPlayer().getObjective();
+
+        button.setOnAction(e -> {
+            showObjectiveWindow(card);
+        });
+
+        /* when a winner is set, this subscription event is called to show Game Over alert */
+        eventBus.subscribe(GameOverEvent.class, e -> showGameOver(turn.getWinner()));
+
     }
 
     /**
@@ -159,19 +178,6 @@ public class GameScene {
     public GameScene(GameController controller) {
         super();
         this.controller = controller;
-    }
-
-    /** when the button is clicked, it shows the objective card */
-    public void showObjective() {
-
-        /** Button that when clicked, shows the objective card of the player */
-        Button button = new Button("Show objective");
-        /** Gets the objective of the player */
-        Card card = turn.getCurrentPlayer().getObjective();
-
-        button.setOnAction(e -> {
-            showObjectiveWindow(card);
-        });        
     }
 
     /**
