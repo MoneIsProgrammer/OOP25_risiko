@@ -26,7 +26,7 @@ public final class PlayerFactoryImpl implements PlayerFactory {
         return new PlayerImpl(playerRequest.color(), 
         playerRequest.name(), 
         createStrategy(playerRequest.ai(), roster, map), 
-        startingForces(players), null) ;
+        startingForces(players), null);
     }
 
     /**
