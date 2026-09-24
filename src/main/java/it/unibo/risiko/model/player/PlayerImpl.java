@@ -32,8 +32,15 @@ public final class PlayerImpl implements Player {
      * @param name  name of the player
      * @param strategy  strategy that this player will use during its turns
      * @param startingForces the number of armies in the setup phase
+     * @param objective the victory condition for this player
      */
-    protected PlayerImpl(final RisikoColors color, final String name, final PlayerStrategy strategy, final int startingForces, final Card objective) {
+    protected PlayerImpl(
+        final RisikoColors color, 
+        final String name, 
+        final PlayerStrategy strategy, 
+        final int startingForces, 
+        final Card objective
+    ) {
         this.name = name;
         this.strategy = strategy;
         this.color = color;
@@ -67,6 +74,7 @@ public final class PlayerImpl implements Player {
         return this.strategy.getReinforce(this, armies);
     }
 
+    @Override
     public int getArmies() {
         return this.reinforces;
     }
@@ -118,7 +126,8 @@ public final class PlayerImpl implements Player {
         this.reinforces = armies;
     }
 
-    public void setObjective(Card objective) {
+    @Override 
+    public void setObjective(final Card objective) {
         this.objective = objective;
     }
 
@@ -127,6 +136,7 @@ public final class PlayerImpl implements Player {
         return this.objective;
     }
 
+    @Override 
     public void setNewObjective() {
         this.objective = new Card(Objective.OBJECTIVEX);
     }

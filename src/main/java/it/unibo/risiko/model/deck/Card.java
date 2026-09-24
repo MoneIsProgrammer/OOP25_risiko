@@ -1,16 +1,17 @@
 package it.unibo.risiko.model.deck;
 
-/** This class helps create an object card of one of the three types: 
-* 1. Territory Card
-* 2. Jolly Card
-* 3. Objective Card
-* The card has a troop and territory, if it is a Territory Card.
-* The card has an objective description, if it's an Objective Card.
-* If the card is of type "JOLLY", then the only variable is the cardType,
-* as we just need to know it's type to represent a Jolly card (all jolly cards
-* have the same visual representation).
-*/
-public class Card {
+/** 
+ * This class helps create an object card of one of the three types: 
+ * 1. Territory Card
+ * 2. Jolly Card
+ * 3. Objective Card
+ * The card has a troop and territory, if it is a Territory Card.
+ * The card has an objective description, if it's an Objective Card.
+ * If the card is of type "JOLLY", then the only variable is the cardType,
+ * as we just need to know it's type to represent a Jolly card (all jolly cards
+ * have the same visual representation).
+ */
+public final class Card {
 
     /* Private Fields, each Territory card has a territory and a troop */
     private CardTerritories territory;
@@ -18,44 +19,62 @@ public class Card {
     /* Private Field, each Objective card has an objective description */
     private Objective objective;
     /* Private Field, specifies the type of the card (Territory, Objective or Jolly) */
-    private CardType cardType;
+    private final CardType cardType;
 
-    /** Constructor for territory cards, creates a card with a specified 
+    /** 
+     * Constructor for territory cards, creates a card with a specified 
      * territory and troop. It also sets the card type, i.e. TERRITORY
+     * 
      * @param territory is the territory represented on the card
      * @param troop is the troop represented on the card
-    */
-    public Card(CardTerritories territory, CardTroops troop) {
+     */
+    public Card(final CardTerritories territory, final CardTroops troop) {
         this.territory = territory;
         this.troop = troop;
         this.cardType = CardType.TERRITORY;
     }
 
-    /* Constructor for jolly cards, sets the card type as Jolly */
+    /**
+     *  Constructor for jolly cards, sets the card type as Jolly.
+     */
     public Card() {
         this.cardType = CardType.JOLLY;
     }
 
-    /** Constructor for objective cards, sets the card type as OBJECTIVE
+    /** 
+     * Constructor for objective cards, sets the card type as OBJECTIVE.
+     * 
+     * @param objective the objective to be set
      */
-    public Card(Objective objective) {
+    public Card(final Objective objective) {
         this.objective = objective;
         this.cardType = CardType.OBJECTIVE;
     }
 
-    /* Getters */
+    /**
+     * @return the territory on the card
+     */
     public CardTerritories getTerritory() {
         return territory;
     }
 
+    /**
+     * @return the troop on the card
+     */
     public CardTroops getTroop() {
         return troop;
     }
 
+    /**
+     * @return the objective on the card
+     */
     public Objective getObjective() {
         return objective;
     }
 
+    /**
+     * @return the type of the card
+     */
     public String getCardType() {
         return cardType.getCardType();
     }

@@ -76,7 +76,8 @@ public class ChangingBox extends HBox {
         reinforceButton.setOnAction(e -> {}); //TODO Change when done
         reinforceSetup = List.of(new Text("Armies to place:"), armies, reinforceButton, doneButton);
 
-        moveSetup = List.of(new Text("move"), doneButton);
+        // in the move you choose the armies too, with the same buttons of the attack
+        moveSetup = List.of(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
 
         cardSetup = List.of(new Text("card"), doneButton);
 
