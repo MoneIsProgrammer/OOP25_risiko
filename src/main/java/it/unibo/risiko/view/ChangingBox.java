@@ -65,8 +65,8 @@ public class ChangingBox extends HBox {
         confirmButton.disableProperty().bind(buttonActive.not());
         confirmButton.setOnAction(e -> {
             getStrenght.accept(this.counter.get());
+            // you can attack again, done goes to the next phase
             this.counter.set(0);
-            advancePhase.run();
         });
         attackSetup = List.of(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
 

@@ -16,8 +16,10 @@ import it.unibo.risiko.model.event.GameOverEvent;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
+import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.turn.Phase;
+import it.unibo.risiko.utils.ColorConversion;
 import it.unibo.risiko.view.cards.CardViewImpl;
 import it.unibo.risiko.view.map.DiceCanvas;
 import it.unibo.risiko.view.map.MapCanvas;
@@ -31,10 +33,22 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -128,11 +142,17 @@ public class GameScene {
 
         final var box = new VBox();
         for (final Player player : roster.getAllPlayers()) {
-            box.getChildren().add(new Text(player.getName() + player.getId() + player.getColor().name()));
+            var text = new Label(player.getName());
+            text.setFont(new Font(20));
+            text.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+            var hbox = new HBox(text);
+            hbox.setPadding(new Insets(5));
+            hbox.setBackground(new Background(new BackgroundFill(ColorConversion.toJavaFxColor(player.getColor()), null, null)));
+            box.getChildren().addAll(hbox, new Separator());
         }
-
         // the dice of the last attack, under the players
         box.getChildren().add(dice);
+        box.setAlignment(Pos.CENTER);
         final var spacing = 5;
         final var bottom = new ChangingBox(controller.getStrenght, controller.armyCounter, controller.ableToBuild, controller.maxArmyforAction, a -> controller.addListener(a) , () -> controller.advancePhase());
         bottom.setAlignment(Pos.CENTER);
@@ -150,14 +170,15 @@ public class GameScene {
         /** Button that when clicked, shows the objective card of the player */
         Button button = new Button("Show objective");
         /** Gets the objective of the player */
-        Card card = turn.getCurrentPlayer().getObjective();
+        // turn is still null here, the controller knows who plays
+        Card card = controller.getCurrentPlayer().getObjective();
 
         button.setOnAction(e -> {
             showObjectiveWindow(card);
         });
 
         /* when a winner is set, this subscription event is called to show Game Over alert */
-        eventBus.subscribe(GameOverEvent.class, e -> showGameOver(turn.getWinner()));
+        eventBus.subscribe(GameOverEvent.class, e -> showGameOver(controller.getWinner()));
 
     }
 
@@ -199,7 +220,7 @@ public class GameScene {
         objectiveView.setPreserveRatio(true);
 
         /* Context for the objective, shows name of the player whose objective is being shown */
-        Label caption = new Label("Player: " + turn.getCurrentPlayer().getName());
+        Label caption = new Label("Player: " + controller.getCurrentPlayer().getName());
         caption.setWrapText(true);
         caption.setStyle("-fx-font-size: 14px;");
 

@@ -96,10 +96,11 @@ public final class MapClickHandler implements TerritoryClickListener {
         // reinforce and setup, one click is enough: your territory, where the armies go
         if (isPlacing()) {
             if (isMine(this.map.getTerritory(territoryId))) {
-                this.mapView.setSelected(territoryId);
                 for (final var listener : this.placementListeners) {
                     listener.accept(territoryId);
                 }
+                // selected after the listeners, so the map is drawn with the new army
+                this.mapView.setSelected(territoryId);
             }
             return;
         }
