@@ -2,7 +2,7 @@ package it.unibo.risiko.model.deck;
 
 /**
  * Enum class is being used, as the territories
- * in the deck are fixed
+ * in the deck are fixed.
  */
 public enum CardTerritories {
     AFGHANISTAN("Afghanistan", "afghanistan"),
@@ -50,22 +50,27 @@ public enum CardTerritories {
 
     /**
      * The private fields are final, to ensure
-     * that they are not modified during runtime
+     * that they are not modified during runtime.
      */
     private final String territoryName;
     private final String id;
 
     /* Constructor */
-    private CardTerritories(String territoryName, String id) {
+    CardTerritories(final String territoryName, final String id) {
         this.territoryName = territoryName;
         this.id = id;
     }
 
-    /* Public Method - Getters */
+    /**
+     * @return the name of the territory
+     */
     public String getTerritoryName() {
         return territoryName;
     }
 
+    /**
+     * @return the territory id
+     */
     public String getTerritoryId() {
         return id;
     }
