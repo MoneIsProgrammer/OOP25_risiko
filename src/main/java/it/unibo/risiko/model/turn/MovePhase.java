@@ -92,7 +92,9 @@ public class MovePhase {
                  * player has completed their objective and won the game.
                  * 
                  */
-                return managePlayerElimination(player, currentPlayer);
+                if (managePlayerElimination(player, currentPlayer)) {
+                    return true;
+                }
             }
         }
         /* If none of the players got eliminated or if a player got eliminated 
