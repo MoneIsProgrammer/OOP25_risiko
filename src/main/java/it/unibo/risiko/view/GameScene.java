@@ -10,6 +10,7 @@ import it.unibo.risiko.controller.PlayerTurn;
 import it.unibo.risiko.controller.MapClickHandler;
 import it.unibo.risiko.model.battle.BattleResult;
 import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CreateCardView;
 import it.unibo.risiko.model.event.Event;
 import it.unibo.risiko.model.event.EventBus;
 import it.unibo.risiko.model.event.GameOverEvent;
@@ -20,7 +21,6 @@ import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.turn.Phase;
 import it.unibo.risiko.utils.ColorConversion;
-import it.unibo.risiko.view.cards.CardViewImpl;
 import it.unibo.risiko.view.map.DiceCanvas;
 import it.unibo.risiko.view.map.MapCanvas;
 import it.unibo.risiko.view.map.MapLayout;
@@ -216,7 +216,7 @@ public class GameScene {
      */
     private void showObjectiveWindow (Card card) {
         /** Gets the image of the objective card from CardViewImpl */
-        ImageView objectiveView = CardViewImpl.createObjectiveView(card, 100);
+        ImageView objectiveView = CreateCardView.createObjectiveView(card, 100);
         objectiveView.setPreserveRatio(true);
 
         /* Context for the objective, shows name of the player whose objective is being shown */
