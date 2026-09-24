@@ -8,7 +8,6 @@ import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.strategy.HumanStrategy;
-import it.unibo.risiko.model.player.strategy.PlayerStrategy;
 
 /**
  * Models the move phase of the game.
@@ -19,10 +18,10 @@ public class MovePhase {
     private final VictoryCheck check;
     private final PlayerTurn turn;
     private Player currentPlayer;
-    private PlayerStrategy strategy;
-    private HumanStrategy humanStrategy;
+    //private PlayerStrategy strategy;
+    //private HumanStrategy humanStrategy;
     private boolean isCompleted;
-    private Player winner;
+    //private Player winner;
 
     /**
      * Default constructor.
@@ -45,7 +44,7 @@ public class MovePhase {
     public void phaseStart() {
         moveArmies();
         if (checkElimination()) {
-            winner = currentPlayer;
+            final var winner = currentPlayer;
             turn.setWinner(winner);
         }
 
@@ -66,11 +65,11 @@ public class MovePhase {
      */
     void moveArmies() {
         currentPlayer = turn.getCurrentPlayer();
-        if (!(currentPlayer.isHuman())) {
+        if (!currentPlayer.isHuman()) {
             currentPlayer.move();
         } else {
-            strategy = currentPlayer.getStrategy();
-            humanStrategy = (HumanStrategy) strategy;
+            final var strategy = currentPlayer.getStrategy();
+            final var humanStrategy = (HumanStrategy) strategy;
             if (humanStrategy.canCreateMove()) {
                 currentPlayer.move();
             }
@@ -86,7 +85,7 @@ public class MovePhase {
      */
     public boolean checkElimination() {
         for (final Player player: players.getAllPlayers()) {
-            if (map.getTerritoriesOf(player.getId()).size() <= 0) {
+            if (map.getTerritoriesOf(player.getId()).isEmpty()) {
                 /* Check whether a player has been eliminated and if 
                  * the current player's objective was to eliminate this 
                  * player, then it returns true, which means the current 
@@ -129,7 +128,7 @@ public class MovePhase {
          * territories) for that player
          */
         for (final Player player: players.getAllPlayers()) {
-            if (!(player.equals(actualPlayer)) && objectiveEliminateColor(player, eliminatedColor)) {
+            if (!player.equals(actualPlayer) && objectiveEliminateColor(player, eliminatedColor)) {
                 player.setNewObjective();
             }
         }
@@ -164,12 +163,12 @@ public class MovePhase {
      * @return true if it was any of the colour objectives false otherwise
      */
     boolean eliminateColorObjective(final Objective objective) {
-        return objective.equals(Objective.OBJECTIVE9) 
-        || objective.equals(Objective.OBJECTIVE10) 
-        || objective.equals(Objective.OBJECTIVE11) 
-        || objective.equals(Objective.OBJECTIVE12) 
-        || objective.equals(Objective.OBJECTIVE13) 
-        || objective.equals(Objective.OBJECTIVE14);
+        return objective == Objective.OBJECTIVE9
+        || objective == Objective.OBJECTIVE10 
+        || objective == Objective.OBJECTIVE11 
+        || objective == Objective.OBJECTIVE12 
+        || objective == Objective.OBJECTIVE13 
+        || objective == Objective.OBJECTIVE14;
     }
 
     /**
