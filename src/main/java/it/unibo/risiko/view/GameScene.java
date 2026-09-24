@@ -144,10 +144,10 @@ public class GameScene {
         for (final Player player : roster.getAllPlayers()) {
             var text = new Label(player.getName());
             text.setFont(new Font(20));
-            text.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+            text.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), null)));
             var hbox = new HBox(text);
             hbox.setPadding(new Insets(5));
-            hbox.setBackground(new Background(new BackgroundFill(ColorConversion.toJavaFxColor(player.getColor()), null, null)));
+            hbox.setBackground(new Background(new BackgroundFill(ColorConversion.toJavaFxColor(player.getColor()), new CornerRadii(5), null)));
             box.getChildren().addAll(hbox, new Separator());
         }
         // the dice of the last attack, under the players
