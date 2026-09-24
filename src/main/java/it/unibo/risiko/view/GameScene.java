@@ -89,12 +89,16 @@ public class GameScene {
             mapView.setPlayerColor(player.getId(), player.getColor());
         }
 
-        // clicks for the attack and the move
+        // clicks for the attack, the move and the reinforce
         final var clickHandler = new MapClickHandler(map, mapView);
         mapView.addTerritoryClickListener(clickHandler);
         clickHandler.addChoiceListener((from, to) -> {
+            // the controller gives them to the strategy of the player
             controller.getTerritories(from, to);
-            // TODO put here the HumanStrategy calls, from and to are the ids of the territories
+        });
+        // in the reinforce and in the setup a click says where the armies go
+        clickHandler.addPlacementListener(territoryId -> {
+            controller.placementChosen(territoryId);
         });
 
 

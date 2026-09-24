@@ -2,12 +2,14 @@ package it.unibo.risiko.controller;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.battle.BattleResult;
 import it.unibo.risiko.model.deck.TerritoriesDeck;
 import it.unibo.risiko.model.event.AttackEvent;
@@ -17,9 +19,11 @@ import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.history.HistoryImpl;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.MapLoader;
+import it.unibo.risiko.model.map.Territory;
 import it.unibo.risiko.model.player.PlayerRequest;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
+import it.unibo.risiko.model.player.strategy.HumanStrategy;
 import it.unibo.risiko.model.turn.Phase;
 import it.unibo.risiko.view.GameScene;
 import javafx.beans.property.BooleanProperty;
@@ -32,6 +36,9 @@ import javafx.stage.Stage;
  * The Controller for the game part of risiko.
  */
 public final class GameController {
+
+    // you attack with 3 armies at most
+    private static final int MAX_ATTACK_ARMIES = 3;
 
     private Roster roster;
     private GameMap map;
@@ -49,6 +56,8 @@ public final class GameController {
     public Consumer<Integer> getStrenght;
     private GameScene view;
     private Stage stage;
+    // the armies put with the clicks in the reinforce or in the setup, for each territory
+    private final Map<Territory, Integer> placements = new HashMap<>();
 
     /**
      * Default constructor for new game.
@@ -75,6 +84,11 @@ public final class GameController {
             this.map.getTerritory(terr.getTerritory().getTerritoryId()).addArmies(1);
             this.map.getTerritory(terr.getTerritory().getTerritoryId()).setOwner(curr.getId());
         }
+        // the counter of the buttons says how many armies attack or move
+        this.getStrenght = armies -> armiesChosen(armies);
+        // a new reinforce starts from zero
+        this.turn.addPropertyChangeListener(event -> this.placements.clear());
+        this.turn.addPlayerChangeListener(event -> this.placements.clear());
     }
 
     private Consumer<Integer> getStrenght() {
@@ -101,8 +115,71 @@ public final class GameController {
     }
     
     // same order as the map clicks: first where it starts, then where it goes
-    public void getTerritories(String from, String to) {
+    @SuppressFBWarnings("PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE") // the buttons read the max from here
+    public void getTerritories(final String from, final String to) {
+        if (!humanPlays()) {
+            return;
+        }
+        final var source = this.map.getTerritory(from);
+        final var destination = this.map.getTerritory(to);
+        if (this.turn.getCurrentPhase() == Phase.ATTACK) {
+            humanStrategy().attackSource(source);
+            humanStrategy().attackDestination(destination);
+            // one army has to stay home
+            this.maxArmyforAction.set(Math.min(MAX_ATTACK_ARMIES, source.getArmies() - 1));
+        } else {
+            humanStrategy().moveSource(source);
+            humanStrategy().moveDestination(destination);
+            // you can move all the armies but one
+            this.maxArmyforAction.set(source.getArmies() - 1);
+        }
+    }
 
+    /**
+     * Receives the territory clicked in the reinforce or in the setup, where the armies go.
+     * Every click puts there one of the armies of the counter.
+     *
+     * @param territoryId id of the territory
+     */
+    public void placementChosen(final String territoryId) {
+        // no armies left to place
+        if (!humanPlays() || this.armyCounter.get() < 1) {
+            return;
+        }
+        final var territory = this.map.getTerritory(territoryId);
+        // one more army on this territory
+        this.placements.put(territory, this.placements.getOrDefault(territory, 0) + 1);
+        this.armyCounter.set(this.armyCounter.get() - 1);
+        // the strategy keeps one number for each territory, so i give it the new total
+        final var placement = Map.of(territory, this.placements.get(territory));
+        if (this.turn.getCurrentPhase() == Phase.SETUP) {
+            humanStrategy().setupPlacement(placement);
+        } else {
+            humanStrategy().reinforce(placement);
+        }
+    }
+
+    // the armies of the counter when confirm is pressed: how many attack or how many move
+    private void armiesChosen(final int armies) {
+        // the strategy doesn't take 0 armies
+        if (!humanPlays() || armies < 1) {
+            return;
+        }
+        if (this.turn.getCurrentPhase() == Phase.ATTACK) {
+            humanStrategy().attackStrenght(armies);
+        } else if (this.turn.getCurrentPhase() == Phase.MOVE) {
+            humanStrategy().moveStrenght(armies);
+        }
+    }
+
+    // only a human gives the input, while a bot plays the clicks and the buttons do nothing
+    private boolean humanPlays() {
+        return this.turn.getCurrentPlayer().isHuman();
+    }
+
+    // isHuman says the strategy is a HumanStrategy, so the cast is safe
+    private HumanStrategy humanStrategy() {
+        return (HumanStrategy) this.turn.getCurrentPlayer().getStrategy();
     }
 
     public void registerView(GameScene gameScene) {
