@@ -1,5 +1,6 @@
 package it.unibo.risiko.model.turn;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -132,7 +133,7 @@ public class VictoryCheck {
          * if it matches, increase the number of continents conquered 
          * by the player
          */
-            if(playerId.equals(map.getContinentOwner(continent.getId()))) {
+            if (ownsContinent(playerId, continent.getName())) {
                 nOfContinents++;
             }
         }

@@ -20,7 +20,7 @@ public class PlaycardsPhase{
     private Player player;
     private PlayerStrategy strategy;
     private HumanStrategy humanStrategy;
-    private CardView cView;
+    private final CardView cView;
     private boolean isCompleted = false;
     private final int MIN_CARDS = 3;
 
@@ -41,8 +41,9 @@ public class PlaycardsPhase{
         return isCompleted;
     }
 
-    PlaycardsPhase(final PlayerTurn turn) {
+    PlaycardsPhase(final PlayerTurn turn, final CardView cView) {
         this.turn = turn;
+        this.cView = cView;
     }
 
     /** Based on whether a player is human or ai, calls different methods to 

@@ -12,9 +12,9 @@ import it.unibo.risiko.model.player.strategy.PlayerStrategy;
  */
 public class ReinforcePhase{
 
-    private PlayerTurn turn;
+    private final PlayerTurn turn;
     /* Receive current player from PlayerTurn */
-    private Player player = turn.getCurrentPlayer();
+    private Player player;
     private PlayerStrategy strategy;
     private HumanStrategy humanStrategy;
     private boolean completed = false;
@@ -29,8 +29,8 @@ public class ReinforcePhase{
         return completed;
     }
 
-    ReinforcePhase(final Player player) {
-        this.player = player;
+    ReinforcePhase(final PlayerTurn turn) {
+        this.turn = turn;
     }
 
     /**
@@ -38,6 +38,7 @@ public class ReinforcePhase{
      * to place armies as reinforcements
      */
     private void placeArmies() {
+        player  = turn.getCurrentPlayer();
         if (player.isHuman()) {
             strategy = player.getStrategy();
             humanStrategy = (HumanStrategy) strategy;

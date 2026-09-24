@@ -28,7 +28,7 @@ public final class PlayerTurn {
     */
     private Player currentPlayer;
     private Player winner = null;
-    private EventBus eventBus;
+    private EventBus eventBus = new EventBus();
 
 
     /**
@@ -121,7 +121,7 @@ public final class PlayerTurn {
     }
 
     /**
-     * Gets the curreny player
+     * Gets the current player
      */
     public Player getCurrentPlayer() {
         return currentPlayer;
