@@ -396,6 +396,18 @@ Per alcune parti, segnalate qui sotto, ho preso spunto da guide e discussioni su
     \item Il metodo dei test che trasforma delle righe di testo in un \texttt{InputStream}, così \texttt{MapLoader} e \texttt{MapLayout} leggono un file finto senza doverlo creare davvero \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/test/java/it/unibo/risiko/model/map/MapLoaderTest.java#L60-L62}{qui}: questo l'ho copiato così com'è da una discussione su un forum, e lo stesso metodo è anche in \texttt{MapLayoutTest}.
 \end{itemize}
 
+\subsection{Azhar Hamail}
+\begin{itemize}
+    \item Uso di funzionalità di JavaFX per le carte, \href{https://github.com/MoneIsProgrammer/OOP25_risiko/blob/master/src/main/java/it/unibo/risiko/view/cards/CardView.java}{ad esempio}
+\end{itemize}
+Ho preso spunto da:
+\begin{itemize}
+    \item video youtube, come \href{https://youtube.com/playlist?list=PLlmV8hCw8wblhfOeesNFABDq4gQHc2CL_&si=R5UHVmDRaBtifulw}{hudredvisionguy}
+    \item spiegazioni di concetti come \href{https://www.geeksforgeeks.org/system-design/observer-pattern-set-1-introduction/}{pattern observers} e altri da geeksforgeeks
+    \item per bug o altri errori incontrati durante l'implementazione, ho consultato vecchi post su \texttt{stackoverflow}
+    \item w3school per concetti base, ad esempio, se non mi ricordavo come usare hashmap
+\end{itemize}
+
 %
 %
 %
@@ -557,6 +569,9 @@ Nel caso in cui si pensasse di portare avanti il progetto, ad esempio perché ef
 Scrivere il codice ha avuto le sue difficoltà, ma la più grossa è stata lavorare in tre su parti che si toccano. Ognuno portava avanti la sua, e le cose in comune, come gli eventi o il modo di identificare territori e giocatori, a volte cambiavano mentre qualcuno le stava già usando. Ho capito che quelle vanno decise tutti insieme all'inizio, prima di cominciare.
 
 Dal lato opposto, le cose che mi porto dietro da questo progetto sono soprattutto due. La prima è Git: non l'avevo mai usato prima, e lavorando in tre ho imparato a usarlo sul serio, con i commit, i branch e le pull request su un repository condiviso. La seconda è quanto conta separare bene le parti di un programma. Tenendo la mappa e il combattimento senza niente di grafico, ho potuto testarli da soli, senza aprire nessuna finestra, e il controller non sa nemmeno che la mappa è disegnata con JavaFX. Quando ho dovuto cambiare il disegno, per esempio per la linea fra Alaska e Kamchatka, ho toccato solo la parte grafica e il resto è rimasto com'era.
+
+\subsection{Hamail Azhar}
+La principale difficoltà che ho incontrato è che ho gestito male il tempo. All'inizio non mi erano ben chiare le funzionalità che dovevo implementare, cioè avevo un'idea generale ma le cose non le avevo strutturate/messe in ordine. Dopo un po' ho iniziato a distribuire ogni task in parti più piccole e gestirle una alla volta e questo mi ha reso il lavoro un po' più facile. Questo mi ha dato esperienza per gestire i progetti futuri.
 
 
 Questa sezione, \textbf{opzionale}, può essere utilizzata per segnalare ai docenti eventuali problemi o difficoltà incontrate nel corso o nello svolgimento del progetto, può essere vista come una seconda possibilità di valutare il corso (dopo quella offerta dalle rilevazioni della didattica) avendo anche conoscenza delle modalità e delle difficoltà collegate all'esame, cosa impossibile da fare usando le valutazioni in aula per ovvie ragioni.
