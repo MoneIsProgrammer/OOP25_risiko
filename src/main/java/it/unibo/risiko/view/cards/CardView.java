@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CreateCardView;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -50,7 +51,7 @@ public class CardView {
         final FlowPane handPane = new FlowPane(10, 10);
         /* Each card in the player's hand is displayed */
         for (final Card card : playerHand) {
-            final ImageView cardView = CardViewImpl.createCardView(card, 100);
+            final ImageView cardView = CreateCardView.createCardView(card, 100);
             /* call setCombo to add the selected/clicked card to the combo */
             cardView.setOnMouseClicked(e -> setCombo(card, cardView));
 

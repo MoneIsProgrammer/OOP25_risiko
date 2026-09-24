@@ -1,10 +1,9 @@
-package it.unibo.risiko.view.cards;
+package it.unibo.risiko.model.deck;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.unibo.risiko.model.deck.Card;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -12,18 +11,18 @@ import javafx.scene.image.ImageView;
  * Create the territory and objective cards view to show to the player.
  */
 
-public final class CardViewImpl {
+public final class CreateCardView {
 
     private static final Map<String, Image> CACHE = new HashMap<>();
     private static final Map<String, Image> OBJECTIVE_CACHE = new HashMap<>();
 
-    private CardViewImpl() {
+    private CreateCardView() {
         //private constructor change if this class is not utility
     }
 
         private static Image loadImage(final String fileName) {
             return CACHE.computeIfAbsent(fileName, f -> {
-                final URL url = CardViewImpl.class.getResource("/cardimages/" + f);
+                final URL url = CreateCardView.class.getResource("/cardimages/" + f);
                 if (url == null) {
                     throw new IllegalStateException("Missing card image: " + fileName);
                 }
@@ -33,7 +32,7 @@ public final class CardViewImpl {
 
         private static Image loadObjectiveImage(final String fileName) {
             return OBJECTIVE_CACHE.computeIfAbsent(fileName, f -> {
-                final URL url = CardViewImpl.class.getResource("/objectiveimages/" + f);
+                final URL url = CreateCardView.class.getResource("/objectiveimages/" + f);
                 if (url == null) {
                     throw new IllegalStateException("Missing objective image: " + fileName);
                 }
