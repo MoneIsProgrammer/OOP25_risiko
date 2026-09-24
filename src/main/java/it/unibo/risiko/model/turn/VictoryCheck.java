@@ -149,7 +149,7 @@ public class VictoryCheck {
              * if it matches, increase the number of continents conquered 
              * by the player
              */
-            if (ownsContinent(playerId, continent.getName())) {
+            if (ownsContinent(playerId, continent.getId())) {
                 nOfContinents++;
             }
         }
