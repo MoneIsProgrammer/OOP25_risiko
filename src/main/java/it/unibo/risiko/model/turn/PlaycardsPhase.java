@@ -60,8 +60,6 @@ public class PlaycardsPhase {
         this.cView = cView;
     }
 
-    /** Based on whether a player is human or ai, calls different methods to 
-     * allow player to play cards  */
     /** 
      * Based on whether a player is human or ai, calls different methods to allow player to play cards.
      */

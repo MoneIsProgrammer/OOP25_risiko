@@ -43,6 +43,7 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -147,23 +148,7 @@ public class GameScene {
             hbox.setBackground(new Background(new BackgroundFill(ColorConversion.toJavaFxColor(player.getColor()), new CornerRadii(5), null)));
             box.getChildren().addAll(hbox, new Separator());
         }
-        // the dice of the last attack, under the players
-        box.getChildren().add(dice);
-        box.setAlignment(Pos.CENTER);
-        final var spacing = 5;
-        final var bottom = new ChangingBox(controller.getStrenght, controller.armyCounter, controller.ableToBuild, controller.maxArmyforAction, a -> controller.addListener(a) , () -> controller.advancePhase());
-        bottom.setAlignment(Pos.CENTER);
-        bottom.setSpacing(spacing);
-        box.getChildren().addAll(bottom, new GameLogBox(history));
-
-        // the map follows the size of the window
-        final var container = new Pane(canvas);
-        canvas.widthProperty().bind(container.widthProperty());
-        canvas.heightProperty().bind(container.heightProperty());
-        root.setCenter(container);
-        root.setRight(box);
-        stage.setScene(new Scene(root));
-
+        
         /** Button that when clicked, shows the objective card of the player */
         Button button = new Button("Show objective");
         /** Gets the objective of the player */
@@ -173,6 +158,23 @@ public class GameScene {
         button.setOnAction(e -> {
             showObjectiveWindow(card);
         });
+
+        // the dice of the last attack, under the players
+        box.getChildren().add(dice);
+        box.setAlignment(Pos.CENTER);
+        final var spacing = 5;
+        final var bottom = new ChangingBox(controller.getStrenght, controller.armyCounter, controller.ableToBuild, controller.maxArmyforAction, a -> controller.addListener(a) , () -> controller.advancePhase());
+        bottom.setAlignment(Pos.CENTER);
+        bottom.setSpacing(spacing);
+        box.getChildren().addAll(bottom, new GameLogBox(history), button);
+
+        // the map follows the size of the window
+        final var container = new Pane(canvas);
+        canvas.widthProperty().bind(container.widthProperty());
+        canvas.heightProperty().bind(container.heightProperty());
+        root.setCenter(container);
+        root.setRight(box);
+        stage.setScene(new Scene(root));
     }
 
     /**
