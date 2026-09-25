@@ -2,6 +2,7 @@ package it.unibo.risiko.controller;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,9 @@ public final class GameController {
     private static final int MIN_REINFORCEMENTS = 3;
     // a bot stops attacking after this many attacks, so its turn always ends
     private static final int MAX_BOT_ATTACKS = 10;
+    // at the start 35 armies with 3 players, 30 with 4, 25 with 5 and 20 with 6
+    private static final int STARTING_ARMIES_BASE = 50;
+    private static final int FEWER_ARMIES_PER_PLAYER = 5;
 
     private Roster roster;
     private GameMap map;
@@ -76,6 +80,8 @@ public final class GameController {
     // the real dice, the fixed ones are only for the tests of the combat
     private final CombatSystem combat = new CombatSystemImpl(new RandomDice());
     private final VictoryCheck victory;
+    // how many players still have to place their starting armies
+    private int playersToSetUp;
 
     /**
      * Default constructor for new game.
@@ -241,6 +247,14 @@ public final class GameController {
             return;
         }
         final var current = this.turn.getCurrentPhase();
+        if (current == Phase.SETUP) {
+            // all your starting armies have to be placed before the next player
+            if (this.armyCounter.get() == 0) {
+                placeReinforcements();
+                endSetupTurn();
+            }
+            return;
+        }
         if (current == Phase.REINFORCE) {
             // you have to place all the armies before going on
             if (this.armyCounter.get() > 0) {
@@ -319,12 +333,40 @@ public final class GameController {
     }
 
     /**
-     * Starts the game. There is no setup: every territory keeps the army it got when the
-     * territories were dealt.
+     * Starts the game with the setup: every territory has the army it got when the territories
+     * were dealt, and one player at a time places the rest of its starting armies.
      */
     public void startGame() {
-        this.turn.setupFinished();
-        letBotsPlay();
+        this.playersToSetUp = this.roster.getAllPlayers().size();
+        // the next player places first, and so the view is told who it is
+        this.turn.next();
+        setupTurn();
+    }
+
+    // the player of the turn places its starting armies: a human with the clicks, a bot by itself
+    private void setupTurn() {
+        final var player = this.turn.getCurrentPlayer();
+        final int reserve = startingArmies() - this.map.getTerritoriesOf(player.getId()).size();
+        if (player.isHuman()) {
+            // the counter shows the reserve, done goes on when it's 0
+            this.armyCounter.set(reserve);
+        } else {
+            spreadArmies(player, reserve);
+            endSetupTurn();
+        }
+    }
+
+    // the player placed everything: now the next one, or the turns start when everybody is done
+    private void endSetupTurn() {
+        this.playersToSetUp--;
+        // after the last one we are back to the first one, who plays first
+        this.turn.next();
+        if (this.playersToSetUp > 0) {
+            setupTurn();
+        } else {
+            this.turn.setupFinished();
+            letBotsPlay();
+        }
     }
 
     // every player gets a secret objective, the victory is checked on it
@@ -334,6 +376,24 @@ public final class GameController {
         for (final Player player : this.roster.getAllPlayers()) {
             player.setObjective(objectives.getObjectiveCard());
         }
+    }
+
+    // 35 armies with 3 players, 30 with 4, 25 with 5 and 20 with 6
+    private int startingArmies() {
+        return STARTING_ARMIES_BASE - FEWER_ARMIES_PER_PLAYER * this.roster.getAllPlayers().size();
+    }
+
+    // a bot puts its armies on its territories one at a time, like dealing cards
+    private void spreadArmies(final Player bot, final int armies) {
+        final List<Territory> owned = new ArrayList<>(this.map.getTerritoriesOf(bot.getId()));
+        final Map<Territory, Integer> added = new HashMap<>();
+        for (int i = 0; i < armies; i++) {
+            final var territory = owned.get(i % owned.size());
+            territory.addArmies(1);
+            added.put(territory, added.getOrDefault(territory, 0) + 1);
+        }
+        // the history and the map are told too
+        publish(new ReinforceEvent(bot, added));
     }
 
     // one army every 3 territories, at least 3, plus the bonus of the continents

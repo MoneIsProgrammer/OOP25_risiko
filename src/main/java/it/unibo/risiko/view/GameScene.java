@@ -12,8 +12,6 @@ import it.unibo.risiko.model.battle.BattleResult;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.CreateCardView;
 import it.unibo.risiko.model.event.Event;
-import it.unibo.risiko.model.event.EventBus;
-import it.unibo.risiko.model.event.GameOverEvent;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
@@ -63,7 +61,6 @@ public class GameScene {
     private Stage stage;
     private GameController controller;
     private PlayerTurn turn;
-    private EventBus eventBus = new EventBus();
     // kept here so the controller can pass them the events
     private MapView mapView;
     private final DiceCanvas dice = new DiceCanvas();
@@ -176,10 +173,6 @@ public class GameScene {
         button.setOnAction(e -> {
             showObjectiveWindow(card);
         });
-
-        /* when a winner is set, this subscription event is called to show Game Over alert */
-        eventBus.subscribe(GameOverEvent.class, e -> showGameOver(controller.getWinner()));
-
     }
 
     /**

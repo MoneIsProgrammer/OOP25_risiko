@@ -78,7 +78,7 @@ A seguire, si dettagliano alcune parti del design, quelle maggiormente rilevanti
 
 Abbiamo usato il pattern MVC, con il codice diviso nei package \texttt{model}, \texttt{view} e \texttt{controller}.
 
-La parte che ho fatto io è divisa così: mappa, dadi e combattimento stanno nel model e non sanno niente né della grafica né del controller; il disegno della mappa sta nella view, ma da fuori si usa solo tramite l'interfaccia \texttt{MapView}, che non contiene tipi di JavaFX; \texttt{MapClickHandler} sta nel controller, riceve i click dalla view, legge la mappa e non modifica niente. Per tenere aggiornato lo schermo uso il pattern Observer: \texttt{MapView} estende \texttt{GameObserver}, quindi riceve gli \texttt{Event} e la mappa si ridisegna da sola.
+La parte che ho fatto io è divisa così: mappa, dadi e combattimento stanno nel model e non sanno niente né della grafica né del controller; il disegno della mappa sta nella view, ma da fuori si usa solo tramite l'interfaccia \texttt{MapView}, che non contiene tipi di JavaFX; \texttt{MapClickHandler} sta nel controller, riceve i click dalla view, legge la mappa e non modifica niente. Per tenere aggiornato lo schermo uso il pattern Observer: \texttt{MapView} estende \texttt{GameObserver}, quindi riceve gli \texttt{Event} e la mappa si ridisegna da sola. Il flusso della partita, cioè la preparazione, i turni e l'esecuzione delle mosse, l'ho scritto nel \texttt{GameController}: prende le mosse dalle strategie dei giocatori, le esegue sul model e avvisa la view con gli eventi.
 
 Per la mia parte cambiare libreria grafica vuol dire riscrivere solo \texttt{MapCanvas} e \texttt{DiceCanvas}: il model e \texttt{MapClickHandler} restano uguali.
 
@@ -191,7 +191,7 @@ Il controller non vede mai \texttt{MapCanvas}, lo crea solo la schermata di gioc
 \end{figure}
 
 \subsection{Zangheri Marco. Cosa vuol dire un click}
-La mappa sa solo quale territorio hai cliccato, ma lo stesso click vuol dire cose diverse in base alla fase: in attacco il primo click è da dove attacchi e il secondo il bersaglio, nello spostamento il secondo è dove vai. Invece di mettere queste regole in \texttt{MapCanvas} ho fatto \texttt{MapClickHandler}, nel controller: col primo click scegli un tuo territorio con almeno due armate e la mappa evidenzia dove puoi andare, col secondo, se la destinazione va bene, avvisa chi ascolta e gli passa i due id. La mossa non la crea lui, quella resta alla parte dei giocatori.
+La mappa sa solo quale territorio hai cliccato, ma lo stesso click vuol dire cose diverse in base alla fase: in attacco il primo click è da dove attacchi e il secondo il bersaglio, nello spostamento il secondo è dove vai, mentre nel rinforzo e nella preparazione basta un click su un tuo territorio per metterci un'armata. Invece di mettere queste regole in \texttt{MapCanvas} ho fatto \texttt{MapClickHandler}, nel controller: col primo click scegli un tuo territorio con almeno due armate e la mappa evidenzia dove puoi andare, col secondo, se la destinazione va bene, avvisa chi ascolta e gli passa i due id. La mossa non la crea lui, quella resta alla parte dei giocatori: i due territori, insieme alle armate scelte con il contatore, li passo alla strategia del giocatore umano, che li raccoglie finché la mossa non è completa.
 
 All'inizio c'era un metodo solo, \texttt{setTurn(giocatore, fase)}, perché pensavo che chi faceva il gestore dei turni avesse sempre tutte e due le cose insieme. Con \texttt{PlayerTurn} di Simone si è visto che non è così: la fase cambia più volte nello stesso turno e viene annunciata da sola, il giocatore cambia una volta per turno. L'ho quindi diviso in \texttt{setPlayer} e \texttt{setPhase}, e ho collegato \texttt{setPhase} ai cambi di fase. Poi ho collegato anche \texttt{setPlayer}: \texttt{PlayerTurn} annuncia chi gioca a ogni cambio di turno e alla fine della preparazione, con un avviso separato da quello delle fasi.
 
@@ -201,6 +201,13 @@ All'inizio c'era un metodo solo, \texttt{setTurn(giocatore, fase)}, perché pens
     \caption{Gestione dei click}
     \label{fig:Click}
 \end{figure}
+
+\subsection{Zangheri Marco. Il flusso della partita}
+All'inizio il controller aveva solo i metodi pensati per il flusso della partita, ma vuoti: nessuno faceva partire il gioco, eseguiva le mosse o passava il turno. Su richiesta di Simone l'ho completato io. Adesso, quando si apre la schermata, il controller distribuisce gli obiettivi e fa la preparazione: ogni territorio ha già un'armata e, a turno, ognuno piazza le armate che gli restano, gli umani cliccando e i bot da soli. Poi partono i turni. Nel rinforzo il controller calcola le armate da piazzare, cioè un terzo dei territori, almeno tre, più il bonus dei continenti. In attacco, a ogni conferma prende la mossa dalla strategia del giocatore, la risolve con \texttt{CombatSystem}, toglie le perdite, gestisce la conquista e manda il risultato a storico, mappa e dadi con \texttt{publishBattle}; si può attaccare più volte, e alla fine lo spostamento passa il turno.
+
+I bot giocano da soli con la loro strategia, ma ogni loro mossa la controllo prima di eseguirla, con le stesse regole del combattimento: così una mossa sbagliata viene ignorata invece di bloccare il gioco. Dopo ogni attacco controllo la vittoria, con \texttt{VictoryCheck} oppure se un giocatore ha conquistato tutta la mappa.
+
+Il punto debole è che il controller è diventato grande: il flusso starebbe meglio in una classe sua, e il turno dei bot in un'altra.
 
 \subsection{Hamail Azhar. Costruire due tipi di mazzi}
 In un mazzo di carte territorio ci sono 42 carte di tipo territorio e altre 2 carte jolly mentre nel mazzo di carte obiettivo ci sono 14 carte obiettivo. Facendo prima questa distinzione, ho pensato di creare due classi \texttt{ObjectivesDeck} e \texttt{TerritoriesDeck}, per costruire i due mazzi, i metodi comuni a questi mazzi sono stati inseriti in una terza classe \texttt{Deck}. Nella classe deck ci sono metodi per popolare un mazzo di carte \texttt{populateTerritoryDeck} e \texttt{populateObjectiveDeck} a partire da classi enum (\texttt{Objective}, \texttt{CardTerritories} per aggiungere i territori alle carte territorio e \texttt{CardTroops} per aggiungere le truppe alle carte territorio). Inoltre, per aggiungere le carte jolly, che non hanno nessun territorio, ho usato un metodo \texttt{addJolly} che crea solo due carte jolly. Nella classe \texttt{TerritoriesDeck}, ci sono due metodi, uno per creare il mazzo con le carte territorio e uno per aggiungere le carte jolly. Entrambi però contengono un metodo shuffle che mischia le carte dopo che sono state inserite nel mazzo. Questi metodi vengono poi usati nella fasi di preparazione. Per risolvere il problema di ripopolare il mazzo dopo che si è svuotato, ho aggiunto un controllo in \texttt{dealCard} che prima di distribuire una carta, controlla se il mazzo è vuoto e se lo è, lo ripopola da solo.
@@ -396,6 +403,19 @@ Per alcune parti, segnalate qui sotto, ho preso spunto da guide e discussioni su
     \item Il metodo dei test che trasforma delle righe di testo in un \texttt{InputStream}, così \texttt{MapLoader} e \texttt{MapLayout} leggono un file finto senza doverlo creare davvero \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/test/java/it/unibo/risiko/model/map/MapLoaderTest.java#L60-L62}{qui}: questo l'ho copiato così com'è da una discussione su un forum, e lo stesso metodo è anche in \texttt{MapLayoutTest}.
 \end{itemize}
 
+\subsection{Azhar Hamail}
+\begin{itemize}
+    \item Uso di funzionalità di JavaFX per le carte, \href{https://github.com/MoneIsProgrammer/OOP25_risiko/blob/master/src/main/java/it/unibo/risiko/view/cards/CardView.java}{ad esempio}
+\end{itemize}
+Ho preso spunto da:
+\begin{itemize}
+    \item video youtube, come \href{https://youtube.com/playlist?list=PLlmV8hCw8wblhfOeesNFABDq4gQHc2CL_&si=R5UHVmDRaBtifulw}{hudredvisionguy}
+    \item spiegazioni di concetti come \href{https://www.geeksforgeeks.org/system-design/observer-pattern-set-1-introduction/}{pattern observers} e altri da geeksforgeeks
+    \item per bug o altri errori incontrati durante l'implementazione, ho consultato vecchi post su \texttt{stackoverflow}
+    \item w3school per concetti base, ad esempio, se non mi ricordavo come usare hashmap
+    \item \href{https://math.hws.edu/javanotes/source/}{javanotes} per la gestione delle classi deck e card
+\end{itemize}
+
 %
 %
 %
@@ -529,7 +549,7 @@ Al fine di evitare pregiudizi involontari, l'intero capitolo verrà letto dai do
 Ritengo che la mia parte sia in parte troppo ingegnerizzata sia che si mantenga in piedi grazie a pezze e fix, questo forse è dovuto al tempo mal gestito, a una poca comunicazione iniziale e alla mala gestione delle parti in comune. La mia parte la credo forte in quanto più punti sono stati gestiti per avere una quanto più facile integrazione nelle altre componenti. Una evidente debolezza è la troppa dipendenza dalle componenti dei miei compagni che non sono riuscito a risolvere anche a livello teorico.
 
 \subsection{Zangheri Marco}
-Mi sono occupato della mappa e dei continenti, dei dadi e del combattimento, del disegno della mappa e della gestione dei click. Siccome la mia parte è quella su cui poggiano le altre, ho cercato di chiudere presto le interfacce, tenerle piccole e non dipendere dalle classi degli altri: la mappa usa solo id e la grafica si usa solo tramite \texttt{MapView}. Secondo me è stata la scelta giusta, perché quando gli altri hanno collegato le loro parti non ho dovuto cambiare niente di importante.
+Mi sono occupato della mappa e dei continenti, dei dadi e del combattimento, del disegno della mappa e della gestione dei click, e verso la fine anche del flusso della partita nel controller. Siccome la mia parte è quella su cui poggiano le altre, ho cercato di chiudere presto le interfacce, tenerle piccole e non dipendere dalle classi degli altri: la mappa usa solo id e la grafica si usa solo tramite \texttt{MapView}. Secondo me è stata la scelta giusta, perché quando gli altri hanno collegato le loro parti non ho dovuto cambiare niente di importante.
 
 Però ci sono cose che potevo fare meglio. La prima è il disegno: i territori sono cerchi collegati da linee e non le forme vere dei continenti, quindi si capisce chi confina con chi ma non sembra un tabellone. In più \texttt{MapCanvas} è la mia classe più grande e fa un sacco di cose insieme, l'avrei dovuta dividere in due, una per i continenti e una per i territori.
 
@@ -537,11 +557,16 @@ La seconda sono gli id: usare le \texttt{String} ha tenuto separate mappa e gioc
 
 La terza è che la mappa si fida troppo di chi la usa: \texttt{GameMap} restituisce i territori veri, quindi chiunque può cambiare proprietario e armate senza passare da nessuna regola, e lo stesso vale per il combattimento, visto che \texttt{resolve} calcola e basta. Erano scelte per tenere le cose semplici e testabili, ma potevo dare i territori in sola lettura e mettere nella mappa dei metodi che fanno i controlli.
 
+La quarta è il controller: con il flusso della partita è diventato grande e fa troppe cose insieme. Lo dividerei in una classe per il giro dei turni e una per i bot, lasciando al controller solo il compito di parlare con la schermata.
+
 Queste cose le ho viste verso la fine, soprattutto per il tempo e per la poca comunicazione che c'è stata tra di noi all'inizio: alcune decisioni che riguardavano tutti e tre le abbiamo prese ognuno per conto suo.
 
 Nella proposta iniziale mi ero preso anche il salvataggio della partita, che era fra le funzionalità opzionali, e alla fine non sono riuscito a farlo. Qui il problema è stato come ho gestito il tempo: ho scelto di dare la precedenza alle parti obbligatorie e ai test, e quando le ho chiuse mi sono accorto che non ne restava abbastanza per fare bene anche questa. Salvare una partita infatti non vuol dire salvare solo la mappa, ma tutto lo stato del gioco, e farlo di corsa avrebbe voluto dire consegnare una funzione a metà. Ho preferito consegnare meno cose, ma finite e testate. La strada comunque è aperta: la mappa si carica già da un file di testo, quindi per salvarla basterebbe riscrivere lo stesso formato con proprietari e armate aggiornati, e nel menu il pulsante per ricaricare una partita è già predisposto, solo disattivato.
 
 Se si andasse avanti, la prima cosa che farei è una mappa a poligoni: le coordinate stanno già in un file separato dal model, quindi basterebbe estendere \texttt{MapLayout} per fargli leggere una lista di punti invece di un punto solo.
+
+\subsection{Hamail Azhar}
+La principale difficoltà che ho incontrato è che ho gestito male il tempo. All'inizio non mi erano ben chiare le funzionalità che dovevo implementare, cioè avevo un'idea generale ma le cose non le avevo strutturate/messe in ordine. Dopo un po' ho iniziato a distribuire ogni task in parti più piccole e gestirle una alla volta e questo mi ha reso il lavoro un po' più facile. Questo mi ha dato esperienza per gestire i progetti futuri.
 
 
 \textbf{È richiesta una sezione per ciascun membro del gruppo, obbligatoriamente}.

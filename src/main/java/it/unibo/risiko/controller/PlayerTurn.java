@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import it.unibo.risiko.model.event.EventBus;
-import it.unibo.risiko.model.event.GameOverEvent;
+import it.unibo.risiko.model.event.GameOverObserver;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.turn.Phase;
@@ -27,9 +26,8 @@ public final class PlayerTurn {
      * when it's the next player's turn, it changes current player to the new player
     */
     private Player currentPlayer;
+    private GameOverObserver observer;
     private Player winner = null;
-    private EventBus eventBus = new EventBus();
-
 
     /**
      * Default constructor, already shuffles the players.
@@ -135,11 +133,15 @@ public final class PlayerTurn {
      * current player has reached their objective, if they 
      * have, checkElimination returns true and the current 
      * player is set as winner 
+     * Informs the view through GameOverObserver that the 
+     * game is over
      * @param winner the player that reached their objective
      */
     public void setWinner(Player winner) {
         this.winner = winner;
-        eventBus.publish(new GameOverEvent());
+        if (observer != null) {
+            observer.onGameOver(winner);
+        }
     }
 
     /**
@@ -156,6 +158,10 @@ public final class PlayerTurn {
      */
     public Player getWinner() {
         return winner;
+    }
+    /* observer that alerts view when the game is over */
+    public void setGameOverObserver(GameOverObserver observer) {
+        this.observer = observer;
     }
 
     /**
