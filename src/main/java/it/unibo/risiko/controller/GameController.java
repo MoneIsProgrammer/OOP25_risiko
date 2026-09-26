@@ -62,7 +62,7 @@ public final class GameController {
     private Roster roster;
     private GameMap map;
     private History history = new HistoryImpl();
-    private PlayerTurn turn;
+    public PlayerTurn turn;
     private Phase phase;
     private String sourceId;
     private String destinationId;

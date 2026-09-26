@@ -165,7 +165,7 @@ public class GameScene {
 
         Button drawButton = new Button("Draw card");
         
-        if ((turn.getCurrentPhase().equals(Phase.MOVE)) && (attackPhase.canDraw())) {
+        if ((this.controller.turn.getCurrentPhase().equals(Phase.MOVE)) && (attackPhase.canDraw())) {
             drawButton.setOnAction(e -> {
                 Card cardDrew;
                 cardDrew = drawCard.drawNewCard();
