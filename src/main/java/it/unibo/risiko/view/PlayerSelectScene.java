@@ -214,12 +214,16 @@ public class PlayerSelectScene extends Scene {
                     final var temp = players.remove(i);
                     this.playerColors.add(ColorConversion.toJavaFxColor(temp.color()));
                     this.counter--;
-                    this.done.setDisable(counter < MIN_PLAYERS);
+                    this.done.setDisable(canFinish());
                 });
         top.getChildren().add(box);
         players.add(new PlayerRequest(nickname, playerType, ColorConversion.toRisikoColor(color)));
         this.field.setText("");
-        this.done.setDisable(counter < MIN_PLAYERS);
+        this.done.setDisable(canFinish());
+    }
+
+    private boolean canFinish() {
+        return counter < MIN_PLAYERS || !players.stream().anyMatch(a -> a.ai() == PlayerStrategyRequest.HUMAN);
     }
 
     private void finish() {
