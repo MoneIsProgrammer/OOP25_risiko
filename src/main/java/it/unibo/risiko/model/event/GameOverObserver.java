@@ -8,7 +8,11 @@ import it.unibo.risiko.view.GameScene;
  * GameOverObserver
  */
 public class GameOverObserver {
-    private GameScene scene;
+    private final GameScene scene;
+
+    GameOverObserver(final GameScene scene) {
+        this.scene = scene;
+    }
     /* method called by PlayerTurn only when a player wins  */
     public void onGameOver(Player winner) {
         scene.showGameOver(winner);

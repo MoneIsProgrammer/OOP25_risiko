@@ -90,8 +90,8 @@ public final class GameController {
     // how many players still have to place their starting armies
     private int playersToSetUp;
     private final DrawCard draw;
-    private CardBonus bonusReinforcements;
-    private CardView viewCards;
+    private final CardBonus bonusReinforcements;
+    private final CardView viewCards;
     private final MovePhase elimination;
     // conquered this turn
     private boolean conquered;
@@ -137,6 +137,16 @@ public final class GameController {
             }
         });
         this.turn.addPlayerChangeListener(event -> this.placements.clear());
+    }
+
+    /* Dummy constructor for initialising uninitialised final fields */
+    @SuppressWarnings("unused")
+    private GameController(final CardBonus bonusReinforcements, final CardView viewCards, final DrawCard draw, final MovePhase elimination, final VictoryCheck victory) {
+        this.draw = draw;
+        this.elimination = elimination;
+        this.bonusReinforcements = bonusReinforcements;
+        this.viewCards = viewCards;
+        this.victory = victory;
     }
 
     private Consumer<Integer> getStrenght() {
@@ -442,7 +452,7 @@ public final class GameController {
         /* iterator for for loop */
         int i;
         /* to store bonus reinforcements amount */
-        int bonus;
+        int bonus = 0;
 
         /* check if player is human or ai, 
         - if human: call askComboToPlay to let the player choose cards

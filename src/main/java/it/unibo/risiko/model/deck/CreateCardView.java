@@ -50,10 +50,15 @@ public final class CreateCardView {
     public static ImageView createCardView(final Card card, final double size) {
 
         final String fileName;
+        final String cardType = card.getCardType();
+        final String territoryName;
+        final String troopName;
 
-        if (card.getCardType().equals(CardType.TERRITORY)){
-            fileName = card.getTerritory().getTerritoryId() + "_" + card.getTroop().getTroopName() + ".png";
-        } else if (card.getCardType().equals(CardType.JOLLY)) {
+        if (cardType.contentEquals("Territory")){
+            territoryName = card.getTerritory().getTerritoryName();
+            troopName = card.getTroop().getTroopName();
+            fileName = territoryName+"_"+troopName+".png";
+        } else if (cardType.contentEquals("Jolly")) {
             fileName = "jolly.png";
         } else {
             throw new IllegalStateException("Not a territory or jolly card.");
