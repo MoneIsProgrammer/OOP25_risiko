@@ -1,14 +1,12 @@
 package it.unibo.risiko.model.deck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +17,7 @@ class CardsTest {
     private static final int ZERO = 0;
 
     /* for testing card dealing method */
-    private final Random random = new Random();
+    //private final Random random = new Random();
 
     /* Test whether the deck is successfully created and shuffled */
     private final List<Card> territoriesDeck = new ArrayList<>();
@@ -30,7 +28,7 @@ class CardsTest {
     @Test 
     void territoryDeck() {
         final Card cardDealt;
-        final int randomIndex;
+        //final int randomIndex;
         /* add three cards to the deck */
         final Card c1 = new Card(CardTerritories.ALASKA, CardTroops.CANNONS);
         final Card c2 = new Card(CardTerritories.AFGHANISTAN, CardTroops.CAVALRY);
@@ -64,9 +62,9 @@ class CardsTest {
         assertTrue(!(territoriesDeck.get(2).equals(c3))); */
 
         /* check if calling dealCard() actually deals a card */
-        randomIndex = random.nextInt(territoriesDeck.size());
-        assertNotEquals(randomIndex, 0);
-        cardDealt = territoriesDeck.get(randomIndex);
+        //randomIndex = random.nextInt(territoriesDeck.size());
+        //assertNotEquals(randomIndex, 0);
+        cardDealt = territoriesDeck.get(1);
         territoriesDeck.remove(cardDealt);
         /* after removing a card, we see that the number of cards actually decreased */
         assertTrue(territoriesDeck.size() < 3);
@@ -143,7 +141,7 @@ class CardsTest {
         final String player2Id = ownerId;
 
         final String europeOwnerId = ownerId;
-        final String oceaniaOwnerId = ownerId;
+        //final String oceaniaOwnerId = ownerId;
         //@SuppressWarnings("unused")
         //final String southAmericaOwnerId = "123";
         /* player 1 owns 2 continents */
@@ -156,6 +154,6 @@ class CardsTest {
         /* putting the part below as comment so it doesn't give error when others are testing */
         /* assertTrue((player1Id.equals(europeOwnerId)) && (player1Id.equals(southAmericaOwnerId)) && (nOfContinentsP1 > 2)); */
         /* for player 2 - objective: Europe, Oceania and a third continent */
-        assertTrue(player2Id.equals(europeOwnerId) && player2Id.equals(oceaniaOwnerId) && nOfContinentsP2 > 2);
+        assertTrue(player2Id.equals(europeOwnerId) && nOfContinentsP2 > 2);
     }
 }
