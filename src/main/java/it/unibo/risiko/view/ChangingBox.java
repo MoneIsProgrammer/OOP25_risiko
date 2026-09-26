@@ -5,9 +5,12 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.function.Consumer;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.turn.Phase;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -24,8 +27,8 @@ public class ChangingBox extends HBox {
     private final List<Node> attackSetup;
     private final List<Node> reinforceSetup;
     private final BooleanProperty buttonActive = new SimpleBooleanProperty(false);
-    private List<Node> moveSetup;
-    private List<Node> cardSetup;
+    private final List<Node> moveSetup;
+    private final List<Node> cardSetup;
 
     /**
      * Default constructor.
@@ -34,13 +37,15 @@ public class ChangingBox extends HBox {
      * @param counter Tracks the number of armies the player has to use or wants to use
      * @param canGenerate if the controller allows to generate an action
      * @param maxArmyforAction the number of troops the players can utilize
-     * @param advancePhase 
+     * @param advancePhase advaces the controller phase
+     * @param addListener to add a listener when phase changes
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public ChangingBox(
         final Consumer<Integer> getStrenght,
         final IntegerProperty counter, 
-        final BooleanProperty canGenerate, 
-        final IntegerProperty maxArmyforAction,
+        final ReadOnlyBooleanProperty canGenerate, 
+        final ReadOnlyIntegerProperty maxArmyforAction,
         final Consumer<PropertyChangeListener> addListener,
         final Runnable advancePhase
     ) {
@@ -68,30 +73,49 @@ public class ChangingBox extends HBox {
             // you can attack again, done goes to the next phase
             this.counter.set(0);
         });
-        attackSetup = List.of(new Text("attack"), subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
+        attackSetup = List.of(
+            new Text("attack"), 
+            subtractButton, 
+            new Text("Armies:"), 
+            armiesCounter, 
+            addButton, 
+            confirmButton, 
+            doneButton
+        );
 
         final var armies = new Text();
         armies.textProperty().bind(counter.asString());
         final var reinforceButton = new Button("Confirm");
         reinforceButton.setOnAction(e -> advancePhase.run());
         reinforceButton.disableProperty().bind(counter.isEqualTo(0).not());
-        reinforceSetup = List.of(new Text("reinforce"), new Text("Armies to place:"), armies, reinforceButton);
+        reinforceSetup = List.of(
+            new Text("reinforce"), 
+            new Text("Armies to place:"), 
+            armies, 
+            reinforceButton
+        );
 
         // in the move you choose the armies too, with the same buttons of the attack
-        moveSetup = List.of(new Text("move"), subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
+        moveSetup = List.of(
+            new Text("move"), 
+            subtractButton, 
+            new Text("Armies:"), 
+            armiesCounter, 
+            addButton, 
+            confirmButton, 
+            doneButton
+        );
 
         cardSetup = List.of(new Text("card"), doneButton);
-
 
         super.getChildren().addAll(reinforceSetup);
 
         addListener.accept(new PropertyChangeListener() {
 
             @Override
-            public void propertyChange(PropertyChangeEvent evt) {
+            public void propertyChange(final PropertyChangeEvent evt) {
                 change((Phase) evt.getNewValue());
             }
-            
         });
     }
 
@@ -100,7 +124,7 @@ public class ChangingBox extends HBox {
      * 
      * @param phase determinates which configuration should be applied
      */
-    public void change(final Phase phase) { //invoke when phase changes //TODO add all phases
+    public void change(final Phase phase) { //invoke when phase changes
         super.getChildren().clear();
         switch (phase) {
             case REINFORCE, SETUP:

@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -46,6 +44,8 @@ import it.unibo.risiko.view.GameScene;
 import it.unibo.risiko.view.cards.CardView;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.stage.Stage;
@@ -55,6 +55,7 @@ import javafx.stage.Stage;
  */
 public final class GameController {
 
+    private static final int MAX_TERR_CARDS = 42;
     // you attack with 3 armies at most
     private static final int MAX_ATTACK_ARMIES = 3;
     // in the reinforce you get one army every 3 territories, but never less than 3
@@ -66,33 +67,34 @@ public final class GameController {
     private static final int STARTING_ARMIES_BASE = 50;
     private static final int FEWER_ARMIES_PER_PLAYER = 5;
 
-    private Roster roster;
-    private GameMap map;
-    private History history = new HistoryImpl();
-    public PlayerTurn turn;
-    private Phase phase;
-    private String sourceId;
-    private String destinationId;
-    // activate button to commit the action if it can be generated, both this and the army are used to check may be moved
-    public final BooleanProperty ableToBuild = new SimpleBooleanProperty(true);
-    //to show player how many armies has to place or wants to utilize
-    public final IntegerProperty armyCounter = new SimpleIntegerProperty(0);
-    // set this to the maximum troops utilizable for the action, limits if action can be launched by controller parameteters
-    public final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6);
-    public Consumer<Integer> getStrenght;
-    private GameScene view;
-    private Stage stage;
-    // the armies put with the clicks in the reinforce or in the setup, for each territory
-    private final Map<Territory, Integer> placements = new HashMap<>();
-    // the real dice, the fixed ones are only for the tests of the combat
+    private final History history = new HistoryImpl();
+    private final Roster roster;
+    private final DrawCard draw;
     private final CombatSystem combat = new CombatSystemImpl(new RandomDice());
     private final VictoryCheck victory;
+    private final Stage stage;
+    private final Map<Territory, Integer> placements = new HashMap<>();
+    private final MovePhase elimination;
+    // activate button to commit the action if it can be generated, both this and the army are used to check may be moved
+    private final BooleanProperty ableToBuild = new SimpleBooleanProperty(true);
+    //to show player how many armies has to place or wants to utilize
+    private final IntegerProperty armyCounter = new SimpleIntegerProperty(0);
+
+    // set this to the maximum troops utilizable for the action, limits if action can be launched by controller parameteters
+    private final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6);
+    private final Consumer<Integer> getStrenght;
+
+    private GameScene view;
+    private GameMap map;
+
+    private final PlayerTurn turn;
+    // the armies put with the clicks in the reinforce or in the setup, for each territory
+    // the real dice, the fixed ones are only for the tests of the combat
     // how many players still have to place their starting armies
     private int playersToSetUp;
-    private final DrawCard draw;
-    private final CardBonus bonusReinforcements;
+
+    private CardBonus bonusReinforcements;
     private final CardView viewCards;
-    private final MovePhase elimination;
     // conquered this turn
     private boolean conquered;
     // target killed
@@ -102,24 +104,28 @@ public final class GameController {
      * Default constructor for new game.
      * 
      * @param requests players that will play in the game
+     * @param stage the stage where to put the view
      */
-    public GameController(final List<PlayerRequest> requests, Stage stage) {
+
+    // don't want to use a logger
+    
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2") //keeps the same stage
+    public GameController(final List<PlayerRequest> requests, final Stage stage) {
         try {
             this.map = MapLoader.loadDefault();
         } catch (final IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // NOPMD don't want to use loggers just for this
         }
         //Build map before players then the territories must be assigned
         this.roster = new RosterImpl(requests, this.map); 
         this.turn = new PlayerTurn(roster);
-        this.phase = Phase.SETUP;
         this.stage = stage;
-        TerritoriesDeck territoryDeck = new TerritoriesDeck();
+        final TerritoriesDeck territoryDeck = new TerritoriesDeck();
         territoryDeck.populateTerritoryDeck();
-        for (int i = 0; i < 42; i++) {
-            var curr = this.turn.next();
-            var terr = territoryDeck.dealCard();
-            System.out.println(terr.getTerritory().getTerritoryName());
+        for (int i = 0; i < MAX_TERR_CARDS; i++) {
+            final var curr = this.turn.next();
+            final var terr = territoryDeck.dealCard();
+            //System.out.println(terr.getTerritory().getTerritoryName()); ugly testing
             this.map.getTerritory(terr.getTerritory().getTerritoryId()).addArmies(1);
             this.map.getTerritory(terr.getTerritory().getTerritoryId()).setOwner(curr.getId());
         }
@@ -128,53 +134,76 @@ public final class GameController {
         this.elimination = new MovePhase(this.map, this.roster, this.victory, this.turn);
         dealObjectives();
         // the counter of the buttons says how many armies attack or move
-        this.getStrenght = armies -> armiesChosen(armies);
+        this.getStrenght = this::armiesChosen;
         // a new reinforce starts from zero, and the counter says how many armies there are to place
-        this.turn.addPropertyChangeListener(event -> {
+        this.turn.addPhaseChangeListener(event -> {
             this.placements.clear();
             if (event.getNewValue() == Phase.REINFORCE) {
                 this.armyCounter.set(reinforcementsOf(this.turn.getCurrentPlayer()));
             }
         });
         this.turn.addPlayerChangeListener(event -> this.placements.clear());
+        this.viewCards = new CardView();
     }
 
-    /* Dummy constructor for initialising uninitialised final fields */
-    @SuppressWarnings("unused")
-    private GameController(final CardBonus bonusReinforcements, final CardView viewCards, final DrawCard draw, final MovePhase elimination, final VictoryCheck victory) {
-        this.draw = draw;
-        this.elimination = elimination;
-        this.bonusReinforcements = bonusReinforcements;
-        this.viewCards = viewCards;
-        this.victory = victory;
+    /**
+     * Checks if a human player can build.
+     * 
+     * @return a property tracking if human can build
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //readonly view must look at this
+    public ReadOnlyBooleanProperty getAbleToBuild() {
+        return ableToBuild;
     }
 
-    private Consumer<Integer> getStrenght() {
-        // TODO Auto-generated method stub
-        return new Consumer<>() {
-            //with ArmyCounter this may be useless
-            @Override
-            public void accept(final Integer t) {
-                maxArmyforAction.set(10);
-                System.out.println(t); //dirty testing, feel free to remove
-            }
-
-        };
+    /**
+     * tracks the current player armies.
+     * 
+     * @return a counter for armies
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //value is changed by view
+    public IntegerProperty getArmyCounter() {
+        return armyCounter;
     }
 
-    private Consumer<Entry<String, Integer>> getReiforceMap() {
-        return new Consumer<>() {
-
-            @Override
-            public void accept(final Entry<String, Integer> t) {
-                
-            }
-        };
+    /**
+     * tracks how many armies can be used.
+     * 
+     * @return a changing limit for army number
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //readonly view must look at this
+    public ReadOnlyIntegerProperty getMaxArmyforAction() {
+        return maxArmyforAction;
     }
-    
+
+    /**
+     * A consumer for the GUI.
+     * 
+     * @return a getter for the strenght of the action
+     */
+    public Consumer<Integer> getGetStrenght() {
+        return getStrenght;
+    }
+
+    /**
+     * Getter for the turn tracker.
+     * 
+     * @return the turn tracker
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+    public PlayerTurn getTurn() {
+        return turn;
+    }
+
     // same order as the map clicks: first where it starts, then where it goes
-    @SuppressFBWarnings("PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE") // the buttons read the max from here
-    public void getTerritories(final String from, final String to) {
+    /**
+     * Consumer that gets the territories from gui.
+     * 
+     * @param from the source
+     * @param to the destination
+     */
+    //@SuppressFBWarnings("PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE") // the buttons read the max from here
+    public void territoriesConsumer(final String from, final String to) {
         if (!humanPlays()) {
             return;
         }
@@ -219,46 +248,12 @@ public final class GameController {
         }
     }
 
-    // the armies of the counter when confirm is pressed: how many attack or how many move
-    private void armiesChosen(final int armies) {
-        // the strategy doesn't take 0 armies
-        if (!humanPlays() || armies < 1) {
-            return;
-        }
-        final var player = this.turn.getCurrentPlayer();
-        if (this.turn.getCurrentPhase() == Phase.ATTACK) {
-            humanStrategy().attackStrenght(armies);
-            // the attack is complete, so it happens now
-            if (humanStrategy().canCreateAttack()) {
-                final var attack = humanStrategy().getAttack(player);
-                if (attack.isPresent() && isValidAttack(attack.get())) {
-                    executeAttack(attack.get());
-                }
-            }
-        } else if (this.turn.getCurrentPhase() == Phase.MOVE) {
-            humanStrategy().moveStrenght(armies);
-            // there is only one move in a turn, after it the turn passes
-            if (humanStrategy().canCreateMove()) {
-                final var move = humanStrategy().getMove(player);
-                if (move.isPresent() && isValidMove(move.get())) {
-                    executeMove(move.get());
-                    passTurn();
-                }
-            }
-        }
-    }
-
-    // only a human gives the input: while a bot plays, or after the end, clicks and buttons do nothing
-    private boolean humanPlays() {
-        return !this.turn.isGameOver() && this.turn.getCurrentPlayer().isHuman();
-    }
-
-    // isHuman says the strategy is a HumanStrategy, so the cast is safe
-    private HumanStrategy humanStrategy() {
-        return (HumanStrategy) this.turn.getCurrentPlayer().getStrategy();
-    }
-
-    public void registerView(GameScene gameScene) {
+    /**
+     * Register the view of the game.
+     * 
+     * @param gameScene the scene to add
+     */
+    public void registerView(final GameScene gameScene) {
         this.view = gameScene;
         this.view.start(roster, map, history, this.stage);
         // the view is listening now, so the game can start
@@ -315,8 +310,13 @@ public final class GameController {
         return this.turn.getWinner();
     }
 
-    public void addListener(PropertyChangeListener listener) {
-        turn.addPropertyChangeListener(listener);
+    /**
+     * Adds listener to phase changes.
+     * 
+     * @param listener the listener to add
+     */
+    public void addListener(final PropertyChangeListener listener) {
+        turn.addPhaseChangeListener(listener);
     }
 
     /**
@@ -355,10 +355,6 @@ public final class GameController {
         }
     }
 
-    public void confirmAction() {
-
-    }
-
     /**
      * Starts the game with the setup: every territory has the army it got when the territories
      * were dealt, and one player at a time places the rest of its starting armies.
@@ -368,6 +364,45 @@ public final class GameController {
         // the next player places first, and so the view is told who it is
         this.turn.next();
         setupTurn();
+    }
+
+    // the armies of the counter when confirm is pressed: how many attack or how many move
+    private void armiesChosen(final int armies) {
+        // the strategy doesn't take 0 armies
+        if (!humanPlays() || armies < 1) {
+            return;
+        }
+        final var player = this.turn.getCurrentPlayer();
+        if (this.turn.getCurrentPhase() == Phase.ATTACK) {
+            humanStrategy().attackStrenght(armies);
+            // the attack is complete, so it happens now
+            if (humanStrategy().canCreateAttack()) {
+                final var attack = humanStrategy().getAttack(player);
+                if (attack.isPresent() && isValidAttack(attack.get())) {
+                    executeAttack(attack.get());
+                }
+            }
+        } else if (this.turn.getCurrentPhase() == Phase.MOVE) {
+            humanStrategy().moveStrenght(armies);
+            // there is only one move in a turn, after it the turn passes
+            if (humanStrategy().canCreateMove()) {
+                final var move = humanStrategy().getMove(player);
+                if (move.isPresent() && isValidMove(move.get())) {
+                    executeMove(move.get());
+                    passTurn();
+                }
+            }
+        }
+    }
+
+    // only a human gives the input: while a bot plays, or after the end, clicks and buttons do nothing
+    private boolean humanPlays() {
+        return !this.turn.isGameOver() && this.turn.getCurrentPlayer().isHuman();
+    }
+
+    // isHuman says the strategy is a HumanStrategy, so the cast is safe
+    private HumanStrategy humanStrategy() {
+        return (HumanStrategy) this.turn.getCurrentPlayer().getStrategy();
     }
 
     // the player of the turn places its starting armies: a human with the clicks, a bot by itself
@@ -452,7 +487,7 @@ public final class GameController {
         /* iterator for for loop */
         int i;
         /* to store bonus reinforcements amount */
-        int bonus = 0;
+        final int bonus;
 
         /* check if player is human or ai, 
         - if human: call askComboToPlay to let the player choose cards
@@ -637,7 +672,5 @@ public final class GameController {
     private boolean isOwnedBy(final Territory territory, final Player player) {
         return territory.getOwnerId().equals(Optional.of(player.getId()));
     }
-
-    private void setupAction() {}
 
 }

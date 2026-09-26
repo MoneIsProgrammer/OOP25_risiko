@@ -1,5 +1,6 @@
 package it.unibo.risiko.view;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.controller.GameController;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -17,6 +18,8 @@ public final class MainMenu extends Application {
     private final Rectangle2D screen = Screen.getPrimary().getBounds();
 
     @Override
+    
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public void start(final Stage stage) throws Exception {
         this.mainStage = stage;
         this.mainStage.setTitle("Risiko");

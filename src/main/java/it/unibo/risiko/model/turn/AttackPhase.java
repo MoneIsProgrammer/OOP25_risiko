@@ -56,14 +56,14 @@ public class AttackPhase {
 
     /**
      * This will return true if the player has conquered at least 
-     * one territory
-     * Its used during MovePhase, if player wants to draw a card
-     * @return true if the current amount of territories the player 
-     * has is more than initial territories
+     * one territory.
+     * Its used during MovePhase, if player wants to draw a card.
+     * 
+     * @return true if the current amount of territories the player has is more than initial territories
      */
     public boolean canDraw() {
         final var player = turn.getCurrentPlayer();
 
-        return ((map.getTerritoriesOf(player.getId()).size()) > initialTerritories);
+        return map.getTerritoriesOf(player.getId()).size() > initialTerritories;
     }
 }

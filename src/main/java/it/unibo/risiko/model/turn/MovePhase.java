@@ -1,5 +1,6 @@
 package it.unibo.risiko.model.turn;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.controller.PlayerTurn;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.Objective;
@@ -31,6 +32,8 @@ public class MovePhase {
      * @param check the checker for victory
      * @param turn the current turn
      */
+    
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public MovePhase(final GameMap map, final Roster players, final VictoryCheck check, final PlayerTurn turn) {
         this.map = map;
         this.players = players;
@@ -85,16 +88,14 @@ public class MovePhase {
      */
     public boolean checkElimination() {
         for (final Player player: players.getAllPlayers()) {
-            if (map.getTerritoriesOf(player.getId()).isEmpty()) {
+            if (map.getTerritoriesOf(player.getId()).isEmpty() && managePlayerElimination(player, currentPlayer)) {
                 /* Check whether a player has been eliminated and if 
                  * the current player's objective was to eliminate this 
                  * player, then it returns true, which means the current 
                  * player has completed their objective and won the game.
                  * 
                  */
-                if (managePlayerElimination(player, currentPlayer)) {
-                    return true;
-                }
+                return true;
             }
         }
         /* If none of the players got eliminated or if a player got eliminated 

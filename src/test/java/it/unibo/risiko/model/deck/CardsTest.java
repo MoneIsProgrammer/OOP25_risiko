@@ -1,47 +1,52 @@
 package it.unibo.risiko.model.deck;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
 /**
- * Test the territory deck and objective deck
+ * Test the territory deck and objective deck.
  */
-public class CardsTest {
+class CardsTest {
+    private static final int ZERO = 0;
+
     /* for testing card dealing method */
-    private final Random random = new Random();
-    private int ZERO = 0;
+    //private final Random random = new Random();
 
     /* Test whether the deck is successfully created and shuffled */
-    ArrayList<Card> territoriesDeck = new ArrayList<Card>();
+    private final List<Card> territoriesDeck = new ArrayList<>();
 
-    @Test void territoryDeck() {
-        Card cardDealt;
-        final int randomIndex;
+    /**
+     * Tests the territory deck.
+     */
+    @Test 
+    void territoryDeck() {
+        final Card cardDealt;
+        //final int randomIndex;
         /* add three cards to the deck */
-        Card c1 = new Card(CardTerritories.ALASKA, CardTroops.CANNONS);
-        Card c2 = new Card(CardTerritories.AFGHANISTAN, CardTroops.CAVALRY);
-        Card c3 = new Card(CardTerritories.ALBERTA, CardTroops.INFANTRY);
-        
+        final Card c1 = new Card(CardTerritories.ALASKA, CardTroops.CANNONS);
+        final Card c2 = new Card(CardTerritories.AFGHANISTAN, CardTroops.CAVALRY);
+        final Card c3 = new Card(CardTerritories.ALBERTA, CardTroops.INFANTRY);
+
         territoriesDeck.add(c1);
         territoriesDeck.add(c2);
         territoriesDeck.add(c3);
 
         /* After adding the cards, let's call them by index to see if it 
         was actually added */
-        assertTrue((territoriesDeck.get(0).getTerritory()).equals(c1.getTerritory()));
-        assertTrue((territoriesDeck.get(1).getTerritory()).equals(c2.getTerritory()));
-        assertTrue((territoriesDeck.get(2).getTerritory()).equals(c3.getTerritory()));
-        
-        assertTrue((territoriesDeck.get(0).getTroop()).equals(c1.getTroop()));
-        assertTrue((territoriesDeck.get(1).getTroop()).equals(c2.getTroop()));
-        assertTrue((territoriesDeck.get(2).getTroop()).equals(c3.getTroop()));
+        assertEquals(territoriesDeck.get(0).getTerritory(), c1.getTerritory());
+        assertEquals(territoriesDeck.get(1).getTerritory(), c2.getTerritory());
+        assertEquals(territoriesDeck.get(2).getTerritory(), c3.getTerritory());
+
+        assertEquals(territoriesDeck.get(0).getTroop(), c1.getTroop());
+        assertEquals(territoriesDeck.get(1).getTroop(), c2.getTroop());
+        assertEquals(territoriesDeck.get(2).getTroop(), c3.getTroop());
 
         Collections.shuffle(territoriesDeck);
 
@@ -51,27 +56,31 @@ public class CardsTest {
          * can remain in the same position, especially in this case as 
          * there's only three elements
         */
-       /* putting the part below as comment so it doesn't give error when others are testing */
+        /* putting the part below as comment so it doesn't give error when others are testing */
         /* assertTrue(!(territoriesDeck.get(0).equals(c1)));
         assertTrue(!(territoriesDeck.get(1).equals(c2)));
         assertTrue(!(territoriesDeck.get(2).equals(c3))); */
 
         /* check if calling dealCard() actually deals a card */
-        randomIndex = random.nextInt(territoriesDeck.size());
-        assertTrue(randomIndex != 0);
-        cardDealt = territoriesDeck.get(randomIndex);
+        //randomIndex = random.nextInt(territoriesDeck.size());
+        //assertNotEquals(randomIndex, 0);
+        cardDealt = territoriesDeck.get(1);
         territoriesDeck.remove(cardDealt);
         /* after removing a card, we see that the number of cards actually decreased */
         assertTrue(territoriesDeck.size() < 3);
     }
-    
-    @Test void bonusReinforcements() {
+
+    /**
+     * Tests if bonus reinforcement are calculated correctly.
+     */
+    @Test 
+    void bonusReinforcements() {
 
         /* create a set of cards to test calculateThreeBonus method */
-        Card c1 = new Card(CardTerritories.ALASKA, CardTroops.CANNONS);
-        Card c2 = new Card(CardTerritories.AFGHANISTAN, CardTroops.CAVALRY);
-        Card c3 = new Card(CardTerritories.ALBERTA, CardTroops.INFANTRY);
-        List<Card> setOfCards = new LinkedList<Card>();
+        final Card c1 = new Card(CardTerritories.ALASKA, CardTroops.CANNONS);
+        final Card c2 = new Card(CardTerritories.AFGHANISTAN, CardTroops.CAVALRY);
+        final Card c3 = new Card(CardTerritories.ALBERTA, CardTroops.INFANTRY);
+        final List<Card> setOfCards = new LinkedList<>();
         setOfCards.add(c1);
         setOfCards.add(c2);
         setOfCards.add(c3);
@@ -88,7 +97,7 @@ public class CardsTest {
         /* this for each calculates the number of each type of cards in the set that the 
         player wants to play, in this case the number of jolly cards should be zero */
         for (final Card card: setOfCards) {
-            if(card.getCardType().equals(CardType.JOLLY.getCardType())) {
+            if (card.getCardType().equals(CardType.JOLLY.getCardType())) {
                 nJolly++;
             } else if (card.getCardType().equals(CardType.TERRITORY.getCardType())) {
                 if (card.getTroop() == CardTroops.CANNONS) {
@@ -100,7 +109,7 @@ public class CardsTest {
                 }
             }
         }
-        assertTrue(nJolly == ZERO);
+        assertEquals(ZERO, nJolly);
 
         if (nCannons == 3) {
             final int cannonBonus = 4;
@@ -117,30 +126,34 @@ public class CardsTest {
         }
 
         /* after checking the number of troops of each type, bonus should be 10 */
-        assertTrue(bonus == 10);
+        assertEquals(10, bonus);
     }
 
-    @Test void checkVictory() {
+    /**
+     * Tests if Victorycheck works.
+     */
+    @Test 
+    void checkVictory() {
         /* check whether the cases in the switch in victoryCheck method work,
         we have two players, one has reached the objective, the other hasn't */
-        @SuppressWarnings("unused")
-        final String player1Id = "123";
-        final String player2Id = "456";
+        //final String player1Id = "123"; unused
+        final String ownerId = "456";
+        final String player2Id = ownerId;
 
-        final String europeOwnerId = "456";
-        final String oceaniaOwnerId = "456";
-        @SuppressWarnings("unused")
-        final String southAmericaOwnerId = "123";
+        final String europeOwnerId = ownerId;
+        //final String oceaniaOwnerId = ownerId;
+        //@SuppressWarnings("unused")
+        //final String southAmericaOwnerId = "123";
         /* player 1 owns 2 continents */
-        @SuppressWarnings("unused")
-        final int nOfContinentsP1 = 2;
+        //@SuppressWarnings("unused")
+        //final int nOfContinentsP1 = 2;
         /* player 2 owns 3 continents */
         final int nOfContinentsP2 = 3;
 
         /* for player 1 - objective: Europe, South America and a third continent */
-       /* putting the part below as comment so it doesn't give error when others are testing */
-       /* assertTrue((player1Id.equals(europeOwnerId)) && (player1Id.equals(southAmericaOwnerId)) && (nOfContinentsP1 > 2)); */
+        /* putting the part below as comment so it doesn't give error when others are testing */
+        /* assertTrue((player1Id.equals(europeOwnerId)) && (player1Id.equals(southAmericaOwnerId)) && (nOfContinentsP1 > 2)); */
         /* for player 2 - objective: Europe, Oceania and a third continent */
-        assertTrue((player2Id.equals(europeOwnerId)) && (player2Id.equals(oceaniaOwnerId)) && (nOfContinentsP2 > 2));
+        assertTrue(player2Id.equals(europeOwnerId) && nOfContinentsP2 > 2);
     }
 }

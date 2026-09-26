@@ -2,13 +2,14 @@ package it.unibo.risiko.model.deck;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.controller.PlayerTurn;
-import it.unibo.risiko.model.player.Player;
 
+/**
+ * Deals a card to the current player.
+ */
 public class DrawCard {
-    private Player player;
-    private PlayerTurn turn;
+    private final PlayerTurn turn;
     /* Deck not currently populated, when player calls drawCard, it's automatically populated thanks to dealCard */
-    TerritoriesDeck territoriesDeck = new TerritoriesDeck();
+    private final TerritoriesDeck territoriesDeck = new TerritoriesDeck();
 
     /**
      * Needs the turn.
@@ -20,9 +21,14 @@ public class DrawCard {
         this.turn = turn;
     }
 
+    /**
+     * Adds a card to the current player.
+     * 
+     * @return the card dealt
+     */
     public Card drawNewCard() {
-        player = turn.getCurrentPlayer();
-        Card card = territoriesDeck.dealCard();
+        final var player = turn.getCurrentPlayer();
+        final Card card = territoriesDeck.dealCard();
         player.addCard(card);
         return card;
     }

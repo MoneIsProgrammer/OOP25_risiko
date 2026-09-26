@@ -1,7 +1,6 @@
 package it.unibo.risiko.model.turn;
 
 import it.unibo.risiko.controller.PlayerTurn;
-import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.strategy.HumanStrategy;
 
 /**
@@ -12,7 +11,7 @@ public class ReinforcePhase {
 
     private final PlayerTurn turn;
     /* Receive current player from PlayerTurn */
-    private Player player;
+    //private final Player player;
     //private PlayerStrategy strategy;
     //private HumanStrategy humanStrategy;
     private boolean completed;
@@ -20,10 +19,10 @@ public class ReinforcePhase {
     /**
      * Default constructor.
      * 
-     * @param player the current player
+     * @param turn the turn tracker
      */
-    ReinforcePhase(final Player player, final PlayerTurn turn) {
-        this.player = player;
+    ReinforcePhase(final PlayerTurn turn) {
+        //this.player = player;
         this.turn = turn;
     }
 
@@ -48,7 +47,7 @@ public class ReinforcePhase {
      * to place armies as reinforcements.
      */
     private void placeArmies() {
-        player  = turn.getCurrentPlayer();
+        final var player = turn.getCurrentPlayer();
         if (player.isHuman()) {
             final var strategy = player.getStrategy();
             final var humanStrategy = (HumanStrategy) strategy;

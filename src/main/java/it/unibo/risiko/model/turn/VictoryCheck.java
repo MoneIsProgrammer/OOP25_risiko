@@ -3,6 +3,7 @@ package it.unibo.risiko.model.turn;
 import java.util.Optional;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.map.Territory;
@@ -42,6 +43,7 @@ public class VictoryCheck {
      * @param player the player for whose victory condition is being checked
      * @return returns false if victory conditions have not been met, returns true if victory conditions have been met
      */
+    @SuppressFBWarnings(value = "DB_DUPLICATE_SWITCH_CLAUSES")
     public boolean victoryCheck(final Player player) {
         final String playerId = player.getId();
         final Card playerObjective = player.getObjective();
