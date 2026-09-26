@@ -46,7 +46,7 @@ public class ChangingBox extends HBox {
     ) {
         super();
         this.counter = counter;
-        buttonActive.bind(canGenerate.and(counter.greaterThan(-1).and(counter.lessThanOrEqualTo(maxArmyforAction))));
+        buttonActive.bind(canGenerate.and(counter.greaterThan(0).and(counter.lessThanOrEqualTo(maxArmyforAction))));
 
         final var doneButton = new Button("done");
         doneButton.setOnAction(e -> advancePhase.run());
@@ -68,16 +68,17 @@ public class ChangingBox extends HBox {
             // you can attack again, done goes to the next phase
             this.counter.set(0);
         });
-        attackSetup = List.of(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
+        attackSetup = List.of(new Text("attack"), subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
 
         final var armies = new Text();
         armies.textProperty().bind(counter.asString());
         final var reinforceButton = new Button("Confirm");
-        reinforceButton.setOnAction(e -> {}); //TODO Change when done
-        reinforceSetup = List.of(new Text("Armies to place:"), armies, reinforceButton, doneButton);
+        reinforceButton.setOnAction(e -> advancePhase.run());
+        reinforceButton.disableProperty().bind(counter.isEqualTo(0).not());
+        reinforceSetup = List.of(new Text("reinforce"), new Text("Armies to place:"), armies, reinforceButton);
 
         // in the move you choose the armies too, with the same buttons of the attack
-        moveSetup = List.of(subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
+        moveSetup = List.of(new Text("move"), subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
 
         cardSetup = List.of(new Text("card"), doneButton);
 
