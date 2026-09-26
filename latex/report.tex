@@ -77,8 +77,14 @@ Per la mia parte cambiare libreria grafica vuol dire riscrivere solo \texttt{Map
 % TODO Simone: aggiungi qui la tua parte, cioè i punti d'ingresso di giocatori, eventi e storico,
 % e come si parlano GameController e GameScene. Segnala anche che GameController conosce
 % direttamente GameScene e usa property di JavaFX, e che History usa le liste di JavaFX.
-% TODO: lo schema UML dell'architettura e' gia' pronto, lo aggiungo quando ci saranno
-% anche il mazzo e le fasi del turno, se no e' incompleto.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{latex/resources/Architettura.png}
+    \caption{Architettura: i punti d'ingresso di view, controller e model}
+    \label{fig:Architettura}
+\end{figure}
+
 \subsection{Carte e fasi del turno}
 La parte delle carte e delle fasi è divisa così: le carte, il mazzo e le fasi stanno tutti nel model. Nel controller, in particolare nella classe \texttt{PlayerTurn}, sono aggiunti metodi per informare i giocatori quando un giocatore ha vinto e quindi la partita è finita. Nella classe \texttt{GameScene} della view, c'è il metodo per far vedere ai giocatori, quale giocatore ha vinto. Inoltre, nella classe \texttt{CardView} viene implementata la view delle carte, cioè in base al tipo di carta, la classe cerca tra le risorse l'immagine carta di quel tipo e con quel nome e lo fa vedere al giocatore durante la Play Cards Phase.
 Nella classe \texttt{Deck} nel model, un mazzo viene popolato aggiungendo le carte ad una lista usando il metodo add delle liste. Per distribuire le carte, viene usata un'istanza random della classe Random che dato un numero a caso, prende la carta a quell'indice nella lista mazzo, la salva in una variabile card di tipo \texttt{Card}, la rimuove dalla lista (usando il metodo \texttt{remove}) e restituisce la carta a chiunque abbia chiamato il metodo. Per non generare un nuovo oggetto ogni volta, ho creato una field random da usare come random number generator.
