@@ -119,7 +119,7 @@ Un altro problema è come comunicare le intenzioni dei giocatori al controller, 
     \caption{Modello per visitor}
     \label{fig:Visitor}
 \end{figure}
-\subsection{Creare i Giocatori}
+\subsection{Creare i Giocatori. Morri Simone}
 Un ultimo problema non meno importante è come far costruire i vari giocatori che parteciperanno alla partita, visto che ognuno deve avere delle specifiche proprie. Qui utilizzando sempre dei DTO chiamati PlayerRequest posso gestire la creazione astraendo il giocatore dalla richiesta di creazione, e per rendere la creazione più pulita e facile da fare ho creato una Simple Factory che riceve le varie richieste dei giocatori e produce una lista di Player pronti da utilizzare create sotto le specifiche e per aderire all'utilizzo di ID proposto il tutto viene raccolto in Roster che alla creazione richiede tutte le richieste e permette di interrogare i giocatori chiedendo chi è il possessore di uno specifico ID o Colore,quest'ultimo astratto in RisikoColors. 
 \begin{figure}[h]
     \centering
@@ -217,7 +217,7 @@ Per \texttt{MapCanvas}, \texttt{DiceCanvas} e \texttt{MapClickHandler} non ho fa
     \item JavaFx e le sue componenti \href{https://github.com/MoneIsProgrammer/risiko/blob/1ef3e0756d3ff5c10e6d098ca0f10d445c8c83aa/src/main/java/it/unibo/risiko/view/PlayerSelectScene.java#L176-L223}{ad esempio}
 
 \end{itemize}
-Inoltre potrebbero essere presenti pattern di codice simile a quello altrui in quanto per imparare (principalmente JavaFx) ho seguito guide e discussioni sui forum su come utilizzare vari componenti che mi servivano. L'unico pezzo di codice copiato è \href{https://github.com/MoneIsProgrammer/risiko/blob/1ef3e0756d3ff5c10e6d098ca0f10d445c8c83aa/src/main/java/it/unibo/risiko/model/player/strategy/StrategyUtils.java#L106-L108}{questo} dove appare più volte per risolvere lo stesso problema di ottenere combinazioni di un set di oggetti, appare come metodo di libreria di ApacheCommons, ma non volendo importare una intera libreria solo per uno snippet di codice lungo 3 righe la fonte più "affidabile" che ho trovato è probabilmente una \href{https://www.cs.cornell.edu/courses/cs1112/2011sp/Notes/egL20/L20post.pdf?}{slide} di una lezione della Cornell, nello specifico la numero 16.
+Inoltre potrebbero essere presenti pattern di codice simile a quello altrui in quanto per imparare (principalmente JavaFx) ho seguito guide e discussioni sui forum su come utilizzare vari componenti che mi servivano e quindi il mio codice è venuto inconsciamente viziato da tecniche altrui, elencherei tutto ciò che ho utilizzato ma mi risulta impossibile in quanto non ne ho tenuto traccia vista la varietà. L'unico pezzo di codice copiato è \href{https://github.com/MoneIsProgrammer/risiko/blob/1ef3e0756d3ff5c10e6d098ca0f10d445c8c83aa/src/main/java/it/unibo/risiko/model/player/strategy/StrategyUtils.java#L106-L108}{questo} dove appare più volte per risolvere lo stesso problema di ottenere combinazioni di un set di oggetti, appare come metodo di libreria di ApacheCommons, ma non volendo importare una intera libreria solo per uno snippet di codice lungo 3 righe la fonte più "affidabile" che ho trovato è probabilmente una \href{https://www.cs.cornell.edu/courses/cs1112/2011sp/Notes/egL20/L20post.pdf?}{slide} di una lezione della Cornell, nello specifico la numero 16.
 
 \subsection{Zangheri Marco}
 \begin{itemize}
@@ -258,13 +258,6 @@ Ho preso spunto da:
 
 \chapter{Commenti finali}
 
-In quest'ultimo capitolo si tirano le somme del lavoro svolto e si delineano eventuali sviluppi
-futuri.
-
-\textit{Nessuna delle informazioni incluse in questo capitolo verrà utilizzata per formulare la valutazione finale}, a meno che non sia assente o manchino delle sezioni obbligatorie.
-%
-Al fine di evitare pregiudizi involontari, l'intero capitolo verrà letto dai docenti solo dopo aver formulato la valutazione.
-
 \section{Autovalutazione e lavori futuri}
 \subsection{Morri Simone}
 Ritengo che la mia parte sia in parte troppo ingegnerizzata sia che si mantenga in piedi grazie a pezze e fix, questo forse è dovuto al tempo mal gestito, a una poca comunicazione iniziale e alla mala gestione delle parti in comune. La mia parte la credo forte in quanto più punti sono stati gestiti per avere una quanto più facile integrazione nelle altre componenti. Una evidente debolezza è la troppa dipendenza dalle componenti dei miei compagni che non sono riuscito a risolvere anche a livello teorico.
@@ -303,13 +296,6 @@ Nel caso in cui si pensasse di portare avanti il progetto, ad esempio perché ef
 Scrivere il codice ha avuto le sue difficoltà, ma la più grossa è stata lavorare in tre su parti che si toccano. Ognuno portava avanti la sua, e le cose in comune, come gli eventi o il modo di identificare territori e giocatori, a volte cambiavano mentre qualcuno le stava già usando. Ho capito che quelle vanno decise tutti insieme all'inizio, prima di cominciare.
 
 Dal lato opposto, le cose che mi porto dietro da questo progetto sono soprattutto due. La prima è Git: non l'avevo mai usato prima, e lavorando in tre ho imparato a usarlo sul serio, con i commit, i branch e le pull request su un repository condiviso. La seconda è quanto conta separare bene le parti di un programma. Tenendo la mappa e il combattimento senza niente di grafico, ho potuto testarli da soli, senza aprire nessuna finestra, e il controller non sa nemmeno che la mappa è disegnata con JavaFX. Quando ho dovuto cambiare il disegno, per esempio per la linea fra Alaska e Kamchatka, ho toccato solo la parte grafica e il resto è rimasto com'era.
-
-
-Questa sezione, \textbf{opzionale}, può essere utilizzata per segnalare ai docenti eventuali problemi o difficoltà incontrate nel corso o nello svolgimento del progetto, può essere vista come una seconda possibilità di valutare il corso (dopo quella offerta dalle rilevazioni della didattica) avendo anche conoscenza delle modalità e delle difficoltà collegate all'esame, cosa impossibile da fare usando le valutazioni in aula per ovvie ragioni.
-%
-È possibile che alcuni dei commenti forniti vengano utilizzati per migliorare il corso in futuro: sebbene non andrà a vostro beneficio, potreste fare un favore ai vostri futuri colleghi.
-%
-Ovviamente \textit{il contenuto della sezione non impatterà il voto finale}.
 
 \appendix
 \chapter{Guida utente}
