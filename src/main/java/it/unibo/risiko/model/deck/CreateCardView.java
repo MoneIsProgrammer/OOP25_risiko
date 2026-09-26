@@ -51,9 +51,9 @@ public final class CreateCardView {
 
         final String fileName;
 
-        if (card.getCardType().equals(CardType.TERRITORY)) {
+        if (card.getCardType().equals(CardType.TERRITORY.getCardType())) {
             fileName = card.getTerritory().getTerritoryId() + "_" + card.getTroop().getTroopName() + ".png";
-        } else if (card.getCardType().equals(CardType.JOLLY)) {
+        } else if (card.getCardType().equals(CardType.JOLLY.getCardType())) {
             fileName = "jolly.png";
         } else {
             throw new IllegalStateException("Not a territory or jolly card.");
