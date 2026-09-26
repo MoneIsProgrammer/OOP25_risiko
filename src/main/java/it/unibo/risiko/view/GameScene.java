@@ -1,5 +1,7 @@
 package it.unibo.risiko.view;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -27,6 +29,7 @@ import it.unibo.risiko.view.map.MapLayout;
 import it.unibo.risiko.view.map.MapView;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -151,6 +154,20 @@ public class GameScene {
             hbox.setPadding(new Insets(5));
             hbox.setBackground(new Background(new BackgroundFill(ColorConversion.toJavaFxColor(player.getColor()), new CornerRadii(5), null)));
             box.getChildren().addAll(hbox, new Separator());
+            
+            this.controller.addPlayerListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                var current = (Player) evt.getNewValue();
+                if (current.getId() == player.getId()) {
+                    text.setText(player.getName() + "'s turn");
+                } else {
+                    text.setText(player.getName());
+                }
+            }
+            
+        });
         }
         
         /** Button that when clicked, shows the objective card of the player */
