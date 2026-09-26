@@ -19,7 +19,6 @@ public class ReinforcePhase {
     /**
      * Default constructor.
      * 
-     * @param player the current player
      * @param turn the turn tracker
      */
     ReinforcePhase(final PlayerTurn turn) {
