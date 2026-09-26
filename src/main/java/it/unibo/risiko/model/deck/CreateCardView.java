@@ -51,7 +51,7 @@ public final class CreateCardView {
 
         final String fileName;
 
-        if (card.getCardType().equals(CardType.TERRITORY)){
+        if (card.getCardType().equals(CardType.TERRITORY)) {
             fileName = card.getTerritory().getTerritoryId() + "_" + card.getTroop().getTroopName() + ".png";
         } else if (card.getCardType().equals(CardType.JOLLY)) {
             fileName = "jolly.png";
