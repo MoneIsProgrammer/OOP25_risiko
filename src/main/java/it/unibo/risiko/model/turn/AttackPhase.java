@@ -1,6 +1,7 @@
 package it.unibo.risiko.model.turn;
 
 import it.unibo.risiko.controller.PlayerTurn;
+import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.strategy.HumanStrategy;
 
 /**
@@ -10,10 +11,13 @@ import it.unibo.risiko.model.player.strategy.HumanStrategy;
 public class AttackPhase {
 
     private final PlayerTurn turn;
+    private final GameMap map;
+    private int initialTerritories;
     private boolean isCompleted;
 
-    AttackPhase(final PlayerTurn turn) {
+    AttackPhase(final PlayerTurn turn, final GameMap map) {
         this.turn = turn;
+        this.map = map;
     }
 
     /**
@@ -38,6 +42,7 @@ public class AttackPhase {
      */
     void canAttack() {
         final var player = turn.getCurrentPlayer();
+        initialTerritories = map.getTerritoriesOf(player.getId()).size();
         if (!player.isHuman()) {
             player.attack();
         } else {
@@ -47,5 +52,18 @@ public class AttackPhase {
                 player.attack();
             }
         }
+    }
+
+    /**
+     * This will return true if the player has conquered at least 
+     * one territory
+     * Its used during MovePhase, if player wants to draw a card
+     * @return true if the current amount of territories the player 
+     * has is more than initial territories
+     */
+    public boolean canDraw() {
+        final var player = turn.getCurrentPlayer();
+
+        return ((map.getTerritoriesOf(player.getId()).size()) > initialTerritories);
     }
 }

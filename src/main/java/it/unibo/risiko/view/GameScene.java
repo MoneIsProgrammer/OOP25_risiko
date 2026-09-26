@@ -11,12 +11,14 @@ import it.unibo.risiko.controller.MapClickHandler;
 import it.unibo.risiko.model.battle.BattleResult;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.CreateCardView;
+import it.unibo.risiko.model.deck.DrawCard;
 import it.unibo.risiko.model.event.Event;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
+import it.unibo.risiko.model.turn.AttackPhase;
 import it.unibo.risiko.model.turn.Phase;
 import it.unibo.risiko.utils.ColorConversion;
 import it.unibo.risiko.view.map.DiceCanvas;
@@ -61,7 +63,9 @@ public class GameScene {
 
     private Stage stage;
     private GameController controller;
+    private AttackPhase attackPhase;
     private PlayerTurn turn;
+    private DrawCard drawCard;
     // kept here so the controller can pass them the events
     private MapView mapView;
     private final DiceCanvas dice = new DiceCanvas();
@@ -150,14 +154,24 @@ public class GameScene {
         }
         
         /** Button that when clicked, shows the objective card of the player */
-        Button button = new Button("Show objective");
+        Button objectiveButton = new Button("Show objective");
         /** Gets the objective of the player */
         // turn is still null here, the controller knows who plays
         Card card = controller.getCurrentPlayer().getObjective();
 
-        button.setOnAction(e -> {
+        objectiveButton.setOnAction(e -> {
             showObjectiveWindow(card);
         });
+
+        Button drawButton = new Button("Draw card");
+        
+        if ((turn.getCurrentPhase().equals(Phase.MOVE)) && (attackPhase.canDraw())) {
+            drawButton.setOnAction(e -> {
+                Card cardDrew;
+                cardDrew = drawCard.drawNewCard();
+                showCardDrew(cardDrew);
+            });
+        }
 
         // the dice of the last attack, under the players
         box.getChildren().add(dice);
@@ -166,7 +180,7 @@ public class GameScene {
         final var bottom = new ChangingBox(controller.getStrenght, controller.armyCounter, controller.ableToBuild, controller.maxArmyforAction, a -> controller.addListener(a) , () -> controller.advancePhase());
         bottom.setAlignment(Pos.CENTER);
         bottom.setSpacing(spacing);
-        box.getChildren().addAll(bottom, new GameLogBox(history), button);
+        box.getChildren().addAll(bottom, new GameLogBox(history), objectiveButton, drawButton);
 
         // the map follows the size of the window
         final var container = new Pane(canvas);
@@ -234,6 +248,32 @@ public class GameScene {
 
         /* The window is shown until the player closes it */
         objectiveImageStage.show();
+    }
+
+    /**
+     * show the card that the player drew
+     * @param card the card that the player drew
+     */
+    private void showCardDrew (Card card) {
+        /* Get image of the card from CardViewImpl */
+        ImageView cardView = CreateCardView.createCardView(card, 100);
+        cardView.setPreserveRatio(true);
+
+        /* Context for the card, show name of the player */
+        Label caption = new Label("Player: " + controller.getCurrentPlayer().getName() + "New card: ");
+        caption.setStyle("-fx-font-size: 14px;");
+
+        VBox root = new VBox(10, cardView, caption);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(10));
+
+        Stage cardImageStage = new Stage();
+        cardImageStage.setTitle("Card drawn");
+        cardImageStage.setScene(new Scene(root));
+        cardImageStage.initOwner(stage);
+
+        cardImageStage.initModality(Modality.APPLICATION_MODAL);
+        cardImageStage.showAndWait();
     }
 
     /**
