@@ -110,7 +110,7 @@ public final class DefensiveStrategy implements PlayerStrategy {
                 weakest = reinforceMap.entrySet().stream()
                 .filter(a -> !border.contains(a.getKey()))
                 .min((a, b) -> Integer.compare(a.getValue(), b.getValue())); // ,then the inland 
-                if (weakest.get().getValue() >= MAX_ATK_STR) {
+                if (weakest.isEmpty() || weakest.get().getValue() >= MAX_ATK_STR) {
                     // and at last reinforce the weakest border if everithing as at least 3 armies
                     weakest = reinforceMap.entrySet().stream()
                     .filter(a -> border.contains(a.getKey()))
