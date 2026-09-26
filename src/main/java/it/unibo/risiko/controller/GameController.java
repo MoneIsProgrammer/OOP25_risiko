@@ -475,8 +475,18 @@ public final class GameController {
 
     // auto trade, like the bots
     private int playCards(final Player player) {
+        /* iterator for for loop */
         int i;
+        /* to store bonus reinforcements amount */
         final int bonus;
+
+        /* check if player is human or ai, 
+        - if human: call askComboToPlay to let the player choose cards
+        - if ai: call genericCardPlay 
+        In both cases, after getting combo to play, check if it's empty, i.e. player 
+        doesn't want to play cards. Then remove the combo from the player's hands.
+        - for human: calculate bonus reinforcements with calculateThreeBonus
+        Then, in both cases, return reinforcements gained */
         if (player.isHuman()) {
             viewCards.askComboToPlay(player);
             final var played = viewCards.getCombo();
