@@ -21,6 +21,7 @@ public class ReinforcePhase {
      * Default constructor.
      * 
      * @param player the current player
+     * @param turn the turn tracker
      */
     ReinforcePhase(final Player player, final PlayerTurn turn) {
         this.player = player;
@@ -48,7 +49,7 @@ public class ReinforcePhase {
      * to place armies as reinforcements.
      */
     private void placeArmies() {
-        player  = turn.getCurrentPlayer();
+        player = turn.getCurrentPlayer();
         if (player.isHuman()) {
             final var strategy = player.getStrategy();
             final var humanStrategy = (HumanStrategy) strategy;
