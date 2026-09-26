@@ -93,7 +93,7 @@ public final class GameController {
     // how many players still have to place their starting armies
     private int playersToSetUp;
 
-    private CardBonus bonusReinforcements;
+    private CardBonus bonusReinforcements; 
     private final CardView viewCards;
     // conquered this turn
     private boolean conquered;
@@ -146,6 +146,9 @@ public final class GameController {
         this.viewCards = new CardView();
     }
 
+    private void initializeField(final CardBonus bonusReinforcements) {
+        this.bonusReinforcements = bonusReinforcements;
+    }
     /**
      * Checks if a human player can build.
      * 
@@ -482,8 +485,8 @@ public final class GameController {
                 + playCards(player);
     }
 
-    // auto trade, like the bots
     private int playCards(final Player player) {
+        initializeField(bonusReinforcements);
         /* iterator for for loop */
         int i;
         /* to store bonus reinforcements amount */
@@ -506,6 +509,7 @@ public final class GameController {
             for (i = 0; i < played.size(); i++) {
                 player.getHand().remove(played.get(i));
             }
+            
             bonus = bonusReinforcements.calculateThreeBonus(played, player.getId());
             publish(new CardEvent(played, player, bonus));
             return bonus;

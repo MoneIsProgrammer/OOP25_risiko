@@ -10,13 +10,11 @@ import it.unibo.risiko.controller.MapClickHandler;
 import it.unibo.risiko.model.battle.BattleResult;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.CreateCardView;
-import it.unibo.risiko.model.deck.DrawCard;
 import it.unibo.risiko.model.event.Event;
 import it.unibo.risiko.model.history.History;
 import it.unibo.risiko.model.map.GameMap;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
-import it.unibo.risiko.model.turn.AttackPhase;
 import it.unibo.risiko.model.turn.Phase;
 import it.unibo.risiko.utils.ColorConversion;
 import it.unibo.risiko.view.map.DiceCanvas;
@@ -54,8 +52,6 @@ public class GameScene {
 
     private Stage stage;
     private final GameController controller;
-    private AttackPhase attackPhase;
-    private DrawCard drawCard;
     // kept here so the controller can pass them the events
     private MapView mapView;
     private final DiceCanvas dice = new DiceCanvas();
@@ -175,16 +171,6 @@ public class GameScene {
             showObjectiveWindow(controller.getCurrentPlayer().getObjective());
         });
 
-        final Button drawButton = new Button("Draw card");
-
-        if (this.controller.getTurn().getCurrentPhase() == Phase.MOVE && attackPhase.canDraw()) {
-            drawButton.setOnAction(e -> {
-                final Card cardDrew;
-                cardDrew = drawCard.drawNewCard();
-                showCardDrew(cardDrew);
-            });
-        }
-
         // the dice of the last attack, under the players
         box.getChildren().add(dice);
         box.setAlignment(Pos.CENTER);
@@ -264,33 +250,6 @@ public class GameScene {
 
         /* The window is shown until the player closes it */
         objectiveImageStage.show();
-    }
-
-    /**
-     * Show the card that the player drew.
-     * 
-     * @param card the card that the player drew
-     */
-    private void showCardDrew(final Card card) {
-        /* Get image of the card from CardViewImpl */
-        final ImageView cardView = CreateCardView.createCardView(card, 100);
-        cardView.setPreserveRatio(true);
-
-        /* Context for the card, show name of the player */
-        final Label caption = new Label("Player: " + controller.getCurrentPlayer().getName() + "New card: ");
-        caption.setStyle("-fx-font-size: 14px;");
-
-        final VBox root = new VBox(10, cardView, caption);
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(10));
-
-        final Stage cardImageStage = new Stage();
-        cardImageStage.setTitle("Card drawn");
-        cardImageStage.setScene(new Scene(root));
-        cardImageStage.initOwner(stage);
-
-        cardImageStage.initModality(Modality.APPLICATION_MODAL);
-        cardImageStage.showAndWait();
     }
 
     /**
