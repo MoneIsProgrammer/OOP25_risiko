@@ -122,9 +122,12 @@ public class GameScene {
         // clicks for the attack, the move and the reinforce
         final var clickHandler = new MapClickHandler(map, mapView);
         mapView.addTerritoryClickListener(clickHandler);
+        // the two clicks written
+        final var chosen = new Label();
         clickHandler.addChoiceListener((from, to) -> {
             // the controller gives them to the strategy of the player
             controller.getTerritories(from, to);
+            chosen.setText(from + " -> " + to);
         });
         // in the reinforce and in the setup a click says where the armies go
         clickHandler.addPlacementListener(territoryId -> {
@@ -198,7 +201,7 @@ public class GameScene {
         bottom.setAlignment(Pos.CENTER);
         bottom.setSpacing(spacing);
         // no draw button, automatic now
-        box.getChildren().addAll(bottom, new GameLogBox(history), objectiveButton);
+        box.getChildren().addAll(chosen, bottom, new GameLogBox(history), objectiveButton);
 
         // the map follows the size of the window
         final var container = new Pane(canvas);
