@@ -80,12 +80,12 @@ public final class GameController {
 
     // set this to the maximum troops utilizable for the action, limits if action can be launched by controller parameteters
     private final IntegerProperty maxArmyforAction = new SimpleIntegerProperty(6);
-    private Consumer<Integer> getStrenght;
+    private final Consumer<Integer> getStrenght;
 
     private GameScene view;
     private GameMap map;
 
-    private PlayerTurn turn;
+    private final PlayerTurn turn;
     // the armies put with the clicks in the reinforce or in the setup, for each territory
     // the real dice, the fixed ones are only for the tests of the combat
     // how many players still have to place their starting armies
@@ -104,11 +104,13 @@ public final class GameController {
      * @param requests players that will play in the game
      * @param stage the stage where to put the view
      */
+
+    // don't want to use a logger
     public GameController(final List<PlayerRequest> requests, final Stage stage) {
         try {
             this.map = MapLoader.loadDefault();
         } catch (final IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // NOPMD don't want to use loggers just for this
         }
         //Build map before players then the territories must be assigned
         this.roster = new RosterImpl(requests, this.map); 
@@ -119,7 +121,7 @@ public final class GameController {
         for (int i = 0; i < MAX_TERR_CARDS; i++) {
             final var curr = this.turn.next();
             final var terr = territoryDeck.dealCard();
-            System.out.println(terr.getTerritory().getTerritoryName());
+            //System.out.println(terr.getTerritory().getTerritoryName()); ugly testing
             this.map.getTerritory(terr.getTerritory().getTerritoryId()).addArmies(1);
             this.map.getTerritory(terr.getTerritory().getTerritoryId()).setOwner(curr.getId());
         }
@@ -128,7 +130,7 @@ public final class GameController {
         this.elimination = new MovePhase(this.map, this.roster, this.victory, this.turn);
         dealObjectives();
         // the counter of the buttons says how many armies attack or move
-        this.getStrenght = armies -> armiesChosen(armies);
+        this.getStrenght = this::armiesChosen;
         // a new reinforce starts from zero, and the counter says how many armies there are to place
         this.turn.addPhaseChangeListener(event -> {
             this.placements.clear();
@@ -192,7 +194,7 @@ public final class GameController {
      * @param to the destination
      */
     @SuppressFBWarnings("PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE") // the buttons read the max from here
-    public void getTerritories(final String from, final String to) {
+    public void territoriesConsumer(final String from, final String to) {
         if (!humanPlays()) {
             return;
         }
