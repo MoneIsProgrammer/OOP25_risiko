@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.Objective;
 import it.unibo.risiko.model.event.AttackEvent;
@@ -117,6 +118,7 @@ public final class PlayerImpl implements Player {
     }
 
     @Override
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
     public List<Card> getHand() {
         return this.hand;
     }

@@ -44,6 +44,8 @@ import it.unibo.risiko.view.GameScene;
 import it.unibo.risiko.view.cards.CardView;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.stage.Stage;
@@ -146,7 +148,8 @@ public final class GameController {
      * 
      * @return a property tracking if human can build
      */
-    public BooleanProperty getAbleToBuild() {
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //readonly view must look at this
+    public ReadOnlyBooleanProperty getAbleToBuild() {
         return ableToBuild;
     }
 
@@ -155,6 +158,7 @@ public final class GameController {
      * 
      * @return a counter for armies
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //value is changed by view
     public IntegerProperty getArmyCounter() {
         return armyCounter;
     }
@@ -164,7 +168,8 @@ public final class GameController {
      * 
      * @return a changing limit for army number
      */
-    public IntegerProperty getMaxArmyforAction() {
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //readonly view must look at this
+    public ReadOnlyIntegerProperty getMaxArmyforAction() {
         return maxArmyforAction;
     }
 
@@ -182,6 +187,7 @@ public final class GameController {
      * 
      * @return the turn tracker
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
     public PlayerTurn getTurn() {
         return turn;
     }

@@ -8,6 +8,8 @@ import java.util.function.Consumer;
 import it.unibo.risiko.model.turn.Phase;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -40,8 +42,8 @@ public class ChangingBox extends HBox {
     public ChangingBox(
         final Consumer<Integer> getStrenght,
         final IntegerProperty counter, 
-        final BooleanProperty canGenerate, 
-        final IntegerProperty maxArmyforAction,
+        final ReadOnlyBooleanProperty canGenerate, 
+        final ReadOnlyIntegerProperty maxArmyforAction,
         final Consumer<PropertyChangeListener> addListener,
         final Runnable advancePhase
     ) {

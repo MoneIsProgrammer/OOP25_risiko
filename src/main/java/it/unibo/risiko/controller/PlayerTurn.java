@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.event.GameOverObserver;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.Roster;
@@ -45,6 +46,7 @@ public final class PlayerTurn {
      *
      * @return the next player
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
     public Player next() {
         if (isGameOver()) {
             return winner;
@@ -123,6 +125,7 @@ public final class PlayerTurn {
      * 
      * @return the current player
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
@@ -162,6 +165,7 @@ public final class PlayerTurn {
      * 
      * @return the winning player
      */
+
     public Player getWinner() {
         return winner;
     }
