@@ -17,11 +17,13 @@ import it.unibo.risiko.model.battle.CombatSystem;
 import it.unibo.risiko.model.battle.CombatSystemImpl;
 import it.unibo.risiko.model.battle.Dice;
 import it.unibo.risiko.model.battle.RandomDice;
+import it.unibo.risiko.model.deck.CardBonus;
 import it.unibo.risiko.model.deck.DrawCard;
 import it.unibo.risiko.model.deck.ObjectivesDeck;
 import it.unibo.risiko.model.deck.TerritoriesDeck;
 import it.unibo.risiko.model.event.AttackEvent;
 import it.unibo.risiko.model.event.AttackResultEvent;
+import it.unibo.risiko.model.event.CardEvent;
 import it.unibo.risiko.model.event.Event;
 import it.unibo.risiko.model.event.MoveEvent;
 import it.unibo.risiko.model.event.ReinforceEvent;
@@ -41,6 +43,7 @@ import it.unibo.risiko.model.turn.MovePhase;
 import it.unibo.risiko.model.turn.Phase;
 import it.unibo.risiko.model.turn.VictoryCheck;
 import it.unibo.risiko.view.GameScene;
+import it.unibo.risiko.view.cards.CardView;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -87,6 +90,8 @@ public final class GameController {
     // how many players still have to place their starting armies
     private int playersToSetUp;
     private final DrawCard draw;
+    private CardBonus bonusReinforcements;
+    private CardView viewCards;
     private final MovePhase elimination;
     // conquered this turn
     private boolean conquered;
@@ -434,14 +439,32 @@ public final class GameController {
 
     // auto trade, like the bots
     private int playCards(final Player player) {
-        final var played = StrategyUtils.genericCardPlay(player.getHand(), player, this.map);
-        if (played.isEmpty()) {
-            return 0;
+        int i;
+        if (player.isHuman()) {
+            final var strategy = player.getStrategy();
+            final var humanStrategy = (HumanStrategy) strategy;
+            viewCards.askComboToPlay(player);
+            final var played = viewCards.getCombo();
+            if (played.isEmpty()) {
+                return 0;
+            }
+            // FIXME: player logs
+            // remove and log
+            for (i = 0; i < played.size(); i++) {
+                player.getHand().remove(played.get(i));
+            }
+            publish((Event) played);
+            return bonusReinforcements.calculateThreeBonus(played, player.getId());
+        } else {
+            final var played = StrategyUtils.genericCardPlay(player.getHand(), player, this.map);
+            if (played.isEmpty()) {
+                return 0;
+            }
+            // remove and log
+            player.getHand().removeAll(played.get().played());
+            publish(played.get());
+            return played.get().gainedArmies();
         }
-        // remove and log
-        player.getHand().removeAll(played.get().played());
-        publish(played.get());
-        return played.get().gainedArmies();
     }
 
     // at the end of the reinforce everybody is told where the armies went,
