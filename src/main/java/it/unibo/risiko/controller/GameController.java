@@ -17,6 +17,7 @@ import it.unibo.risiko.model.battle.CombatSystem;
 import it.unibo.risiko.model.battle.CombatSystemImpl;
 import it.unibo.risiko.model.battle.Dice;
 import it.unibo.risiko.model.battle.RandomDice;
+import it.unibo.risiko.model.deck.DrawCard;
 import it.unibo.risiko.model.deck.ObjectivesDeck;
 import it.unibo.risiko.model.deck.TerritoriesDeck;
 import it.unibo.risiko.model.event.AttackEvent;
@@ -31,9 +32,12 @@ import it.unibo.risiko.model.map.MapLoader;
 import it.unibo.risiko.model.map.Territory;
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.PlayerRequest;
+import it.unibo.risiko.model.player.RisikoColors;
 import it.unibo.risiko.model.player.Roster;
 import it.unibo.risiko.model.player.RosterImpl;
 import it.unibo.risiko.model.player.strategy.HumanStrategy;
+import it.unibo.risiko.model.player.strategy.StrategyUtils;
+import it.unibo.risiko.model.turn.MovePhase;
 import it.unibo.risiko.model.turn.Phase;
 import it.unibo.risiko.model.turn.VictoryCheck;
 import it.unibo.risiko.view.GameScene;
@@ -82,6 +86,12 @@ public final class GameController {
     private final VictoryCheck victory;
     // how many players still have to place their starting armies
     private int playersToSetUp;
+    private final DrawCard draw;
+    private final MovePhase elimination;
+    // conquered this turn
+    private boolean conquered;
+    // target killed
+    private boolean targetDestroyed;
 
     /**
      * Default constructor for new game.
@@ -109,6 +119,8 @@ public final class GameController {
             this.map.getTerritory(terr.getTerritory().getTerritoryId()).setOwner(curr.getId());
         }
         this.victory = new VictoryCheck(this.map);
+        this.draw = new DrawCard(this.turn);
+        this.elimination = new MovePhase(this.map, this.roster, this.victory, this.turn);
         dealObjectives();
         // the counter of the buttons says how many armies attack or move
         this.getStrenght = armies -> armiesChosen(armies);
@@ -375,7 +387,23 @@ public final class GameController {
         objectives.createObjectiveDeck();
         for (final Player player : this.roster.getAllPlayers()) {
             player.setObjective(objectives.getObjectiveCard());
+            // impossible target, 24 territories
+            final var objective = player.getObjective().getObjective();
+            if (this.elimination.eliminateColorObjective(objective)
+                    && !colorInGame(this.elimination.playerTargetColour(objective), player)) {
+                player.setNewObjective();
+            }
         }
+    }
+
+    // someone else has it
+    private boolean colorInGame(final RisikoColors color, final Player player) {
+        for (final Player other : this.roster.getAllPlayers()) {
+            if (!other.equals(player) && other.getColor() == color) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // 35 armies with 3 players, 30 with 4, 25 with 5 and 20 with 6
@@ -396,11 +424,24 @@ public final class GameController {
         publish(new ReinforceEvent(bot, added));
     }
 
-    // one army every 3 territories, at least 3, plus the bonus of the continents
+    // one army every 3 territories, at least 3, plus the bonus of the continents and cards
     private int reinforcementsOf(final Player player) {
         final int territories = this.map.getTerritoriesOf(player.getId()).size();
         return Math.max(MIN_REINFORCEMENTS, territories / TERRITORIES_FOR_ONE_ARMY)
-                + this.map.getContinentBonus(player.getId());
+                + this.map.getContinentBonus(player.getId())
+                + playCards(player);
+    }
+
+    // auto trade, like the bots
+    private int playCards(final Player player) {
+        final var played = StrategyUtils.genericCardPlay(player.getHand(), player, this.map);
+        if (played.isEmpty()) {
+            return 0;
+        }
+        // remove and log
+        player.getHand().removeAll(played.get().played());
+        publish(played.get());
+        return played.get().gainedArmies();
     }
 
     // at the end of the reinforce everybody is told where the armies went,
@@ -447,9 +488,12 @@ public final class GameController {
         attack.attackDestination().setOwner(attack.attacker().getId());
         attack.attackSource().removeArmies(survivors);
         attack.attackDestination().addArmies(survivors);
+        this.conquered = true;
         // who has no territories left is out of the game
         if (this.map.getTerritoriesOf(attack.defender().getId()).isEmpty()) {
             this.turn.remove(attack.defender());
+            // hamail's check
+            this.targetDestroyed = this.elimination.managePlayerElimination(attack.defender(), attack.attacker());
         }
     }
 
@@ -457,7 +501,8 @@ public final class GameController {
     // and who has the whole map wins anyway, whatever the objective is
     private void checkVictory(final Player player) {
         final boolean wholeMap = this.map.getTerritoriesOf(player.getId()).size() == this.map.getTerritories().size();
-        final boolean objectiveDone = player.getObjective() != null && this.victory.victoryCheck(player);
+        final boolean objectiveDone = this.targetDestroyed
+                || player.getObjective() != null && this.victory.victoryCheck(player);
         if (wholeMap || objectiveDone) {
             this.turn.setWinner(player);
             if (this.view != null) {
@@ -475,8 +520,17 @@ public final class GameController {
 
     // the turn passes, then the bots play by themselves until a human has to play
     private void passTurn() {
+        drawCard();
         this.turn.next();
         letBotsPlay();
+    }
+
+    // card if conquered
+    private void drawCard() {
+        if (this.conquered) {
+            this.draw.drawNewCard();
+        }
+        this.conquered = false;
     }
 
     // the bots play their turns by themselves until it's the turn of a human
@@ -488,6 +542,7 @@ public final class GameController {
             playBotTurn();
             botTurns++;
             if (!this.turn.isGameOver()) {
+                drawCard();
                 this.turn.next();
             }
         }

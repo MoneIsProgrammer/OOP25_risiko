@@ -63,6 +63,8 @@ import javafx.stage.Stage;
 public class GameScene {
     //unused private static final double WINDOW_WIDTH = 1100;
     //unused private static final double WINDOW_HEIGHT = 700;
+    // readable size
+    private static final double OBJECTIVE_SIZE = 450;
 
     private Stage stage;
     private GameController controller;
@@ -173,11 +175,9 @@ public class GameScene {
         /** Button that when clicked, shows the objective card of the player */
         Button objectiveButton = new Button("Show objective");
         /** Gets the objective of the player */
-        // turn is still null here, the controller knows who plays
-        Card card = controller.getCurrentPlayer().getObjective();
-
         objectiveButton.setOnAction(e -> {
-            showObjectiveWindow(card);
+            // who plays now
+            showObjectiveWindow(controller.getCurrentPlayer().getObjective());
         });
 
         Button drawButton = new Button("Draw card");
@@ -197,7 +197,8 @@ public class GameScene {
         final var bottom = new ChangingBox(controller.getStrenght, controller.armyCounter, controller.ableToBuild, controller.maxArmyforAction, a -> controller.addListener(a) , () -> controller.advancePhase());
         bottom.setAlignment(Pos.CENTER);
         bottom.setSpacing(spacing);
-        box.getChildren().addAll(bottom, new GameLogBox(history), objectiveButton, drawButton);
+        // no draw button, automatic now
+        box.getChildren().addAll(bottom, new GameLogBox(history), objectiveButton);
 
         // the map follows the size of the window
         final var container = new Pane(canvas);
@@ -242,7 +243,7 @@ public class GameScene {
      */
     private void showObjectiveWindow (Card card) {
         /** Gets the image of the objective card from CardViewImpl */
-        ImageView objectiveView = CreateCardView.createObjectiveView(card, 100);
+        final ImageView objectiveView = CreateCardView.createObjectiveView(card, OBJECTIVE_SIZE);
         objectiveView.setPreserveRatio(true);
 
         /* Context for the objective, shows name of the player whose objective is being shown */

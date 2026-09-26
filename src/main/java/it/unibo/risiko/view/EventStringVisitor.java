@@ -74,8 +74,7 @@ public final class EventStringVisitor implements EventVisitor<List<String>> {
 
     @Override
     public List<String> visit(final CardEvent cardEvent) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        return List.of(cardEvent.owner().getName() + " played 3 cards for " + cardEvent.gainedArmies() + " more troops");
     }
 
 }
