@@ -15,19 +15,19 @@ import it.unibo.risiko.model.turn.Phase;
  * Handles the player turn order and their removal from the game.
  */
 public final class PlayerTurn {
-    private boolean setupDone = false;
-    private List<Player> playerOrder = new ArrayList<>();
+    private boolean setupDone;
+    private final List<Player> playerOrder = new ArrayList<>();
     private int counter = -1;
     private Phase currentPhase = Phase.SETUP;
     private final PropertyChangeSupport phaseChange = new PropertyChangeSupport(this);
     // separate from the phase one, the phase listeners cast everything to Phase
     private final PropertyChangeSupport playerChange = new PropertyChangeSupport(this);
-    /** Initially gets the current player when the playerOrder is decided, 
+    /*Initially gets the current player when the playerOrder is decided, 
      * when it's the next player's turn, it changes current player to the new player
     */
     private Player currentPlayer;
     private GameOverObserver observer;
-    private Player winner = null;
+    private Player winner;
 
     /**
      * Default constructor, already shuffles the players.
@@ -48,8 +48,7 @@ public final class PlayerTurn {
     public Player next() {
         if (isGameOver()) {
             return winner;
-        }
-        else {
+        } else {
             counter++;
             final Player old = this.currentPlayer;
             currentPlayer = playerOrder.get(counter % playerOrder.size());
@@ -59,7 +58,8 @@ public final class PlayerTurn {
             }
             // says who plays now, the map needs it for the clicks
             playerChange.firePropertyChange("player", old, currentPlayer);
-            return playerOrder.get(counter % playerOrder.size());}
+            return playerOrder.get(counter % playerOrder.size());
+        }
     }
 
     /**
@@ -103,8 +103,8 @@ public final class PlayerTurn {
      * 
      * @param phase the new phase
      */
-    public void setPhase(Phase phase) {
-        var old = this.currentPhase;
+    public void setPhase(final Phase phase) {
+        final var old = this.currentPhase;
         this.currentPhase = phase;
         phaseChange.firePropertyChange("phase", old, this.currentPhase);
     }
@@ -119,7 +119,9 @@ public final class PlayerTurn {
     }
 
     /**
-     * Gets the current player
+     * Gets the current player.
+     * 
+     * @return the current player
      */
     public Player getCurrentPlayer() {
         return currentPlayer;
@@ -134,10 +136,11 @@ public final class PlayerTurn {
      * have, checkElimination returns true and the current 
      * player is set as winner 
      * Informs the view through GameOverObserver that the 
-     * game is over
+     * game is over.
+     * 
      * @param winner the player that reached their objective
      */
-    public void setWinner(Player winner) {
+    public void setWinner(final Player winner) {
         this.winner = winner;
         if (observer != null) {
             observer.onGameOver(winner);
@@ -146,7 +149,8 @@ public final class PlayerTurn {
 
     /**
      * Checks if a winner has been set, if yes, 
-     * it means the game is over
+     * it means the game is over.
+     * 
      * @return returns true if a winner has been set
      */
     public boolean isGameOver() {
@@ -154,18 +158,25 @@ public final class PlayerTurn {
     }
 
     /**
-     * Getter for the player that won
+     * Getter for the player that won.
+     * 
+     * @return the winning player
      */
     public Player getWinner() {
         return winner;
     }
-    /* observer that alerts view when the game is over */
-    public void setGameOverObserver(GameOverObserver observer) {
-        this.observer = observer;
+
+    /** 
+     * Observer that alerts view when the game is over.
+     * 
+     * @param observerToAdd the observer to register
+     */
+    public void setGameOverObserver(final GameOverObserver observerToAdd) {
+        this.observer = observerToAdd;
     }
 
     /**
-     * Finishes the setup and lets turn procede
+     * Finishes the setup and lets turn procede.
      */
     public void setupFinished() {
         setPhase(Phase.PLAYCARDS);
@@ -174,7 +185,12 @@ public final class PlayerTurn {
         playerChange.firePropertyChange("player", null, currentPlayer);
     }
 
-    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+    /**
+     * Adds someone to be told when the player of the turn changes.
+     * 
+     * @param listener the listener to add
+     */
+    public void addPhaseChangeListener(final PropertyChangeListener listener) {
         phaseChange.addPropertyChangeListener(listener);
     }
 

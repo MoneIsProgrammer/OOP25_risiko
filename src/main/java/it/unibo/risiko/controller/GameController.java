@@ -130,7 +130,7 @@ public final class GameController {
         // the counter of the buttons says how many armies attack or move
         this.getStrenght = armies -> armiesChosen(armies);
         // a new reinforce starts from zero, and the counter says how many armies there are to place
-        this.turn.addPropertyChangeListener(event -> {
+        this.turn.addPhaseChangeListener(event -> {
             this.placements.clear();
             if (event.getNewValue() == Phase.REINFORCE) {
                 this.armyCounter.set(reinforcementsOf(this.turn.getCurrentPlayer()));
@@ -306,7 +306,7 @@ public final class GameController {
     }
 
     public void addListener(PropertyChangeListener listener) {
-        turn.addPropertyChangeListener(listener);
+        turn.addPhaseChangeListener(listener);
     }
 
     /**
