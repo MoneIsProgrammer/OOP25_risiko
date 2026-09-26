@@ -9,7 +9,7 @@ import it.unibo.risiko.controller.PlayerTurn;
 public class DrawCard {
     private final PlayerTurn turn;
     /* Deck not currently populated, when player calls drawCard, it's automatically populated thanks to dealCard */
-    private TerritoriesDeck territoriesDeck = new TerritoriesDeck();
+    private final TerritoriesDeck territoriesDeck = new TerritoriesDeck();
 
     /**
      * Needs the turn.
