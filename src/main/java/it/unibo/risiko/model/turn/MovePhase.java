@@ -115,7 +115,7 @@ public class MovePhase {
      * @param actualPlayer the acting player
      * @return If it was the objective of the current player, returns true
      */
-    boolean managePlayerElimination(final Player playerEliminated, final Player actualPlayer) {
+    public boolean managePlayerElimination(final Player playerEliminated, final Player actualPlayer) {
         final RisikoColors eliminatedColor = playerEliminated.getColor();
 
         /* objectiveEliminateColor() checks whether a player's objective was to eliminate 
@@ -164,7 +164,7 @@ public class MovePhase {
      * @param objective the objective to check
      * @return true if it was any of the colour objectives false otherwise
      */
-    boolean eliminateColorObjective(final Objective objective) {
+    public boolean eliminateColorObjective(final Objective objective) {
         return objective == Objective.OBJECTIVE9
         || objective == Objective.OBJECTIVE10 
         || objective == Objective.OBJECTIVE11 
@@ -180,7 +180,7 @@ public class MovePhase {
      * 
      * @return the color of the target
      */
-    RisikoColors playerTargetColour(final Objective objective) {
+    public RisikoColors playerTargetColour(final Objective objective) {
         switch (objective) {
             case OBJECTIVE9:
                 return RisikoColors.YELLOW;
