@@ -24,8 +24,8 @@ public class ChangingBox extends HBox {
     private final List<Node> attackSetup;
     private final List<Node> reinforceSetup;
     private final BooleanProperty buttonActive = new SimpleBooleanProperty(false);
-    private List<Node> moveSetup;
-    private List<Node> cardSetup;
+    private final List<Node> moveSetup;
+    private final List<Node> cardSetup;
 
     /**
      * Default constructor.
@@ -34,7 +34,8 @@ public class ChangingBox extends HBox {
      * @param counter Tracks the number of armies the player has to use or wants to use
      * @param canGenerate if the controller allows to generate an action
      * @param maxArmyforAction the number of troops the players can utilize
-     * @param advancePhase 
+     * @param advancePhase advaces the controller phase
+     * @param addListener to add a listener when phase changes
      */
     public ChangingBox(
         final Consumer<Integer> getStrenght,
@@ -68,30 +69,49 @@ public class ChangingBox extends HBox {
             // you can attack again, done goes to the next phase
             this.counter.set(0);
         });
-        attackSetup = List.of(new Text("attack"), subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
+        attackSetup = List.of(
+            new Text("attack"), 
+            subtractButton, 
+            new Text("Armies:"), 
+            armiesCounter, 
+            addButton, 
+            confirmButton, 
+            doneButton
+        );
 
         final var armies = new Text();
         armies.textProperty().bind(counter.asString());
         final var reinforceButton = new Button("Confirm");
         reinforceButton.setOnAction(e -> advancePhase.run());
         reinforceButton.disableProperty().bind(counter.isEqualTo(0).not());
-        reinforceSetup = List.of(new Text("reinforce"), new Text("Armies to place:"), armies, reinforceButton);
+        reinforceSetup = List.of(
+            new Text("reinforce"), 
+            new Text("Armies to place:"), 
+            armies, 
+            reinforceButton
+        );
 
         // in the move you choose the armies too, with the same buttons of the attack
-        moveSetup = List.of(new Text("move"), subtractButton, new Text("Armies:"), armiesCounter, addButton, confirmButton, doneButton);
+        moveSetup = List.of(
+            new Text("move"), 
+            subtractButton, 
+            new Text("Armies:"), 
+            armiesCounter, 
+            addButton, 
+            confirmButton, 
+            doneButton
+        );
 
         cardSetup = List.of(new Text("card"), doneButton);
-
 
         super.getChildren().addAll(reinforceSetup);
 
         addListener.accept(new PropertyChangeListener() {
 
             @Override
-            public void propertyChange(PropertyChangeEvent evt) {
+            public void propertyChange(final PropertyChangeEvent evt) {
                 change((Phase) evt.getNewValue());
             }
-            
         });
     }
 
@@ -100,7 +120,7 @@ public class ChangingBox extends HBox {
      * 
      * @param phase determinates which configuration should be applied
      */
-    public void change(final Phase phase) { //invoke when phase changes //TODO add all phases
+    public void change(final Phase phase) { //invoke when phase changes
         super.getChildren().clear();
         switch (phase) {
             case REINFORCE, SETUP:
