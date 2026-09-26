@@ -440,21 +440,20 @@ public final class GameController {
     // auto trade, like the bots
     private int playCards(final Player player) {
         int i;
+        int bonus;
         if (player.isHuman()) {
-            final var strategy = player.getStrategy();
-            final var humanStrategy = (HumanStrategy) strategy;
             viewCards.askComboToPlay(player);
             final var played = viewCards.getCombo();
             if (played.isEmpty()) {
                 return 0;
             }
-            // FIXME: player logs
             // remove and log
             for (i = 0; i < played.size(); i++) {
                 player.getHand().remove(played.get(i));
             }
-            publish((Event) played);
-            return bonusReinforcements.calculateThreeBonus(played, player.getId());
+            bonus = bonusReinforcements.calculateThreeBonus(played, player.getId());
+            publish(new CardEvent(played, player, bonus));
+            return bonus;
         } else {
             final var played = StrategyUtils.genericCardPlay(player.getHand(), player, this.map);
             if (played.isEmpty()) {
