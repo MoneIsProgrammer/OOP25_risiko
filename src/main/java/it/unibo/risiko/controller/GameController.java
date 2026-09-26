@@ -201,7 +201,7 @@ public final class GameController {
      * @param from the source
      * @param to the destination
      */
-    @SuppressFBWarnings("PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE") // the buttons read the max from here
+    //@SuppressFBWarnings("PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE") // the buttons read the max from here
     public void territoriesConsumer(final String from, final String to) {
         if (!humanPlays()) {
             return;

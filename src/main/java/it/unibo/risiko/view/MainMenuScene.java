@@ -1,5 +1,7 @@
 package it.unibo.risiko.view;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -68,7 +70,7 @@ public class MainMenuScene extends Scene {
         this.loadGameButton.setOnAction(loadGame);
         this.loadGameButton.setDisable(!canLoadGame);
         this.exitButton = new Button("Exit");
-        this.exitButton.setOnAction(e -> System.exit(0));
+        this.exitButton.setOnAction(e -> Platform.exit());
         this.customize(exitButton);
         this.customize(newGameButton);
         this.customize(loadGameButton);

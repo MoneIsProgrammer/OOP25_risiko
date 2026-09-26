@@ -3,6 +3,8 @@ package it.unibo.risiko.view;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.controller.GameController;
 import it.unibo.risiko.controller.MapClickHandler;
 import it.unibo.risiko.model.battle.BattleResult;
@@ -63,6 +65,7 @@ public class GameScene {
      * 
      * @param controller the controller of the game
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2") 
     public GameScene(final GameController controller) {
         super();
         this.controller = controller;
@@ -76,6 +79,8 @@ public class GameScene {
      * @param mainStage the main stage
      * @param roster the players
      */
+    
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public void start(
         final Roster roster,
         final GameMap map,
