@@ -33,6 +33,17 @@ public class PlaycardsPhase {
     }
 
     /**
+     * Constructor with the cardview.
+     * 
+     * @param turn the current turn
+     * @param cView the card view
+     */
+    PlaycardsPhase(final PlayerTurn turn, final CardView cView) {
+        this.turn = turn;
+        this.cView = cView;
+    }
+
+    /**
      * Checks if phase can be started.
      */
     public void phaseStart() {
@@ -53,11 +64,6 @@ public class PlaycardsPhase {
      */
     public boolean isCompleted() {
         return isCompleted;
-    }
-
-    PlaycardsPhase(final PlayerTurn turn, final CardView cView) {
-        this.turn = turn;
-        this.cView = cView;
     }
 
     /** 
