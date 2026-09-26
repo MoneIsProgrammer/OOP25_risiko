@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.function.Consumer;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.turn.Phase;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -39,6 +40,7 @@ public class ChangingBox extends HBox {
      * @param advancePhase advaces the controller phase
      * @param addListener to add a listener when phase changes
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public ChangingBox(
         final Consumer<Integer> getStrenght,
         final IntegerProperty counter, 

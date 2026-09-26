@@ -108,6 +108,8 @@ public final class GameController {
      */
 
     // don't want to use a logger
+    
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2") //keeps the same stage
     public GameController(final List<PlayerRequest> requests, final Stage stage) {
         try {
             this.map = MapLoader.loadDefault();

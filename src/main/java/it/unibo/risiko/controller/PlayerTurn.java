@@ -143,6 +143,8 @@ public final class PlayerTurn {
      * 
      * @param winner the player that reached their objective
      */
+    
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public void setWinner(final Player winner) {
         this.winner = winner;
         if (observer != null) {
@@ -166,6 +168,7 @@ public final class PlayerTurn {
      * @return the winning player
      */
 
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
     public Player getWinner() {
         return winner;
     }
