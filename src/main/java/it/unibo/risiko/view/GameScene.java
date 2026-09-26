@@ -185,7 +185,7 @@ public class GameScene {
 
         Button drawButton = new Button("Draw card");
         
-        if ((this.controller.turn.getCurrentPhase().equals(Phase.MOVE)) && (attackPhase.canDraw())) {
+        if ((this.controller.getTurn().getCurrentPhase().equals(Phase.MOVE)) && (attackPhase.canDraw())) {
             drawButton.setOnAction(e -> {
                 Card cardDrew;
                 cardDrew = drawCard.drawNewCard();
@@ -197,7 +197,14 @@ public class GameScene {
         box.getChildren().add(dice);
         box.setAlignment(Pos.CENTER);
         final var spacing = 5;
-        final var bottom = new ChangingBox(controller.getStrenght, controller.armyCounter, controller.ableToBuild, controller.maxArmyforAction, a -> controller.addListener(a) , () -> controller.advancePhase());
+        final var bottom = new ChangingBox(
+            controller.getGetStrenght(),
+            controller.getArmyCounter(), 
+            controller.getAbleToBuild(), 
+            controller.getMaxArmyforAction(), 
+            a -> controller.addListener(a) , 
+            () -> controller.advancePhase()
+        );
         bottom.setAlignment(Pos.CENTER);
         bottom.setSpacing(spacing);
         // no draw button, automatic now
