@@ -55,6 +55,8 @@ import javafx.stage.Stage;
  */
 public final class GameController {
 
+    private static final String EI_EXPOSE_REP = "EI_EXPOSE_REP";
+    private static final String EI_EXPOSE_REP2 = "EI_EXPOSE_REP2";
     private static final int MAX_TERR_CARDS = 42;
     // you attack with 3 armies at most
     private static final int MAX_ATTACK_ARMIES = 3;
@@ -108,8 +110,7 @@ public final class GameController {
      */
 
     // don't want to use a logger
-    
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2") //keeps the same stage
+    @SuppressFBWarnings(EI_EXPOSE_REP2) //keeps the same stage
     public GameController(final List<PlayerRequest> requests, final Stage stage) {
         try {
             this.map = MapLoader.loadDefault();
@@ -152,7 +153,7 @@ public final class GameController {
      * 
      * @return a property tracking if human can build
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //readonly view must look at this
+    @SuppressFBWarnings(EI_EXPOSE_REP) //readonly view must look at this
     public ReadOnlyBooleanProperty getAbleToBuild() {
         return ableToBuild;
     }
@@ -162,7 +163,7 @@ public final class GameController {
      * 
      * @return a counter for armies
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //value is changed by view
+    @SuppressFBWarnings(EI_EXPOSE_REP) //value is changed by view
     public IntegerProperty getArmyCounter() {
         return armyCounter;
     }
@@ -172,7 +173,7 @@ public final class GameController {
      * 
      * @return a changing limit for army number
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP") //readonly view must look at this
+    @SuppressFBWarnings(EI_EXPOSE_REP) //readonly view must look at this
     public ReadOnlyIntegerProperty getMaxArmyforAction() {
         return maxArmyforAction;
     }
@@ -191,7 +192,7 @@ public final class GameController {
      * 
      * @return the turn tracker
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+    @SuppressFBWarnings(EI_EXPOSE_REP)
     public PlayerTurn getTurn() {
         return turn;
     }
@@ -506,7 +507,7 @@ public final class GameController {
             for (i = 0; i < played.size(); i++) {
                 player.getHand().remove(played.get(i));
             }
-            
+
             bonus = bonusReinforcements.calculateThreeBonus(played, player.getId());
             publish(new CardEvent(played, player, bonus));
             return bonus;

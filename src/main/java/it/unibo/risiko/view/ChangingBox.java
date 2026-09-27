@@ -40,7 +40,7 @@ public class ChangingBox extends HBox {
      * @param advancePhase advaces the controller phase
      * @param addListener to add a listener when phase changes
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public ChangingBox(
         final Consumer<Integer> getStrenght,
         final IntegerProperty counter, 

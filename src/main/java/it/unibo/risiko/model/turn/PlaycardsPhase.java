@@ -2,6 +2,7 @@ package it.unibo.risiko.model.turn;
 
 import it.unibo.risiko.model.player.Player;
 import it.unibo.risiko.model.player.strategy.HumanStrategy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.controller.PlayerTurn;
 import it.unibo.risiko.view.cards.CardView;
 
@@ -46,6 +47,7 @@ public class PlaycardsPhase {
     /**
      * Checks if phase can be started.
      */
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") //unused class
     public void phaseStart() {
         /*
          * Before allowing the player to play cards, 

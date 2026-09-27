@@ -43,7 +43,7 @@ public class VictoryCheck {
      * @param player the player for whose victory condition is being checked
      * @return returns false if victory conditions have not been met, returns true if victory conditions have been met
      */
-    @SuppressFBWarnings(value = "DB_DUPLICATE_SWITCH_CLAUSES")
+    @SuppressFBWarnings("DB_DUPLICATE_SWITCH_CLAUSES")
     public boolean victoryCheck(final Player player) {
         final String playerId = player.getId();
         final Card playerObjective = player.getObjective();

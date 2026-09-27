@@ -118,7 +118,7 @@ public final class PlayerImpl implements Player {
     }
 
     @Override
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<Card> getHand() {
         return this.hand;
     }

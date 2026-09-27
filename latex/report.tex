@@ -288,14 +288,6 @@ Se si andasse avanti, la prima cosa che farei è una mappa a poligoni: le coordi
 \subsection{Hamail Azhar}
 La principale difficoltà che ho incontrato è che ho gestito male il tempo. All'inizio non mi erano ben chiare le funzionalità che dovevo implementare, cioè avevo un'idea generale ma le cose non le avevo strutturate/messe in ordine. Dopo un po' ho iniziato a distribuire ogni task in parti più piccole e gestirle una alla volta e questo mi ha reso il lavoro un po' più facile. Questo mi ha dato esperienza per gestire i progetti futuri.
 
-
-\textbf{È richiesta una sezione per ciascun membro del gruppo, obbligatoriamente}.
-%
-Ciascuno dovrà autovalutare il proprio lavoro, elencando i punti di forza e di debolezza in quanto prodotto.
-Si dovrà anche cercare di descrivere \emph{in modo quanto più obiettivo possibile} il proprio ruolo all'interno del gruppo.
-Si ricorda, a tal proposito, che ciascuno studente è responsabile solo della propria sezione: non è un problema se ci sono opinioni contrastanti, a patto che rispecchino effettivamente l'opinione di chi le scrive.
-Nel caso in cui si pensasse di portare avanti il progetto, ad esempio perché effettivamente impiegato, o perché sufficientemente ben riuscito da poter esser usato come dimostrazione di esser capaci progettisti, si descriva brevemente verso che direzione portarlo.
-
 \section{Difficoltà incontrate e commenti per i docenti}
 
 \subsection{Zangheri Marco}
@@ -311,9 +303,10 @@ Innazitutto si aprirà con un menù principal ridotto all'osso, cliccando su new
      \item il colore viene assgnato randomicamente, ma sempre dei soliti 6 classici si parla.
      \item dopo aver creato 3 o più giocatori, di cui uno deve essere umano cliccando su start new game(che dovrebbee essere cliccabile) ci porta alla mappa di gioco.
  \end{itemize}
- una volta alla mappa di gioco avvengono tutte le fasi del risiko, la fase di setup avviene posizionado tutte le truppe in una sola mandata(per risparmiare tempo) e questo avviene per ogni giocatore.
+ Una volta alla mappa di gioco avvengono tutte le fasi del risiko, la fase di setup avviene posizionado tutte le truppe in una sola mandata(per risparmiare tempo) e questo avviene per ogni giocatore.
  A seguire i giocatori si alternano i turni prima giocando le carte disponibili, poi rinforzando, poi attaccando e in fine muovendo le truppe. Ci sono varie variazioni dalle regole standard fatte per consentirci una implementazione più rapida, ad esempio dopo una conquista veengono spostate le armate vittoriose in automatico e per pareggare i conti con i bot il giocatore può muovere una volta le sue truppe da un qualsiasi punto ad un altro nella side bar di sinistra abbiamo i giocatori, di cui viene indicato il turno, sotto i risultati dell'ultimo combattimento, a seguire dei bottoni che cambiano in bas alla fase, done fa passare la fase mentre se appare confirm serve per confermare l'azione che si vuole, oltre a selezionare il numero di truppe da utilizzare attraverso + e -. sotto si ha un Log della partita che riporta tutte le azioni sia dei bot e non scrollabile. In fondo il bottone show Objective mostra l'obbiettivo del giocatore corrente che se completato porta alla vittoria.
  Quando è necessario cliccare sui territori basta semplicemente cliccare sul pallino corrispontente ,del colore del proprietario, e se in combattimento o movimento cliccare due territori li prende come primo sorgente e secondo destinazione dell'azione che va confermata dopo aver selezionato un numero corretto di truppe, nel rinforzo invece un singolo clic aggiunge una truppa al territorio corrispondente: ATTENZIONE! non c'è un bottone di undo quindi cliccare consapevolmente.
+ All'inizio del turno quando si clicca sul bottone si aprirà una seconda finestra elencando le carte in possesso, qui dopo aver selezionato una combo valida sarà possibile giocarla cliccando sul tasto che diventerà cliccabile, oppure se una combo valida non è disponibile perchè non si hanno le carte giuste o abbastanza carte o semplicemente non si vuole giocare nessuna carta cliccare su annulla farà passare la fase senza aver giocato nessuna carta. 
 \chapter{Esercitazioni di laboratorio}
 Nessuno di noi vuole consegnare i laboratori
 

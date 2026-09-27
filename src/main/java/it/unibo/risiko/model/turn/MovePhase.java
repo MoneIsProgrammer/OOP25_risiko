@@ -32,8 +32,7 @@ public class MovePhase {
      * @param check the checker for victory
      * @param turn the current turn
      */
-    
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public MovePhase(final GameMap map, final Roster players, final VictoryCheck check, final PlayerTurn turn) {
         this.map = map;
         this.players = players;

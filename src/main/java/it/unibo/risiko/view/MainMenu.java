@@ -18,8 +18,7 @@ public final class MainMenu extends Application {
     private final Rectangle2D screen = Screen.getPrimary().getBounds();
 
     @Override
-    
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public void start(final Stage stage) throws Exception {
         this.mainStage = stage;
         this.mainStage.setTitle("Risiko");

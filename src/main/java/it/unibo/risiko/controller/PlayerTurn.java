@@ -46,7 +46,7 @@ public final class PlayerTurn {
      *
      * @return the next player
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public Player next() {
         if (isGameOver()) {
             return winner;
@@ -125,7 +125,7 @@ public final class PlayerTurn {
      * 
      * @return the current player
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
@@ -143,8 +143,7 @@ public final class PlayerTurn {
      * 
      * @param winner the player that reached their objective
      */
-    
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public void setWinner(final Player winner) {
         this.winner = winner;
         if (observer != null) {
@@ -168,7 +167,7 @@ public final class PlayerTurn {
      * @return the winning player
      */
 
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public Player getWinner() {
         return winner;
     }
