@@ -98,14 +98,6 @@ Per l'ultima fase \texttt{MovePhase}, dopo che il giocatore ha spostato le armat
 Per i giocatori abbiamo provato il più possibile a mantenerli sparati dalla view in quanto sono componenti essenzialmente solo del model, nel far questo sono stati necessarie varie classi che si distaccavano dalla implementazione dei giocatori e questi ultimi hanno vari metodi di "ingresso" per permettere al controller di ricevere le loro azioni, valide o meno.
 Tutto sommato sebbene non siamo riusciti ad avere una distinzione netta tra controller e view dove è possibile "staccarne e attaccarne" varie a uno stesso controller con molta facilità, data anche la complessità del progetto che ha richieste specifiche per la GUI oltre a richiedere tempi di progettazione ancora maggiori che non ci potevamo permettere, il risultato è per noi molto soddisfacente in quanto la view fa richieste solo al controller per ciò che gli serve e il model non sa nulla di come è stata progettata la view, e la view a sua volta non sa nulla di come è progettato il model.
 
-
-\subsection*{Elementi positivi}
-\begin{itemize}
- \item Si mostrano pochi, mirati schemi UML dai quali si deduce con chiarezza quali sono le parti principali del software e come interagiscono fra loro.
- \item Si mette in evidenza se e come il pattern architetturale model-view-controller è stato applicato, anche con l'uso di un UML che mostri le interfacce principali ed i rapporti fra loro.
- \item Si discute se sia semplice o meno, con l'architettura scelta, sostituire in blocco la view:
- 	in un MVC ben fatto, controller e modello non dovrebbero in alcun modo cambiare se si transitasse da una libreria grafica ad un'altra (ad esempio, da Swing a JavaFX, o viceversa).
-
 \section{Design dettagliato}
 
 \subsection {Far produrre allo stesso tipo di entità risultati differenti. Morri Simone}
@@ -214,6 +206,7 @@ Per \texttt{MapCanvas}, \texttt{DiceCanvas} e \texttt{MapClickHandler} non ho fa
     \item Ho testato che i metodi usati per le varie operazioni con il mazzo siano funzionali.
     \item Dato un set di carte che un giocatore volesse giocare, ho testato se ottengo il numero di reinforzamenti giusto.
     \item Infine, ho anche testato che il controllo delle condizioni di vittoria sia giusta.
+\end{itemize}
 
 \section{Note di sviluppo}
 
