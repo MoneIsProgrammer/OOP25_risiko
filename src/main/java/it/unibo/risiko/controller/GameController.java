@@ -144,11 +144,9 @@ public final class GameController {
         });
         this.turn.addPlayerChangeListener(event -> this.placements.clear());
         this.viewCards = new CardView();
+        this.bonusReinforcements = new CardBonus(map);
     }
 
-    private void initializeField(final CardBonus bonusReinforcements) {
-        this.bonusReinforcements = bonusReinforcements;
-    }
     /**
      * Checks if a human player can build.
      * 
@@ -486,7 +484,6 @@ public final class GameController {
     }
 
     private int playCards(final Player player) {
-        initializeField(bonusReinforcements);
         /* iterator for for loop */
         int i;
         /* to store bonus reinforcements amount */
