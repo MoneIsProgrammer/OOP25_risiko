@@ -95,7 +95,7 @@ public final class GameController {
     // how many players still have to place their starting armies
     private int playersToSetUp;
 
-    private CardBonus bonusReinforcements; 
+    private final CardBonus bonusReinforcements; 
     private final CardView viewCards;
     // conquered this turn
     private boolean conquered;
