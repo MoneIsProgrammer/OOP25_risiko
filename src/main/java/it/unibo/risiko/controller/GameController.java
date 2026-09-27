@@ -486,7 +486,7 @@ public final class GameController {
     }
 
     private int playCards(final Player player) {
-        initializeField(bonusReinforcements);
+        initializeField(new CardBonus(map));
         /* iterator for for loop */
         int i;
         /* to store bonus reinforcements amount */
