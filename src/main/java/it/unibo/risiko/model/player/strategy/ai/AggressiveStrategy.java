@@ -94,7 +94,7 @@ public final class AggressiveStrategy implements PlayerStrategy {
     }
 
     @Override
-    public ReinforceEvent getReinforce(final Player owner, final int armies) { // TODO add card bonuses when ready
+    public ReinforceEvent getReinforce(final Player owner, final int armies) {
         final Map<Territory, Integer> reinforceMap = new HashMap<>();
         final var playerTerritories = map.getTerritoriesOf(owner.getId());
         final var borders = StrategyUtils.getBorderTerritories(playerTerritories, this.map);
