@@ -1,6 +1,8 @@
 package it.unibo.risiko.view.cards;
 
 import it.unibo.risiko.model.player.Player;
+import it.unibo.risiko.model.player.strategy.StrategyUtils;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -8,7 +10,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import it.unibo.risiko.model.deck.Card;
+import it.unibo.risiko.model.deck.CardTroops;
+import it.unibo.risiko.model.deck.CardType;
 import it.unibo.risiko.model.deck.CreateCardView;
+import it.unibo.risiko.model.deck.TerritoriesDeck;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -49,6 +54,10 @@ public class CardView {
 
         /* FlowPane helps arrange the hand */
         final FlowPane handPane = new FlowPane(10, 10);
+        var testDeck = new TerritoriesDeck();
+        for (int i = 0; i < 42; i++) {
+            playerHand.add(testDeck.dealCard());
+        }
         /* Each card in the player's hand is displayed */
         for (final Card card : playerHand) {
             final ImageView cardView = CreateCardView.createCardView(card, 100);
@@ -99,7 +108,70 @@ public class CardView {
          * - 1 jolly and two of same troops
          * so we only check that exactly three cards are selected
         */
-        okButton.setDisable(chosenCards.size() != 3);
+        okButton.setDisable(!valid(chosenCards));
+    }
+
+    private boolean valid(Set<Card> setOfCards) { //shamelessy stolen from card bonus
+                /* Variable to store the number of bonus troops */
+        int bonus = 0;
+        /*
+         * Calculate the number of jolly cards in the set
+         */
+        int nJolly = 0;
+        for (final Card card : setOfCards) {
+            if (card.getCardType().equals(CardType.JOLLY.getCardType())) {
+                nJolly++;
+            }
+        }
+        int nCannons = 0;
+        int nCavalry = 0;
+        int nInfantry = 0;
+        for (final Card card : setOfCards) {
+            if (card.getCardType().equals(CardType.TERRITORY.getCardType())) {
+                if (card.getTroop() == CardTroops.CANNONS) {
+                    nCannons++;
+                } else if (card.getTroop() == CardTroops.CAVALRY) {
+                    nCavalry++;
+                } else if (card.getTroop() == CardTroops.INFANTRY) {
+                    nInfantry++;
+                }
+            }
+        }
+
+        /* If the number of jolly cards is more than one, return 0 */
+        if (nJolly > 1) {
+            return true;
+        } else if (nJolly == 1) {
+            /* If the number of jolly cards is 1, check whether the other two 
+             * cards are of the same troop */
+            if (nCannons == 2 || nCavalry == 2 || nInfantry == 2) {
+                final int withJollyBonus = 12;
+                bonus += withJollyBonus;
+            }
+        } else if (nJolly == 0) {
+            /* No jolly cards, which means:
+             * If all three cards are of the same kind, I'll check whether:
+             * They're all cannon and 4 extra troops can be deployed;
+             * They're all infantry and 6 extra troops can be deployed;
+             * They're all cavalry and 8 extra troops can be deployed;
+             * If they're each a different type of troop, 10 extra troops 
+             * can be deployed;
+             */
+            if (nCannons == 3) {
+                final int cannonBonus = 4;
+                bonus += cannonBonus;
+            } else if (nInfantry == 3) {
+                final int infantryBonus = 6;
+                bonus += infantryBonus;
+            } else if (nCavalry == 3) {
+                final int cavarlyBonus = 8;
+                bonus += cavarlyBonus;
+            } else if (nCannons == 1 && nInfantry == 1 && nCavalry == 1) {
+                final int trisBonus = 10;
+                bonus += trisBonus;
+            }
+        }
+        return bonus != 0;
     }
 
     /**
