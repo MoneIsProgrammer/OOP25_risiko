@@ -70,13 +70,11 @@ Durante una partita i giocatori possono consultare il tabellone che rappresenta 
 
 Abbiamo usato il pattern MVC, con il codice diviso nei package \texttt{model}, \texttt{view} e \texttt{controller}.
 
-La parte che ho fatto io è divisa così: mappa, dadi e combattimento stanno nel model e non sanno niente né della grafica né del controller; il disegno della mappa sta nella view, ma da fuori si usa solo tramite l'interfaccia \texttt{MapView}, che non contiene tipi di JavaFX; \texttt{MapClickHandler} sta nel controller, riceve i click dalla view, legge la mappa e non modifica niente. Per tenere aggiornato lo schermo uso il pattern Observer: \texttt{MapView} estende \texttt{GameObserver}, quindi riceve gli \texttt{Event} e la mappa si ridisegna da sola. Il flusso della partita, cioè la preparazione, i turni e l'esecuzione delle mosse, l'ho scritto nel \texttt{GameController}: prende le mosse dalle strategie dei giocatori, le esegue sul model e avvisa la view con gli eventi.
+Nel model ci sono le parti del gioco, che non sanno niente della grafica: la mappa con territori e continenti e il combattimento con i dadi, i giocatori con le loro strategie, gli eventi e lo storico, i mazzi, le carte e il controllo della vittoria.
 
-Per la mia parte cambiare libreria grafica vuol dire riscrivere solo \texttt{MapCanvas} e \texttt{DiceCanvas}: il model e \texttt{MapClickHandler} restano uguali.
+Il punto d'ingresso del controller è \texttt{GameController}: lo crea il menu con i giocatori scelti, apre la schermata di gioco e da lì fa girare la partita, cioè la preparazione, i turni e l'esecuzione delle mosse. Di chi è il turno e in che fase si è lo sa \texttt{PlayerTurn}, mentre i click sulla mappa li interpreta \texttt{MapClickHandler}, che legge la mappa e non modifica niente. Le mosse le decidono le strategie dei giocatori, umani o bot; il controller le esegue sul model e le comunica con gli \texttt{Event}: la mappa li riceve come \texttt{GameObserver} e si ridisegna da sola, lo storico li trasforma in testo.
 
-% TODO Simone: aggiungi qui la tua parte, cioè i punti d'ingresso di giocatori, eventi e storico,
-% e come si parlano GameController e GameScene. Segnala anche che GameController conosce
-% direttamente GameScene e usa property di JavaFX, e che History usa le liste di JavaFX.
+La view è \texttt{GameScene}, che contiene la mappa, i dadi, la pulsantiera e lo storico. La mappa il controller la vede solo tramite l'interfaccia \texttt{MapView}, che non contiene tipi di JavaFX, quindi per lei cambiare libreria grafica vuol dire riscrivere solo \texttt{MapCanvas} e \texttt{DiceCanvas}. Il controller però conosce direttamente \texttt{GameScene} e usa le property di JavaFX per la pulsantiera, quindi cambiando libreria andrebbe toccato anche lui.
 
 \begin{figure}[H]
     \centering
@@ -234,7 +232,7 @@ Per alcune parti, segnalate qui sotto, ho preso spunto da guide e discussioni su
 \begin{itemize}
     \item La formula che decide se il numero delle armate va scritto in bianco o in nero sopra il colore del giocatore \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/MapCanvas.java#L303-L308}{qui}: i pesi 0.299, 0.587 e 0.114 sono quelli della luminosità percepita dello standard ITU-R BT.601.
     \item Il calcolo per adattare la mappa alla finestra senza deformarla e tenerla centrata \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/ViewTransform.java#L22-L28}{qui}: la scala è il minimo tra i due rapporti di larghezza e altezza, e i margini servono per centrarla.
-    \item Il modo per far seguire al \texttt{Canvas} la grandezza della finestra, visto che in JavaFX non si ridimensiona da solo: gli leghi larghezza e altezza a quelle del contenitore \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/GameScene.java#L103-L104}{qui} e lo ridisegni quando cambiano \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/MapCanvas.java#L93-L94}{qui}.
+    \item Il modo per far seguire al \texttt{Canvas} la grandezza della finestra, visto che in JavaFX non si ridimensiona da solo: la schermata gli lega larghezza e altezza a quelle del contenitore, e il \texttt{Canvas} si ridisegna quando cambiano \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/main/java/it/unibo/risiko/view/map/MapCanvas.java#L93-L94}{qui}.
     \item Il metodo dei test che trasforma delle righe di testo in un \texttt{InputStream}, così \texttt{MapLoader} e \texttt{MapLayout} leggono un file finto senza doverlo creare davvero \href{https://github.com/MoneIsProgrammer/risiko/blob/90268fcf19c4a90738d5f2d6c9d17ea0389a93c0/src/test/java/it/unibo/risiko/model/map/MapLoaderTest.java#L60-L62}{qui}: questo l'ho copiato così com'è da una discussione su un forum, e lo stesso metodo è anche in \texttt{MapLayoutTest}.
 \end{itemize}
 
@@ -264,7 +262,7 @@ Ritengo che la mia parte sia in parte troppo ingegnerizzata sia che si mantenga 
 \subsection{Zangheri Marco}
 Mi sono occupato della mappa e dei continenti, dei dadi e del combattimento, del disegno della mappa e della gestione dei click, e verso la fine anche del flusso della partita nel controller. Siccome la mia parte è quella su cui poggiano le altre, ho cercato di chiudere presto le interfacce, tenerle piccole e non dipendere dalle classi degli altri: la mappa usa solo id e la grafica si usa solo tramite \texttt{MapView}. Secondo me è stata la scelta giusta, perché quando gli altri hanno collegato le loro parti non ho dovuto cambiare niente di importante.
 
-Però ci sono cose che potevo fare meglio. La prima è il disegno: i territori sono cerchi collegati da linee e non le forme vere dei continenti, quindi si capisce chi confina con chi ma non sembra un tabellone. In più \texttt{MapCanvas} è la mia classe più grande e fa un sacco di cose insieme, l'avrei dovuta dividere in due, una per i continenti e una per i territori.
+Però ci sono cose che potevo fare meglio. La prima è il disegno: i territori sono cerchi collegati da linee e non le forme vere dei continenti, quindi si capisce chi confina con chi ma non sembra un tabellone. In più \texttt{MapCanvas} è la più grande tra le classi che ho creato io e fa un sacco di cose insieme, l'avrei dovuta dividere in due, una per i continenti e una per i territori.
 
 La seconda sono gli id: usare le \texttt{String} ha tenuto separate mappa e giocatori, però il compilatore non distingue l'id di un territorio da quello di un giocatore, e se ne passi uno sbagliato te ne accorgi solo quando il programma gira. Col senno di poi avrei fatto due record piccoli, \texttt{TerritoryId} e \texttt{PlayerId}.
 
