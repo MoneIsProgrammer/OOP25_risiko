@@ -1,6 +1,5 @@
 package it.unibo.risiko.view;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

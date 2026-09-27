@@ -61,7 +61,7 @@ public class GameScene {
      * 
      * @param controller the controller of the game
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2") 
+    @SuppressFBWarnings("EI_EXPOSE_REP2") 
     public GameScene(final GameController controller) {
         super();
         this.controller = controller;
@@ -75,8 +75,7 @@ public class GameScene {
      * @param mainStage the main stage
      * @param roster the players
      */
-    
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public void start(
         final Roster roster,
         final GameMap map,

@@ -1,7 +1,6 @@
 package it.unibo.risiko.view.cards;
 
 import it.unibo.risiko.model.player.Player;
-import it.unibo.risiko.model.player.strategy.StrategyUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -9,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.risiko.model.deck.Card;
 import it.unibo.risiko.model.deck.CardTroops;
 import it.unibo.risiko.model.deck.CardType;
 import it.unibo.risiko.model.deck.CreateCardView;
-import it.unibo.risiko.model.deck.TerritoriesDeck;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -54,10 +53,6 @@ public class CardView {
 
         /* FlowPane helps arrange the hand */
         final FlowPane handPane = new FlowPane(10, 10);
-        var testDeck = new TerritoriesDeck();
-        for (int i = 0; i < 42; i++) {
-            playerHand.add(testDeck.dealCard());
-        }
         /* Each card in the player's hand is displayed */
         for (final Card card : playerHand) {
             final ImageView cardView = CreateCardView.createCardView(card, 100);
@@ -89,6 +84,7 @@ public class CardView {
      * @param card card that the player clicked
      * @param cardView the image of the card
      */
+    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // inizialized later and it works
     private void setCombo(final Card card, final ImageView cardView) {
         if (chosenCards.contains(card)) {
             chosenCards.remove(card);
@@ -111,8 +107,8 @@ public class CardView {
         okButton.setDisable(!valid(chosenCards));
     }
 
-    private boolean valid(Set<Card> setOfCards) { //shamelessy stolen from card bonus
-                /* Variable to store the number of bonus troops */
+    private boolean valid(final Set<Card> setOfCards) { //shamelessy stolen from card bonus
+        /* Variable to store the number of bonus troops */
         int bonus = 0;
         /*
          * Calculate the number of jolly cards in the set

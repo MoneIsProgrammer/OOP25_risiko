@@ -9,12 +9,21 @@ import it.unibo.risiko.view.GameScene;
 public class GameOverObserver {
     private final GameScene scene;
 
+    /**
+     * Default constructor.
+     * 
+     * @param scene the scene
+     */
     GameOverObserver(final GameScene scene) {
         this.scene = scene;
     }
-    
-    /* method called by PlayerTurn only when a player wins  */
-    public void onGameOver(Player winner) {
+
+    /** 
+     * method called by PlayerTurn only when a player wins.
+     * 
+     * @param winner the winner
+     */
+    public void onGameOver(final Player winner) {
         scene.showGameOver(winner);
     }
 }
